@@ -124,8 +124,9 @@
   --stage-h: 720;        /* 4:3 waere 1024 / 768. */
 
   --ease: cubic-bezier(.22,.9,.24,1);
-  --peek: 17px;          /* in Ruhe: Farbstrich plus ein Streifen Papier */
-  --peek-hover: 86px;    /* Maus im Register: Miniatur wird sichtbar */
+  --stripe: 14px;        /* Breite des Farbstreifens am Kartenrand */
+  --peek: 21px;          /* in Ruhe sichtbar: Streifen plus 5px Papier */
+  --peek-hover: 90px;    /* Maus im Register: Miniatur wird sichtbar */
 }
 
 
@@ -214,7 +215,7 @@ body{
   appearance:none; border:1px solid var(--line); border-right:0; cursor:pointer;
   font:inherit; color:var(--ink); text-align:left;
   display:flex; align-items:center; gap:12px;
-  padding:7px 14px 7px 16px;
+  padding:7px 14px 7px 20px;
   background: var(--surface);
   box-shadow: var(--shadow-sm);
   /* Der Kern des Effekts: die Karte schiebt sich um ihre eigene
@@ -224,7 +225,8 @@ body{
   transition: transform .42s var(--ease), background-color .25s ease;
 }
 .rail-item::before{                   /* Registerfarbe an der Aussenkante */
-  content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background: var(--blau-50);
+  content:""; position:absolute; left:0; top:0; bottom:0;
+  width: var(--stripe); background: var(--blau-50);
 }
 .rail-item.current{ transform: translateX(calc(100% - var(--peek) - 13px)) }
 .rail-item.current::before{ background: var(--blau) }
@@ -413,6 +415,10 @@ ul.refs i{ font-style:italic }
 .keys dd{ margin:0; font-size:17px; color:var(--muted) }
 
 
+/* Sprechnotizen: im Foliensatz unsichtbar, nur im zweiten
+   Fenster des Praesentationsmodus zu sehen. */
+.notes{ display:none }
+
 /* ---------- 7 · Fusszeile und Logo ------------------------ */
 .slide::before, .slide::after{ content:""; position:absolute; pointer-events:none; z-index:0 }
 .slide > *{ position:relative; z-index:1 }
@@ -491,6 +497,83 @@ pre{ background:var(--blau-10); border-left:0; border-radius:var(--r-md) }
 .slide.hero .chip{ background:rgba(255,255,255,.17); color:#fff }
 
 
+/* ---------- 8b · Praesentationsmodus (zweites Fenster) ---- */
+/* Taste P oeffnet dieselbe Datei ein zweites Mal mit ?presenter=1.
+   Dort wird der Foliensatz ausgeblendet und stattdessen die
+   Vortragendenansicht gezeigt: aktuelle Folie, naechste Folie,
+   Notizen und Uhr. Beide Fenster sprechen ueber postMessage —
+   das funktioniert auch bei file://, wo gemeinsamer Speicher
+   und BroadcastChannel an der undurchsichtigen Herkunft scheitern. */
+#pres{ display:none }
+body.presenter{ background:#0f1216 }
+body.presenter .stage,
+body.presenter .rail,
+body.presenter .progress{ display:none !important }
+body.presenter #pres{
+  position:fixed; inset:0; display:grid; gap:16px; padding:18px;
+  grid-template-columns: 1.35fr 1fr;
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas: "head head" "now next" "notes notes";
+  color:#e9ecf0; font-size:15px;
+}
+.pres-head{
+  grid-area:head; display:flex; align-items:center; gap:14px;
+  padding-bottom:14px; border-bottom:1px solid rgba(233,236,240,.16);
+}
+.pres-time{
+  font-family:var(--mono); font-size:38px; font-weight:700;
+  font-variant-numeric:tabular-nums; letter-spacing:-.02em; color:#fff;
+}
+.pres-btn{
+  appearance:none; cursor:pointer; font:inherit; font-size:13px; font-weight:500;
+  padding:8px 16px; border-radius:999px;
+  border:1px solid rgba(233,236,240,.28); background:transparent; color:#e9ecf0;
+  transition:background-color .2s ease;
+}
+.pres-btn:hover{ background:rgba(233,236,240,.12) }
+.pres-count{
+  margin-left:auto; font-family:var(--mono); font-size:20px; font-weight:700;
+  font-variant-numeric:tabular-nums; color:var(--blau-50);
+}
+.pres-now{ grid-area:now } .pres-next{ grid-area:next } .pres-notes{ grid-area:notes }
+.pres-now, .pres-next, .pres-notes{ display:flex; flex-direction:column; gap:9px; min-height:0 }
+.pres-label{
+  margin:0; font-size:11.5px; font-weight:700; letter-spacing:.16em;
+  text-transform:uppercase; color:rgba(233,236,240,.55);
+}
+.pres-label em{ font-style:normal; color:var(--blau-50); margin-left:8px }
+.pres-view{
+  position:relative; width:100%; aspect-ratio: var(--stage-w) / var(--stage-h);
+  overflow:hidden; border-radius:14px; background:#fff;
+}
+.pres-next .pres-view{ opacity:.72 }
+.pres-inner{
+  position:absolute; top:0; left:0;
+  width:  calc(var(--stage-w) * 1px);
+  height: calc(var(--stage-h) * 1px);
+  transform-origin:0 0; transform: scale(calc(var(--tw) / var(--stage-w)));
+  pointer-events:none;
+}
+/* Anders als in den Miniaturen bleiben data-step-Elemente hier
+   verborgen — die Vorschau zeigt den echten Aufbaustand. */
+.pres-inner .slide{
+  opacity:1 !important; visibility:visible !important; transform:none !important;
+  animation:none !important; transition:none !important; box-shadow:none;
+}
+.pres-inner .slide [data-anim]{ opacity:1 !important; animation:none !important }
+.pres-inner .slide [data-step]{ transition:none !important }
+.pres-text{
+  flex:1; min-height:0; overflow-y:auto; font-size:19px; line-height:1.55;
+  color:#e9ecf0; background:rgba(233,236,240,.06);
+  border-radius:14px; padding:20px 24px;
+}
+.pres-text:empty::before{ content:"Keine Notizen zu dieser Folie."; color:rgba(233,236,240,.4) }
+.pres-hint{
+  position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:90;
+  padding:12px 22px; border-radius:999px; background:var(--ink); color:#fff;
+  font-size:13.5px; max-width:70vw; text-align:center;
+}
+
 /* ---------- 9 · Bewegung reduziert, Druck ----------------- */
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration:.001ms !important; animation-delay:0ms !important;
@@ -499,7 +582,7 @@ pre{ background:var(--blau-10); border-left:0; border-radius:var(--r-md) }
 @page{ size:1280px 720px; margin:0 }
 @media print{
   body{ overflow:visible; background:#fff }
-  .rail, .progress, .overview, .foot{ display:none !important }
+  .rail, .progress, .overview, .foot, #pres{ display:none !important }
   .stage{ position:static; display:block }
   .deck{ position:static; margin:0; transform:none; width:auto; height:auto }
   .slide{
@@ -532,6 +615,7 @@ pre{ background:var(--blau-10); border-left:0; border-radius:var(--r-md) }
         <span class="l1"><b>ABCD</b>MUSTER</span>
         <span class="l2"><i>U</i><i>N</i><i>I</i><i>V</i><i>E</i><i>R</i><i>S</i><i>I</i><i>T</i><i>Y</i></span>
       </div>
+      <aside class="notes">Diese Anleitung läuft auf derselben Technik wie die Vorlage. Beim Vorführen ruhig gleich P drücken und diese Ansicht hier zeigen.</aside>
     </section>
 
     <!-- Aufbau der Datei ........................................ -->
@@ -557,6 +641,7 @@ deck.style.transform = `scale(${s})`;</pre>
           <p class="caption">Ein Wert, der alles trägt</p>
         </div>
       </div>
+      <aside class="notes">Kernpunkt: eine feste Bühne, alles darin in Pixeln. Deshalb sind die Miniaturen im Register exakt dieselbe Folie.</aside>
     </section>
 
     <!-- Übergänge und Einblendungen ............................. -->
@@ -584,6 +669,7 @@ bar.style.transform = `scaleX(${(i+1) / n})`;</pre>
           <li>Bei <em>prefers-reduced-motion</em> fällt jede Bewegung weg, der Inhalt bleibt vollständig.</li>
         </ul>
       </div>
+      <aside class="notes">Auf das Vorzeichen hinweisen — eine Variable erzeugt beide Richtungen. Danach eine Einblendung vorführen.</aside>
     </section>
 
     <!-- Das Register am rechten Rand ............................ -->
@@ -617,6 +703,7 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
           <p class="body" style="font-size:17px;margin-top:6px">Weil <code>100%</code> sich auf die eigene Breite der Karte bezieht, funktioniert das gleiche CSS für jede Beschriftungslänge — egal wie lang der Folientitel ist.</p>
         </div>
       </div>
+      <aside class="notes">Am besten live zeigen: Maus an den rechten Rand führen, eine Karte anfassen.</aside>
     </section>
 
     <!-- Bausteine ............................................... -->
@@ -639,6 +726,7 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
           <dt>.cite · .source-note</dt><dd>Beleg im Fließtext, Fußnote unter dem Inhalt</dd>
         </dl>
       </div>
+      <aside class="notes">Nicht vorlesen. Nur sagen, dass alles Gezeigte schon fertig ist und kopiert werden kann.</aside>
     </section>
 
     <!-- Wo steht welcher Text ................................... -->
@@ -662,6 +750,32 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
           <li>Alles liegt in einer Datei, auch die Schriften. Kopieren genügt.</li>
         </ul>
       </div>
+      <aside class="notes">Wichtigste Folie für alle, die selbst etwas ändern. Auf den Kopfkommentar in der Datei verweisen.</aside>
+    </section>
+
+
+    <!-- Präsentationsmodus ...................................... -->
+    <section class="slide" data-title="Zwei Bildschirme">
+      <p class="eyebrow" data-anim>Vortragen</p>
+      <h2 data-anim>Zwei Bildschirme, ein Zustand</h2>
+      <div class="cols wide-left" data-anim>
+        <ul class="points">
+          <li><b>P</b> öffnet dieselbe Datei ein zweites Mal — als Vortragendenansicht mit aktueller Folie, nächster Folie, Notizen und Uhr.</li>
+          <li>Dieses zweite Fenster auf den Laptopbildschirm ziehen, im ersten <b>F</b> für Vollbild auf dem Beamer drücken.</li>
+          <li>Geblättert wird in beiden Fenstern — der Zustand bleibt gekoppelt, auch die Einblendungen.</li>
+          <li>Notizen stehen als <em>&lt;aside class="notes"&gt;</em> in der Folie und sind im Foliensatz unsichtbar.</li>
+        </ul>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <pre>&lt;section <span class="k">class</span>="slide"&gt;
+  …
+  &lt;aside <span class="k">class</span>="notes"&gt;
+    Hier stehen die Sprechnotizen.
+  &lt;/aside&gt;
+&lt;/section&gt;</pre>
+          <p class="caption">Beide Fenster sprechen über postMessage — das trägt auch bei file://</p>
+        </div>
+      </div>
+      <aside class="notes">Hier die Ansicht selbst vorführen: P drücken, das zweite Fenster zeigen, auf Uhr und Notizen deuten.</aside>
     </section>
 
     <!-- Tastenbelegung .......................................... -->
@@ -676,6 +790,7 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
           <dt>Pos1 &nbsp;Ende</dt><dd>erste / letzte Folie</dd>
           <dt>O &nbsp;oder &nbsp;Esc</dt><dd>Übersicht aller Folien</dd>
           <dt>F</dt><dd>Vollbild</dd>
+          <dt>P</dt><dd>Vortragendenansicht im zweiten Fenster</dd>
         </dl>
         <div style="display:flex;flex-direction:column;gap:12px">
           <p class="body">Eine Folie hinzufügen heißt: eine <code>&lt;section&gt;</code> ergänzen. Register, Übersicht, Balken und Zifferntasten richten sich automatisch danach.</p>
@@ -687,6 +802,7 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
           <p class="caption">data-title beschriftet die Registerkarte · data-step nummeriert die Einblendungen</p>
         </div>
       </div>
+      <aside class="notes">Kurz halten, die Tabelle steht auch im README.</aside>
     </section>
 
     <footer class="foot">
@@ -711,6 +827,28 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
 </div>
 
 
+<!-- Vortragendenansicht — nur im zweiten Fenster sichtbar (Taste P) -->
+<div id="pres">
+  <header class="pres-head">
+    <span class="pres-time" id="presTime">00:00</span>
+    <button class="pres-btn" id="presToggle" type="button">Uhr starten</button>
+    <button class="pres-btn" id="presReset" type="button">Zurücksetzen</button>
+    <span class="pres-count" id="presCount">01 / 08</span>
+  </header>
+  <section class="pres-now">
+    <h2 class="pres-label">Aktuelle Folie<em id="presStep"></em></h2>
+    <div class="pres-view" id="presNow"></div>
+  </section>
+  <section class="pres-next">
+    <h2 class="pres-label">Als Nächstes</h2>
+    <div class="pres-view" id="presNext"></div>
+  </section>
+  <section class="pres-notes">
+    <h2 class="pres-label">Notizen</h2>
+    <div class="pres-text" id="presNotes"></div>
+  </section>
+</div>
+
 <script>
 (() => {
   "use strict";
@@ -731,6 +869,22 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
   let index = 0, step = 0;
 
   const pad = n => String(n).padStart(2, '0');
+
+  /* Dieselbe Datei laeuft in zwei Rollen: als Foliensatz und — mit
+     ?presenter=1 — als Vortragendenansicht im zweiten Fenster. */
+  const isPresenter = /[?&]presenter=1/.test(location.search);
+  let presWin = null;
+
+  /* Getastet wird in beiden Fenstern, geblaettert nur im ersten. */
+  const nav = (what, n) => {
+    if (isPresenter) {
+      try { opener.postMessage({ type: 'nav', what, n }, '*'); } catch (err) {}
+      return;
+    }
+    if (what === 'next') next();
+    else if (what === 'prev') prev();
+    else go(n);
+  };
 
 
   /* --- Bühne an das Fenster anpassen ---------------------- */
@@ -943,6 +1097,7 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
     });
     ovItems.forEach((el, k) => el.classList.toggle('current', k === index));
     try { history.replaceState(null, '', '#' + (index + 1)); } catch (e) {}
+    sendState();
   }
 
   /* --- Folienwechsel -------------------------------------- */
@@ -982,11 +1137,12 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
     const open = overview.classList.contains('open');
 
     switch (e.key) {
-      case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': next(); break;
-      case 'ArrowLeft':  case 'ArrowUp':   case 'PageUp':            prev(); break;
-      case 'Home': go(0); break;
-      case 'End':  go(slides.length - 1); break;
-      case 'Escape': case 'o': case 'O': setOverview(!open); break;
+      case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': nav('next'); break;
+      case 'ArrowLeft':  case 'ArrowUp':   case 'PageUp':            nav('prev'); break;
+      case 'Home': nav('go', 0); break;
+      case 'End':  nav('go', slides.length - 1); break;
+      case 'p': case 'P': if (!isPresenter) openPresenter(); break;
+      case 'Escape': case 'o': case 'O': if (!isPresenter) setOverview(!open); break;
       case 'f': case 'F':
         try {
           document.fullscreenElement ? document.exitFullscreen()
@@ -994,7 +1150,7 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
         } catch (err) {}
         break;
       default:
-        if (/^[1-9]$/.test(e.key)) { go(Number(e.key) - 1); setOverview(false); }
+        if (/^[1-9]$/.test(e.key)) { nav('go', Number(e.key) - 1); setOverview(false); }
         return;
     }
     e.preventDefault();
@@ -1008,8 +1164,126 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
   addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - sx;
     const dy = e.changedTouches[0].clientY - sy;
-    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)) (dx < 0 ? next() : prev());
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)) nav(dx < 0 ? 'next' : 'prev');
   }, { passive:true });
+
+  /* ========================================================
+     Praesentationsmodus — zwei Fenster, ein Zustand
+     ======================================================== */
+  function sendState() {
+    if (!presWin || presWin.closed) return;
+    try {
+      presWin.postMessage({
+        type: 'state', index, step,
+        steps: stepsOf(slides[index]), total: slides.length
+      }, '*');
+    } catch (err) {}
+  }
+
+  function openPresenter() {
+    if (presWin && !presWin.closed) { presWin.focus(); return; }
+    const url = location.href.split('#')[0].split('?')[0] + '?presenter=1';
+    presWin = open(url, 'registerdeck-presenter', 'width=1180,height=800');
+    if (!presWin) {
+      const hint = document.createElement('div');
+      hint.className = 'pres-hint';
+      hint.textContent = 'Das zweite Fenster wurde blockiert. Pop-ups für diese Seite erlauben und P erneut drücken.';
+      document.body.appendChild(hint);
+      setTimeout(() => hint.remove(), 5000);
+    }
+  }
+
+  /* Das erste Fenster hoert auf Blaetterbefehle aus dem zweiten. */
+  if (!isPresenter) {
+    addEventListener('message', e => {
+      const d = e.data;
+      if (!d || typeof d !== 'object' || e.source !== presWin) return;
+      if (d.type === 'hello') sendState();
+      else if (d.type === 'nav') nav(d.what, d.n);
+    });
+  }
+
+  /* --- Die Vortragendenansicht ---------------------------- */
+  if (isPresenter) (function presenter() {
+    document.body.classList.add('presenter');
+    const elNow   = document.getElementById('presNow');
+    const elNext  = document.getElementById('presNext');
+    const elNotes = document.getElementById('presNotes');
+    const elCount = document.getElementById('presCount');
+    const elStep  = document.getElementById('presStep');
+    const elTime  = document.getElementById('presTime');
+    const btnRun  = document.getElementById('presToggle');
+    const btnZero = document.getElementById('presReset');
+    let shown = { index: 0, step: 0, steps: 0 };
+
+    /* Vorschau: eine verkleinerte Kopie im echten Aufbaustand. */
+    function preview(box, slide, atStep, full) {
+      box.style.setProperty('--tw', Math.round(box.clientWidth) || 520);
+      const inner = document.createElement('span');
+      inner.className = 'pres-inner';
+      const copy = slide.cloneNode(true);
+      copy.classList.add('active');
+      copy.classList.remove('leaving');
+      copy.removeAttribute('id');
+      copy.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+      copy.querySelectorAll('[data-anim]').forEach(n => n.removeAttribute('data-anim'));
+      copy.querySelectorAll('[data-step]').forEach(el => {
+        const from  = +el.dataset.step || 0;
+        const until = el.dataset.stepUntil ? +el.dataset.stepUntil : Infinity;
+        el.classList.toggle('shown', full || (from <= atStep && atStep < until));
+      });
+      inner.appendChild(copy);
+      box.replaceChildren(inner);
+    }
+
+    function draw() {
+      const i = shown.index;
+      preview(elNow, slides[i], shown.step, false);
+      if (i + 1 < slides.length) preview(elNext, slides[i + 1], 0, true);
+      else elNext.replaceChildren();
+    }
+
+    function render(st) {
+      shown = { index: Math.max(0, Math.min(slides.length - 1, st.index | 0)),
+                step: st.step | 0, steps: st.steps | 0 };
+      /* Den eigenen, verborgenen Foliensatz mitziehen: nur dann steht
+         das Diagramm in der Vorschau auf dem richtigen Verlauf. */
+      go(shown.index, shown.step);
+      elCount.textContent = pad(shown.index + 1) + ' / ' + pad(slides.length);
+      elStep.textContent  = shown.steps ? 'Schritt ' + shown.step + ' von ' + shown.steps : '';
+      const n = slides[shown.index].querySelector('.notes');
+      elNotes.textContent = n ? n.textContent.trim() : '';
+      draw();
+      setTimeout(draw, 950);          // nach dem Morph noch einmal
+    }
+
+    addEventListener('message', e => {
+      if (e.source !== opener) return;
+      if (e.data && e.data.type === 'state') render(e.data);
+    });
+    addEventListener('resize', draw, { passive: true });
+
+    /* Uhr */
+    let t0 = 0, acc = 0, running = false;
+    const fmt = ms => {
+      const t = Math.floor(ms / 1000);
+      return pad(Math.floor(t / 60)) + ':' + pad(t % 60);
+    };
+    const tick = () => { elTime.textContent = fmt(acc + (running ? Date.now() - t0 : 0)); };
+    btnRun.addEventListener('click', () => {
+      if (running) { acc += Date.now() - t0; running = false; btnRun.textContent = 'Uhr starten'; }
+      else { t0 = Date.now(); running = true; btnRun.textContent = 'Uhr anhalten'; }
+      tick();
+    });
+    btnZero.addEventListener('click', () => {
+      acc = 0; t0 = Date.now(); tick();
+    });
+    setInterval(tick, 500); tick();
+
+    /* Sofort etwas zeigen, auch bevor das erste Fenster antwortet. */
+    render({ index: 0, step: 0, steps: stepsOf(slides[0]) });
+    try { opener.postMessage({ type: 'hello' }, '*'); } catch (err) {}
+  })();
 
   /* --- Startfolie aus der Adresszeile --------------------- */
   const fromHash = () => {

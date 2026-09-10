@@ -16,6 +16,7 @@ im Farbklang der RWTH Aachen.
 |---|---|
 | `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. Acht Folien, die alle Bausteine einmal zeigen. |
 | `anleitung.html` | Die Bedienungsanleitung — selbst ein Foliensatz, läuft auf derselben Technik. Erklärt Aufbau, Übergänge, Register und Bausteine. |
+| `technik-uebernehmen.py` | Überträgt Stylesheet, Vortragendenansicht und Skript von der Vorlage in die Anleitung, damit der Unterbau nur an einer Stelle gepflegt wird. |
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
 
 Für einen neuen Vortrag: `vorlage.html` kopieren und umbenennen. Das Original bleibt
@@ -33,6 +34,7 @@ unangetastet als Ausgangspunkt.
 | `Pos1` / `Ende` | erste / letzte Folie |
 | `O` oder `Esc` | Übersicht aller Folien |
 | `F` | Vollbild |
+| `P` | Vortragendenansicht im zweiten Fenster |
 
 Auf dem Tablet wischen. Die Foliennummer steht in der Adresszeile: `datei.html#3`
 springt direkt auf Folie 3.
@@ -40,6 +42,41 @@ springt direkt auf Folie 3.
 Am rechten Rand liegt der **Karteikasten**: in Ruhe sieht man nur die farbige Kante
 jeder Folie. Nähert sich die Maus, treten die Miniaturen hervor; auf einer Karte
 fährt sie ganz heraus und zeigt den Folientitel. Ein Klick springt dorthin.
+
+---
+
+## Präsentationsmodus
+
+`P` öffnet dieselbe Datei ein zweites Mal — diesmal als **Vortragendenansicht**:
+aktuelle Folie, nächste Folie, Sprechnotizen und eine Uhr mit Start und Rücksetzen.
+
+Der Ablauf beim Vortrag:
+
+1. Beide Bildschirme anschließen und den Foliensatz öffnen.
+2. `P` drücken — das zweite Fenster erscheint.
+3. Das zweite Fenster auf den Laptopbildschirm ziehen.
+4. Im ersten Fenster `F` für Vollbild auf dem Beamer drücken.
+
+Geblättert werden kann in beiden Fenstern; der Zustand bleibt gekoppelt, auch die
+Einblendschritte. Die Vorschau der aktuellen Folie zeigt den echten Aufbaustand,
+die Vorschau der nächsten Folie zeigt sie fertig aufgebaut.
+
+Die beiden Fenster verständigen sich über `postMessage`. Das ist bewusst so gewählt:
+gemeinsamer Speicher und `BroadcastChannel` scheitern bei `file://` an der
+undurchsichtigen Herkunft, `postMessage` funktioniert auch dort.
+
+### Sprechnotizen
+
+Notizen stehen als `<aside class="notes">` in der Folie. Im Foliensatz sind sie
+unsichtbar, im zweiten Fenster erscheinen sie groß gesetzt.
+
+```html
+<section class="slide" data-title="Ergebnisse">
+  <h2 data-anim>Was wir gefunden haben</h2>
+  …
+  <aside class="notes">Auf die Streuung hinweisen. Etwa zwei Minuten.</aside>
+</section>
+```
 
 ---
 
@@ -92,6 +129,7 @@ nach der Zahl der Folien.
 | `.chip` | Pille für Agenda oder Schlagworte |
 | `.cite` / `.source-note` | Beleg im Fließtext, Fußnote unter dem Inhalt |
 | `.byline` | Autor:innen und Einrichtung |
+| `<aside class="notes">` | Sprechnotizen — nur in der Vortragendenansicht sichtbar |
 | `data-anim` | Element tritt beim Folienwechsel gestaffelt auf |
 | `data-step="n"` | Element erscheint erst beim n-ten Pfeildruck |
 | `data-step-until="n"` | … und verschwindet beim n-ten wieder |
@@ -131,6 +169,22 @@ Einblendungen erscheinen dabei vollständig.
 
 **Bekannte Einschränkung:** Die Fußzeile fehlt im PDF, weil sie einmalig in der Bühne
 liegt und nicht je Seite wiederholt wird.
+
+---
+
+## Beide Dateien gleich halten
+
+`vorlage.html` und `anleitung.html` teilen sich Stylesheet, Vortragendenansicht und
+Skript — nur Folien und Notizen unterscheiden sich. **Die Vorlage ist die Quelle.**
+Nach einer Änderung an der Technik:
+
+```bash
+python3 technik-uebernehmen.py
+```
+
+Das Skript überträgt die drei geteilten Blöcke und lässt Titel, Fußzeile und Folien
+der Anleitung unangetastet. Es bricht ab, bevor es schreibt, falls dabei etwas
+Eigenes verloren ginge.
 
 ---
 
