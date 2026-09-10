@@ -15,7 +15,7 @@ dieses Dokument geht ins Einzelne.
 
 | Datei | Zweck |
 |---|---|
-| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 21 Folien — jede Darstellungsform genau einmal. |
+| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 22 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
 | `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Regeln, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. `python3 pruefen.py` |
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
@@ -34,8 +34,8 @@ unangetastet als Ausgangspunkt.
 | `→` `↓` `Leertaste` `Bild ab` | erst nächster Einblendschritt, dann nächste Folie |
 | `←` `↑` `Bild auf` | zurück — die Folie bleibt dabei fertig aufgebaut |
 | `1` … `9` | direkt zur Folie |
-| `Pos1` / `Ende` | erste / letzte Folie |
 | `0` oder `O` | Übersicht aller Folien — `Esc` schließt sie wieder |
+| `Pos1` / `Ende` | erste / letzte Folie **des Vortrags** (der Anhang bleibt außen vor) |
 | `F` oder `F5` | Vollbild |
 | `P` | Vortragendenansicht im zweiten Fenster |
 | `B` oder `.` | Schwarzbild — jede Taste holt zurück |
@@ -193,6 +193,7 @@ nach der Zahl der Folien.
 | `figure` + `figcaption` | Grafik oder Diagramm mit Bildunterschrift |
 | `pre` | Codeblock, blau getönt |
 | `.chip` | Pille für Schlagworte — vorhanden, in der Vorlage derzeit ungenutzt |
+| `.slide.anhang` | Folie für die Fragerunde, nur über die Übersicht erreichbar |
 | `.tiles` / `.tile` | Kachelreihe für Bilder oder Skizzen |
 | `.zeit` | Zeitleiste: Phasen und Messzeitpunkte auf einem Raster mit `--spalten`, `--von`, `--dauer`, `--bei` |
 | `table.vgl` | Vergleichstabelle; `.mk.ja` / `.mk.halb` / `.mk.nein` als Ausfüllgrad, `.num` für Ziffernschrift |
@@ -261,6 +262,36 @@ Repository).
 | `data-step-until="n"` | … und verschwindet beim n-ten wieder |
 
 ---
+
+
+## Anhangsfolien
+
+Folien für die Fragerunde: Dinge, für die im Vortrag kein Platz war, nach denen aber
+gefragt wird. Sie tragen eine Klasse, alles Weitere folgt daraus.
+
+```html
+<section class="slide anhang" data-title="Wie gut trennen die Items?">
+```
+
+| | Verhalten |
+|---|---|
+| **Fortschrittsbalken** | zählt sie nicht mit. Auf der letzten Folie des Vortrags steht er voll. |
+| **Register** | zeigt sie nicht — es bliebe sonst für den Vortrag weniger Platz. |
+| **Übersicht** (`0`) | zeigt sie, abgesetzt unter einer Trennzeile. **Der einzige Weg hinein.** |
+| **Fußzeile** | `A1`, `A2`, `A3` statt weiterzuzählen. |
+| **Pfeil vor** | baut Einblendungen auf der Folie auf, verlässt sie aber nie. |
+| **Pfeil zurück** | führt zurück auf die letzte Folie des Vortrags, fertig aufgebaut. |
+| **`Ende`** | springt auf die letzte Folie des **Vortrags**, nicht der Datei. |
+
+Am Ende des Vortrags bleibt `→` stehen. Ein Druck zu viel wirft also nicht versehentlich
+eine Anhangsfolie an die Wand — das ist der eigentliche Grund für die Sackgasse.
+
+**Beschrifte sie nach der Frage, nicht nach dem Inhalt.** Also `data-title="Wie gut
+trennen die Items?"` statt `data-title="Itemkennwerte"`. In der Fragerunde suchst du in
+der Übersicht nach der Frage, die man dir gerade gestellt hat.
+
+**Sprechnotizen auch dort.** Anhangsfolien liegen oft Monate brach; wenn die Frage kommt,
+ist die Zahl darauf nicht mehr präsent.
 
 ## Formensammlung
 

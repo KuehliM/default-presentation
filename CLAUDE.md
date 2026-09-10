@@ -14,7 +14,7 @@ sie ohne Rückfrage befolgt werden können. **Zuerst lesen, dann anfassen.**
 
 | Datei | Rolle |
 |---|---|
-| `vorlage.html` | **Der Foliensatz.** 21 Folien, jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
+| `vorlage.html` | **Der Foliensatz.** 22 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
 | `formeln.py` | Setzt alle Formeln: liest LaTeX aus `data-tex`, schreibt MathML hinein, bettet Fira Math ein. Nach jeder Formeländerung laufen lassen. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. |
 | `README.md` | Die Dokumentation für Menschen: Bedienung, Bausteine, Formeln. **Einzige Stelle neben dem Skript, an der die Tastenbelegung steht.** |
@@ -133,6 +133,26 @@ Schatten.
 | `data-step-until="n"` | verschwindet beim n-ten wieder |
 | `data-keep` | bleibt sichtbar, `data-step` löst nur die eigene Bewegung aus |
 | `<aside class="notes">` | Sprechnotizen, nur in der Vortragendenansicht |
+| `.slide.anhang` | Folie für die Fragerunde — eigener Abschnitt unten |
+
+### Anhangsfolien
+
+`<section class="slide anhang">`. Eine Klasse trägt alles Weitere:
+
+* **Fortschrittsbalken** zählt sie nicht (`total` lässt sie aus, `scaleX` ist auf 1 begrenzt).
+* **Register** zeigt sie nicht — es bliebe sonst für den Vortrag weniger Platz.
+* **Übersicht** zeigt sie unter einer Trennzeile. Der einzige Weg hinein.
+* **Fußzeile** zeigt `A1`, `A2`, … über `nummer(i)`.
+* **`→`** baut Einblendungen auf, verlässt die Folie aber nie. Am Ende des Vortrags
+  bleibt `→` ebenfalls stehen — ein Druck zu viel darf den Anhang nicht an die Wand werfen.
+* **`←`** führt aus dem Anhang zurück auf `vortragEnde`, fertig aufgebaut.
+* **`Ende`** springt auf `vortragEnde`, nicht auf die letzte Folie der Datei.
+
+Weil Register und Übersicht ihre Karten nicht mehr über die Position zuordnen können,
+trägt jede Karte ihre Folienzahl in `dataset.nr`; `paint()` vergleicht damit. Wer am
+Aufbau beider Leisten etwas ändert, muss das mitnehmen.
+
+Titel nach der **Frage** benennen, nicht nach dem Inhalt.
 
 ### Zahlen, Formeln, Belege
 
@@ -208,7 +228,7 @@ und Zifferntasten richten sich selbst nach der Zahl der Folien.
 
 ## Steuerung
 
-`→ ↓ Leertaste Bild-ab` weiter · `← ↑ Bild-auf` zurück · `1…9` Folie · `Pos1/Ende`
+`→ ↓ Leertaste Bild-ab` weiter · `← ↑ Bild-auf` zurück · `1…9` Folie · `Pos1/Ende` (Ende = letzte Folie des **Vortrags**)
 · `0`/`O` Übersicht (`Esc` schließt) · `F`/`F5` Vollbild · `P` Vortragendenansicht · `B`/`.`
 Schwarzbild · `K` Tastenanzeige. Bild-ab und Bild-auf sind absichtlich belegt: USB-
 Presenter senden genau die.

@@ -16,7 +16,7 @@ zugleich sein eigener Musterbogen.
 
 | # | Folie | Form | Zahlen kommen aus |
 |---|---|---|---|
-| 01 · 20 | Registerdeck · Vielen Dank | Titel- und Abschlussfolie | — |
+| 01 · 21 | Registerdeck · Vielen Dank | Titel- und Dankfolie | — |
 | 02 | Agenda | Aufzählung, drei Ebenen | — |
 | 03 | Forschungsstand | reine Textfolie mit Belegen | — |
 | 04 | Erkenntnisgewinn | **Ablaufkette** mit zwei Rückwegen | Quelltext |
@@ -35,7 +35,11 @@ zugleich sein eigener Musterbogen.
 | 17 | Von oben nach unten | **Trichter** mit Schwund je Stufe | Quelltext |
 | 18 | Aufploppen | **Kachelreihe** | — |
 | 19 | Deckel ab | Metapherngrafik | — |
-| 21 | Quellen | Quellenverzeichnis | — |
+| 20 | Quellen | Quellenverzeichnis | — |
+| 22 | Zusammenfassung | **Schlussfolie**, bleibt in der Diskussion stehen | — |
+| A1 | Wie gut trennen die Items? | **Itemkennwerte**: Schwierigkeit gegen Trennschärfe | Skript, `buildItem` |
+| A2 | Was genau gerechnet wurde | Varianzanalyse als Tabelle | — |
+| A3 | Voraussetzungen erfüllt? | geprüfte Voraussetzungen | — |
 
 **Abgedeckt sind damit:** lineare Folge, Kreis, Trichter, Streuung, Verteilung,
 Gruppenvergleich, Zeit, Tabelle, Zitat, Transkript, Formel.
@@ -49,7 +53,7 @@ Gruppenvergleich, Zeit, Tabelle, Zitat, Transkript, Formel.
 | **Divergierende Stapelbalken** (Likert) | Wie sich Zustimmung verteilt, um die Mitte zentriert. Für Fragebogenitems unverzichtbar. | mittel |
 | **Übergangsmatrix / Sankey Prä→Post** | Wer wechselt von der Fehlvorstellung zum Fachkonzept — und wer zurück. Bei Concept Inventories der Befund, den jeder Mittelwert verschluckt. | groß |
 | **Forest Plot** | Mehrere Effektstärken mit Intervall untereinander. Für den Forschungsstand und für Subgruppen. | mittel |
-| **Item-Heatmap** | Lösungshäufigkeit je Item × Gruppe. Geht mit der Blau-Staffel 10/25/50/75/100 %, ohne neue Farben. | mittel |
+| **Item-Heatmap** | Lösungshäufigkeit je Item × Gruppe. Ergänzt die Kennwertkarte auf A1, ersetzt sie nicht. | mittel |
 | **Prä-Post-Verbindungslinien** (Slopegraph) | Eine Linie je Person. Zeigt individuelle Entwicklung statt Gruppenmittel. | mittel |
 | **Histogramm mit Referenzlinie** | Verteilung einer Skala, Normwert markiert. | klein |
 | **Netzdiagramm (Radar)** | Ein Profil über mehrere Merkmale, zwei Gruppen übereinander. | mittel |

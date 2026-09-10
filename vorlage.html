@@ -351,9 +351,20 @@ body{
 .ov-cap{
   display:flex; align-items:baseline; gap:9px; font-weight:500;
   font-size: clamp(9px, calc(var(--ov-thumb, 280) * .05px), 14px);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; overflow:hidden;
 }
+/* Der Titel wird gekuerzt, nicht die Nummer — und mit Auslassungs-
+   zeichen, damit man das Kuerzen sieht. */
+.ov-cap .tx{ overflow:hidden; text-overflow:ellipsis }
 .ov-cap .no{ font-family:var(--mono); font-size:.8em; color:var(--tabT); flex:none }
+/* Trennzeile vor dem Anhang: der Vortrag hoert hier auf. */
+.ov-trenner{
+  flex-basis:100%; margin:12px 0 2px;
+  display:flex; align-items:center; gap:18px;
+  font-size:12px; font-weight:700; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--blau-75);
+}
+.ov-trenner::before, .ov-trenner::after{ content:""; flex:1; height:1px; background:var(--blau-25) }
 
 
 /* ---------- 6 · Folieninhalte: Typografie und Bausteine --- */
@@ -679,6 +690,17 @@ table.vgl .num{ font-family:var(--mono); font-variant-numeric:tabular-nums }
 .ki-sub{ font-size:12.5px; fill:var(--muted) }
 .ki-span{ stroke:var(--blau); stroke-width:1.4; fill:none }
 
+/* Itemkennwerte: Schwierigkeit gegen Trennschaerfe */
+.it-grid{ stroke:var(--sw-25); stroke-width:1 }
+.it-ax{ stroke:var(--sw-50); stroke-width:1.5 }
+.it-band{ fill:var(--blau-10) }                 /* der brauchbare Bereich */
+.it-line{ stroke:var(--blau-50); stroke-width:1.3; stroke-dasharray:5 5 }
+.it-pt{ fill:var(--blau); stroke:#fff; stroke-width:1.2 }
+.it-pt.raus{ fill:#fff; stroke:var(--sw-50); stroke-width:1.8 }
+.it-lab{ font-size:12px; fill:var(--sw-75) }
+.it-tick{ font-size:13px; fill:var(--muted) }
+.it-ax-t{ font-size:14px; fill:var(--ink) }
+
 /* Zugewinn-Diagramm (Prae gegen Post) */
 .hk-grid{ stroke:var(--sw-25); stroke-width:1 }
 .hk-ax{ stroke:var(--sw-50); stroke-width:1.5 }
@@ -868,6 +890,13 @@ body.presenter #pres{
 }
 .pres-slot{ position:relative; flex:1 1 auto; min-height:0 }
 .pres-next .pres-view{ opacity:.72 }
+/* Nach der letzten Folie des Vortrags steht dort kein Bild, sondern
+   der Grund dafuer. */
+.pres-view.leer{ display:flex; align-items:center; justify-content:center }
+.pres-view.leer::after{
+  content: attr(data-text); max-width:22ch; text-align:center;
+  font-size:14px; line-height:1.45; color:#8c96a4;
+}
 .pres-inner{
   position:absolute; top:0; left:0;
   width:  calc(var(--stage-w) * 1px);
@@ -1346,6 +1375,21 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Erst reden, dann den Deckel heben. Die Pflanze braucht gut anderthalb Sekunden — solange nicht weiterklicken.</aside>
     </section>
 
+    <!-- Quellenverzeichnis — ul.refs mit haengendem Einzug ...... -->
+    <section class="slide" data-title="Quellen">
+      <p class="eyebrow" data-anim>Anhang</p>
+      <h2 data-anim>Quellen</h2>
+      <ul class="refs" data-anim>
+        <li>Beispiel, A. &amp; Muster, B. (2018). Vorstellungen von Lernenden zum Kraftbegriff. <i>Zeitschrift für Didaktik der Naturwissenschaften, 24</i>(1), 33–48.</li>
+        <li>Hestenes, D., Wells, M. &amp; Swackhamer, G. (1992). Force Concept Inventory. <i>The Physics Teacher, 30</i>(3), 141–158.</li>
+        <li>Mustermann, D., Beispiel, E. &amp; Muster, F. (2019). Formatives Feedback im physikalischen Praktikum. <i>International Journal of Science Education, 41</i>(7), 912–930.</li>
+        <li>Musterfrau, C. (2021). <i>Konzeptwechsel im Physikunterricht</i> (2. Aufl.). Musterverlag.</li>
+        <li>Musterstadt, G. (2024). Umsetzungstreue als Moderator in Interventionsstudien. <i>Zeitschrift für Musterforschung, 12</i>(2), 105–124.</li>
+      </ul>
+      <p class="source-note" data-anim>Bis auf Hestenes et al. (1992) sind alle Angaben erfunden und dienen nur als Formatvorlage.</p>
+      <aside class="notes">Nur bei Nachfrage aufrufen.</aside>
+    </section>
+
     <!-- Abschlussfolie — derselbe Typ .hero wie die Titelfolie ... -->
     <section class="slide hero" data-title="Vielen Dank">
       <p class="eyebrow" data-anim>DPG-Frühjahrstagung Dresden · 2026</p>
@@ -1362,19 +1406,82 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Kontakt stehen lassen. Zeit für Fragen im Blick behalten, notfalls auf die Quellenfolie verweisen.</aside>
     </section>
 
-    <!-- Quellenverzeichnis — ul.refs mit haengendem Einzug ...... -->
-    <section class="slide" data-title="Quellen">
-      <p class="eyebrow" data-anim>Anhang</p>
-      <h2 data-anim>Quellen</h2>
-      <ul class="refs" data-anim>
-        <li>Beispiel, A. &amp; Muster, B. (2018). Vorstellungen von Lernenden zum Kraftbegriff. <i>Zeitschrift für Didaktik der Naturwissenschaften, 24</i>(1), 33–48.</li>
-        <li>Hestenes, D., Wells, M. &amp; Swackhamer, G. (1992). Force Concept Inventory. <i>The Physics Teacher, 30</i>(3), 141–158.</li>
-        <li>Mustermann, D., Beispiel, E. &amp; Muster, F. (2019). Formatives Feedback im physikalischen Praktikum. <i>International Journal of Science Education, 41</i>(7), 912–930.</li>
-        <li>Musterfrau, C. (2021). <i>Konzeptwechsel im Physikunterricht</i> (2. Aufl.). Musterverlag.</li>
-        <li>Musterstadt, G. (2024). Umsetzungstreue als Moderator in Interventionsstudien. <i>Zeitschrift für Musterforschung, 12</i>(2), 105–124.</li>
+    <!-- Abschlussfolie — bleibt in der Diskussion stehen ....... -->
+    <section class="slide" data-title="Zusammenfassung">
+      <p class="eyebrow" data-anim>Zusammenfassung</p>
+      <h2 data-anim>Was bleibt</h2>
+      <ul class="points" data-anim>
+        <li><b>Der Test misst, was er messen soll.</b> Nach der Kennwertprüfung bleiben 21 der 24 Items im Instrument, die interne Konsistenz liegt bei <span class="tex" data-tex="\alpha = 0{,}84"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>α</mi><mo>=</mo><mn>0,84</mn></mrow></math></span>.</li>
+        <li><b>Die Intervention wirkt — aber ungleich.</b> Die Wechselwirkung Zeit × Gruppe ist bedeutsam <span class="tex" data-tex="F(1; 210) = 18{,}4,\ \ p < 0{,}001,\ \ \eta_p^2 = 0{,}08"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>F</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo separator="true">;</mo><mn>210</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>18,4</mn><mo separator="true">,</mo><mtext> </mtext><mtext> </mtext><mi>p</mi><mo>&lt;</mo><mn>0,001</mn><mo separator="true">,</mo><mtext> </mtext><mtext> </mtext><msubsup><mi>η</mi><mi>p</mi><mn>2</mn></msubsup><mo>=</mo><mn>0,08</mn></mrow></math></span>. Den Zuwachs tragen vor allem Klassen mit niedrigem Vorwissen.</li>
+        <li><b>Offen bleibt die Haltbarkeit.</b> Das Follow-up acht Wochen nach der Intervention steht aus. Erst danach lässt sich sagen, ob der Zuwachs bleibt.</li>
       </ul>
-      <p class="source-note" data-anim>Bis auf Hestenes et al. (1992) sind alle Angaben erfunden und dienen nur als Formatvorlage.</p>
-      <aside class="notes">Nur bei Nachfrage aufrufen.</aside>
+      <dl class="keys" data-anim>
+        <dt>Kontakt</dt><dd>Maximilian Kühlkamp · vorname.nachname@rwth-aachen.de</dd>
+        <dt>Instrument</dt><dd>Kompetenztest zum systemischen Denken, 24 Items — Kennwerte im Anhang</dd>
+      </dl>
+      <p class="source-note" data-anim>Alle Zahlen auf dieser Folie sind Platzhalter.</p>
+      <aside class="notes">Diese Folie bleibt in der Diskussion stehen — sie muss allein tragen. Die drei Sätze sind das, was hängenbleiben soll. Für Rückfragen Taste 0: unter „Anhang" liegen Itemkennwerte, Varianzanalyse und die geprüften Voraussetzungen.</aside>
+    </section>
+
+    <!-- ==== ANHANG ==========================================
+         Nur über die Übersicht (Taste 0) erreichbar. Zählt nicht
+         in den Fortschrittsbalken, steht nicht im Register.
+         Pfeil zurück führt in den Vortrag, Pfeil vor nirgendwohin.
+         Beschriftet nach der FRAGE, nicht nach dem Inhalt — in der
+         Fragerunde sucht man die Frage, nicht das Kapitel.
+         ====================================================== -->
+
+    <section class="slide anhang" data-title="Wie gut trennen die Items?">
+      <p class="eyebrow" data-anim>Anhang</p>
+      <h2 data-anim>Kennwerte der 24 Items</h2>
+      <div class="cols wide-left" data-anim>
+        <figure>
+          <svg id="itemSvg" viewBox="0 0 620 360" role="img" aria-label="Streudiagramm der Itemkennwerte: waagerecht die Schwierigkeit, senkrecht die Trennschärfe. Ein hinterlegter Bereich markiert die brauchbaren Werte; drei Items liegen außerhalb."></svg>
+          <figcaption>Ein Punkt je Item. Schwierigkeit waagerecht, Trennschärfe senkrecht — beide aus denselben Rohdaten gerechnet.</figcaption>
+        </figure>
+        <ul class="points">
+          <li>Brauchbar ist ein Item, wenn es weder fast alle noch fast niemand löst und wenn es mit der Gesamtskala zusammenhängt.</li>
+          <li data-step="1">Der hinterlegte Bereich zeigt beide Schranken: Schwierigkeit zwischen 0,20 und 0,80, Trennschärfe mindestens 0,30.</li>
+          <li data-step="2">Drei Items fallen heraus. I7 und I16 trennen zu schwach, I19 ist zusätzlich zu schwer — alle drei sind aus der Auswertung genommen.</li>
+        </ul>
+      </div>
+      <aside class="notes">Kommt fast immer als Frage nach der Qualität des Instruments. Kurz halten: Schranken nennen, die drei ausgeschlossenen Items zeigen, fertig.</aside>
+    </section>
+
+    <section class="slide anhang" data-title="Was genau gerechnet wurde">
+      <p class="eyebrow" data-anim>Anhang</p>
+      <h2 data-anim>Varianzanalyse mit Messwiederholung</h2>
+      <table class="vgl" data-anim>
+        <thead>
+          <tr><th>Quelle</th><th>df</th><th>MQ</th><th>F</th><th>p</th>
+            <th>Effektstärke</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>Zeit</th><td class="num">1</td><td class="num">142,6</td><td class="num">24,8</td><td class="num">&lt; 0,001</td><td class="num">0,11</td></tr>
+          <tr><th>Gruppe</th><td class="num">1</td><td class="num">18,3</td><td class="num">3,2</td><td class="num">0,076</td><td class="num">0,015</td></tr>
+          <tr><th>Zeit × Gruppe</th><td class="num">1</td><td class="num">105,9</td><td class="num">18,4</td><td class="num">&lt; 0,001</td><td class="num">0,08</td></tr>
+          <tr><th>Fehler (innerhalb)</th><td class="num">210</td><td class="num">5,76</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+      <p class="source-note" data-anim>Zweifaktorielle Varianzanalyse, Messwiederholung auf dem Faktor Zeit. Die letzte Spalte gibt das partielle Eta-Quadrat an. Alle Zahlen sind Platzhalter.</p>
+      <aside class="notes">Nur aufrufen, wenn nach dem Verfahren gefragt wird. Der Befund steht in der Zeile „Zeit × Gruppe" — die anderen sind Beiwerk.</aside>
+    </section>
+
+    <section class="slide anhang" data-title="Voraussetzungen erfüllt?">
+      <p class="eyebrow" data-anim>Anhang</p>
+      <h2 data-anim>Geprüfte Voraussetzungen</h2>
+      <dl class="keys" data-anim>
+        <dt>Normalverteilung</dt>
+        <dd>Schiefe zwischen −0,42 und 0,38, Wölbung durchweg unter 1. Bei dieser Stichprobengröße ist das Verfahren gegen Abweichungen dieser Größe unempfindlich.</dd>
+        <dt>Varianzhomogenität</dt>
+        <dd>Levene-Test nicht bedeutsam, <span class="tex" data-tex="F(1; 210) = 1{,}84,\ \ p = 0{,}18"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>F</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo separator="true">;</mo><mn>210</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>1,84</mn><mo separator="true">,</mo><mtext> </mtext><mtext> </mtext><mi>p</mi><mo>=</mo><mn>0,18</mn></mrow></math></span>.</dd>
+        <dt>Sphärizität</dt>
+        <dd>Entfällt: bei zwei Messzeitpunkten gibt es nur eine Differenz, die Annahme ist gegenstandslos.</dd>
+        <dt>Ausreißer</dt>
+        <dd>Vier Fälle über drei Standardabweichungen. Die Analyse wurde mit und ohne sie gerechnet — die Befunde ändern sich nicht.</dd>
+      </dl>
+      <p class="source-note" data-anim>Alle Zahlen auf dieser Folie sind Platzhalter.</p>
+      <aside class="notes">Die Folie, die den Einwand vorwegnimmt. Wenn sie nicht gebraucht wird, umso besser.</aside>
     </section>
 
     <footer class="foot">
@@ -1448,6 +1555,17 @@ ul.points li math{ font-size:20px }
   let index = 0, step = 0;
 
   const pad = n => String(n).padStart(2, '0');
+
+  /* --- Vortrag und Anhang ---------------------------------
+     Anhangsfolien stehen fuer sich. Sie sind nur ueber die
+     Uebersicht erreichbar, Pfeil zurueck fuehrt wieder in den
+     Vortrag, Pfeil vor fuehrt nirgendwohin. Sie zaehlen nicht in
+     den Fortschrittsbalken und stehen nicht im Register — dort
+     wuerden sie die Miniaturen des ganzen Vortrags schrumpfen. */
+  const istAnhang    = sl => sl.classList.contains('anhang');
+  const vortragEnde  = slides.reduce((letzte, sl, i) => istAnhang(sl) ? letzte : i, 0);
+  const ersterAnhang = slides.findIndex(istAnhang);
+  const nummer       = i => istAnhang(slides[i]) ? 'A' + (i - ersterAnhang + 1) : pad(i + 1);
 
   /* Dieselbe Datei laeuft in zwei Rollen: als Foliensatz und — mit
      ?presenter=1 — als Vortragendenansicht im zweiten Fenster. */
@@ -1707,6 +1825,68 @@ ul.points li math{ font-size:20px }
     svg.innerHTML = g;
   })();
 
+  /* ========================================================
+     Itemkennwerte — Schwierigkeit gegen Trennschaerfe
+     Je Item ein Punkt. Der hinterlegte Bereich ist der, in dem
+     ein Item bleiben darf; was herausfaellt, wird benannt.
+     ======================================================== */
+  (function buildItem(){
+    const svg = document.getElementById('itemSvg');
+    if (!svg) return;
+
+    /* Name, Schwierigkeit P, Trennschaerfe r_it — Platzhalterwerte */
+    const ITEMS = [
+      ['I1',.72,.41], ['I2',.58,.47], ['I3',.64,.38], ['I4',.41,.52],
+      ['I5',.35,.44], ['I6',.77,.33], ['I7',.88,.18], ['I8',.52,.55],
+      ['I9',.46,.49], ['I10',.61,.36], ['I11',.29,.40], ['I12',.55,.58],
+      ['I13',.68,.31], ['I14',.43,.45], ['I15',.37,.51], ['I16',.74,.28],
+      ['I17',.50,.53], ['I18',.33,.42], ['I19',.17,.22], ['I20',.59,.39],
+      ['I21',.48,.47], ['I22',.66,.35], ['I23',.39,.50], ['I24',.54,.43],
+    ];
+    const R_MIN = .30, P_MIN = .20, P_MAX = .80;   /* uebliche Schranken */
+
+    const w = 620, h = 360, ml = 60, mr = 18, mt = 16, mb = 50;
+    const X  = v => ml + v * (w - ml - mr);
+    const Y  = v => (h - mb) - v / .7 * (h - mt - mb);
+    const de = x => String(x).replace('.', ',');
+    const f1 = x => x.toFixed(1);
+
+    let g = '<g data-step="1"><rect class="it-band" x="' + f1(X(P_MIN)) + '" y="' + f1(Y(.7)) +
+            '" width="' + f1(X(P_MAX) - X(P_MIN)) + '" height="' + f1(Y(R_MIN) - Y(.7)) + '" rx="6"/></g>';
+
+    [0, .2, .4, .6, .8, 1].forEach(v => {
+      g += '<line class="it-grid" x1="' + f1(X(v)) + '" y1="' + mt + '" x2="' + f1(X(v)) + '" y2="' + (h - mb) + '"/>' +
+           '<text class="it-tick" x="' + f1(X(v)) + '" y="' + (h - mb + 20) + '" text-anchor="middle">' +
+           (v === 0 ? '0' : v === 1 ? '1' : de(v.toFixed(1))) + '</text>';
+    });
+    [0, .2, .4, .6].forEach(v => {
+      g += '<line class="it-grid" x1="' + ml + '" y1="' + f1(Y(v)) + '" x2="' + (w - mr) + '" y2="' + f1(Y(v)) + '"/>' +
+           '<text class="it-tick" x="' + (ml - 10) + '" y="' + f1(Y(v) + 4) + '" text-anchor="end">' +
+           (v === 0 ? '0' : de(v.toFixed(1))) + '</text>';
+    });
+    g += '<g data-step="1"><line class="it-line" x1="' + ml + '" y1="' + f1(Y(R_MIN)) +
+         '" x2="' + (w - mr) + '" y2="' + f1(Y(R_MIN)) + '"/>' +
+         '<text class="it-lab" x="' + (w - mr) + '" y="' + f1(Y(R_MIN) - 8) + '" text-anchor="end">' +
+         'r' + 'ᵢ' + 'ₜ' + ' = 0,30</text></g>';
+    g += '<line class="it-ax" x1="' + ml + '" y1="' + mt + '" x2="' + ml + '" y2="' + (h - mb) + '"/>' +
+         '<line class="it-ax" x1="' + ml + '" y1="' + (h - mb) + '" x2="' + (w - mr) + '" y2="' + (h - mb) + '"/>';
+    const mx = (ml + w - mr) / 2, my = (mt + h - mb) / 2;
+    g += '<text class="it-ax-t" x="' + f1(mx) + '" y="' + (h - 10) + '" text-anchor="middle">Schwierigkeit P</text>' +
+         '<text class="it-ax-t" x="16" y="' + f1(my) + '" text-anchor="middle" transform="rotate(-90 16 ' + f1(my) +
+         ')">Trennschärfe</text>';
+
+    /* Erst alle Punkte gleich, dann treten die auffaelligen heraus. */
+    ITEMS.forEach(([, pv, r]) => {
+      g += '<circle class="it-pt" cx="' + f1(X(pv)) + '" cy="' + f1(Y(r)) + '" r="5"/>';
+    });
+    const raus = ITEMS.filter(([, pv, r]) => r < R_MIN || pv < P_MIN || pv > P_MAX);
+    g += '<g data-step="2">' + raus.map(([nm, pv, r]) =>
+        '<circle class="it-pt raus" cx="' + f1(X(pv)) + '" cy="' + f1(Y(r)) + '" r="5"/>' +
+        '<text class="it-lab" x="' + f1(X(pv)) + '" y="' + f1(Y(r) - 11) + '" text-anchor="middle">' + nm + '</text>'
+      ).join('') + '</g>';
+    svg.innerHTML = g;
+  })();
+
   /* --- Elemente für den gestaffelten Auftritt nummerieren -- */
   slides.forEach(s => {
     s.querySelectorAll('[data-anim]').forEach((el, i) => el.style.setProperty('--i', i));
@@ -1759,10 +1939,13 @@ ul.points li math{ font-size:20px }
     const rand = 34, kopf = 52, bild = 22;      /* Rand, Zeile "Uebersicht", Beschriftung */
     const gap  = slides.length > 16 ? 14 : 18;
     const flB  = window.innerWidth  - 2 * rand;
-    const flH  = window.innerHeight - 2 * rand - kopf;
+    /* Die Trennzeile vor dem Anhang belegt eine eigene Zeile. */
+    const flH  = window.innerHeight - 2 * rand - kopf - (ersterAnhang >= 0 ? 46 : 0);
     let beste = 0;
     for (let sp = 1; sp <= slides.length; sp++) {
-      const ze = Math.ceil(slides.length / sp);
+      /* Der Anhang beginnt in einer neuen Zeile, nicht neben dem Vortrag. */
+      const ze = ersterAnhang < 0 ? Math.ceil(slides.length / sp)
+               : Math.ceil(ersterAnhang / sp) + Math.ceil((slides.length - ersterAnhang) / sp);
       const ausBreite = (flB - gap * (sp - 1)) / sp;
       const ausHoehe  = ((flH - gap * (ze - 1)) / ze - bild) * (W / H);
       beste = Math.max(beste, Math.min(ausBreite, ausHoehe));
@@ -1774,9 +1957,11 @@ ul.points li math{ font-size:20px }
   passeRegister();
   passeUebersicht();
   addEventListener('resize', () => { passeRegister(); passeUebersicht(); }, { passive:true });
+  const railItems = [], ovItems = [];
   slides.forEach((slide, i) => {
-    const title = slide.dataset.title || ('Folie ' + (i + 1));
-    const no    = pad(i + 1);
+    const title  = slide.dataset.title || ('Folie ' + (i + 1));
+    const no     = nummer(i);
+    const anhang = istAnhang(slide);
 
     const tab = document.createElement('button');
     tab.type = 'button';
@@ -1788,8 +1973,18 @@ ul.points li math{ font-size:20px }
     label.querySelector('.no').textContent = no;
     label.querySelector('.tx').textContent = title;
     tab.append(makeThumb(slide, 'var(--rail-thumb)'), label);
+    tab.dataset.nr = i;
     tab.addEventListener('click', e => { go(i); if (e.detail > 0) tab.blur(); });
-    rail.appendChild(tab);
+    if (!anhang) { rail.appendChild(tab); railItems.push(tab); }
+
+    /* Trennzeile vor der ersten Anhangsfolie — in der Fragerunde
+       will man den Anhang auf einen Blick vom Vortrag scheiden. */
+    if (i === ersterAnhang) {
+      const trenner = document.createElement('p');
+      trenner.className = 'ov-trenner';
+      trenner.textContent = 'Anhang — für die Fragerunde';
+      ovGrid.appendChild(trenner);
+    }
 
     const cell = document.createElement('button');
     cell.type = 'button';
@@ -1800,12 +1995,11 @@ ul.points li math{ font-size:20px }
     cap.querySelector('.no').textContent = no;
     cap.querySelector('.tx').textContent = title;
     cell.append(makeThumb(slide, 'var(--ov-thumb)'), cap);
+    cell.dataset.nr = i;
     cell.addEventListener('click', e => { go(i); setOverview(false); if (e.detail > 0) cell.blur(); });
     ovGrid.appendChild(cell);
+    ovItems.push(cell);
   });
-
-  const railItems = Array.from(rail.children);
-  const ovItems   = Array.from(ovGrid.children);
 
   /* ========================================================
      Schrittweises Einblenden
@@ -1825,18 +2019,22 @@ ul.points li math{ font-size:20px }
 
   /* Der Balken oben misst Schritte, nicht nur Folien. */
   const weight = slides.map(s => stepsOf(s) + 1);
-  const total  = weight.reduce((a, b) => a + b, 0);
+  /* Ohne den Anhang: auf der letzten Folie des Vortrags steht der
+     Balken sonst bei zwei Dritteln und sagt dem Publikum etwas
+     Falsches darueber, wie lange es noch dauert. */
+  const total  = weight.reduce((a, b, i) => a + (istAnhang(slides[i]) ? 0 : b), 0);
   const before = weight.map((_, i) => weight.slice(0, i).reduce((a, b) => a + b, 0));
 
   function paint() {
-    bar.style.transform = 'scaleX(' + ((before[index] + step + 1) / total) + ')';
+    bar.style.transform = 'scaleX(' + Math.min(1, (before[index] + step + 1) / total) + ')';
     deck.dataset.hero = slides[index].classList.contains('hero') ? '1' : '0';
-    footNo.textContent = pad(index + 1);
-    railItems.forEach((el, k) => {
-      el.classList.toggle('current', k === index);
-      el.setAttribute('aria-current', k === index ? 'true' : 'false');
+    footNo.textContent = nummer(index);
+    railItems.forEach(el => {
+      const hier = +el.dataset.nr === index;
+      el.classList.toggle('current', hier);
+      el.setAttribute('aria-current', hier ? 'true' : 'false');
     });
-    ovItems.forEach((el, k) => el.classList.toggle('current', k === index));
+    ovItems.forEach(el => el.classList.toggle('current', +el.dataset.nr === index));
     try { history.replaceState(null, '', '#' + (index + 1)); } catch (e) {}
     sendState();
   }
@@ -1861,10 +2059,18 @@ ul.points li math{ font-size:20px }
   }
 
   const next = () => {
-    if (step < stepsOf(slides[index])) { step++; showSteps(slides[index], step); paint(); }
-    else if (index < slides.length - 1) go(index + 1, 0);
+    /* Einblendungen laufen auch im Anhang. Die Folie verlassen tut
+       der Pfeil dort aber nicht — und am Ende des Vortrags bleibt er
+       ebenfalls stehen, damit nicht ein Druck zu viel den Anhang an
+       die Wand wirft. */
+    if (step < stepsOf(slides[index])) { step++; showSteps(slides[index], step); paint(); return; }
+    if (istAnhang(slides[index])) return;
+    if (index < vortragEnde) go(index + 1, 0);
   };
   const prev = () => {
+    /* Aus dem Anhang führt der Pfeil zurück dorthin, wo der Vortrag
+       stehengeblieben ist — fertig aufgebaut. */
+    if (istAnhang(slides[index])) { go(vortragEnde, stepsOf(slides[vortragEnde])); return; }
     if (step > 0) { step--; showSteps(slides[index], step); paint(); }
     else if (index > 0) go(index - 1, stepsOf(slides[index - 1]));   // rückwärts: fertig aufgebaut
   };
@@ -1901,7 +2107,7 @@ ul.points li math{ font-size:20px }
       case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': nav('next'); break;
       case 'ArrowLeft':  case 'ArrowUp':   case 'PageUp':            nav('prev'); break;
       case 'Home': nav('go', 0); break;
-      case 'End':  nav('go', slides.length - 1); break;
+      case 'End':  nav('go', vortragEnde); break;   /* letzte Folie des Vortrags, nicht der Datei */
       case 'p': case 'P': if (!isPresenter) openPresenter(); break;
       /* 0 liegt neben den Zifferntasten der Folien und ist das, wonach
          man greift. Esc schliesst nur — im Vollbild beendet Chrome damit
@@ -2009,8 +2215,18 @@ ul.points li math{ font-size:20px }
     function draw() {
       const i = shown.index;
       preview(elNow, slides[i], shown.step, false);
-      if (i + 1 < slides.length) preview(elNext, slides[i + 1], 0, true);
-      else elNext.replaceChildren();
+      /* Nach der letzten Folie des Vortrags kommt nichts mehr — der
+         Anhang wird nur ueber die Uebersicht angesteuert. Das sagt
+         die Vorschau lieber, als leer zu bleiben. */
+      const weiter = !istAnhang(slides[i]) && i < vortragEnde;
+      if (weiter) { preview(elNext, slides[i + 1], 0, true); elNext.classList.remove('leer'); }
+      else {
+        elNext.replaceChildren();
+        elNext.classList.add('leer');
+        elNext.dataset.text = istAnhang(slides[i])
+          ? 'Anhangsfolie — Pfeil zurück führt in den Vortrag'
+          : 'Ende des Vortrags — Anhang über die Übersicht';
+      }
     }
 
     function render(st) {
