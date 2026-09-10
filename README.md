@@ -61,10 +61,14 @@ Geblättert werden kann in beiden Fenstern; der Zustand bleibt gekoppelt, auch d
 Einblendschritte. Die Vorschau der aktuellen Folie zeigt den echten Aufbaustand,
 die Vorschau der nächsten Folie zeigt sie fertig aufgebaut.
 
+Aufteilung: links die aktuelle Folie, darunter die nächste, rechts über die volle
+Höhe die Notizen. Notizen sind meist stichpunktartig und brauchen eine hohe, schmale
+Spalte statt einer breiten.
+
 ### Aufteilung anpassen
 
-Zwischen den Bereichen liegen zwei Griffe — ein senkrechter zwischen Folie und
-Vorschau, ein waagerechter zwischen Folie und Notizen. Ziehen verschiebt die
+Zwischen den Bereichen liegen zwei Griffe — ein senkrechter zwischen Folien und
+Notizen, ein waagerechter zwischen aktueller und nächster Folie. Ziehen verschiebt die
 Aufteilung, je nachdem ob du im konkreten Vortrag mehr von der Folie oder mehr von
 den Notizen brauchst.
 
@@ -195,6 +199,12 @@ im Quelltext, nicht umgekehrt. Der Verlauf kann von Schritt zu Schritt wandern
 
 **Barrierefreiheit.** Bei `prefers-reduced-motion` fällt jede Bewegung weg, der Inhalt
 bleibt vollständig. Das Register ist mit der Tastatur bedienbar.
+
+**Seitenverhältnis.** Der Foliensatz ist 16:9. Passt das Fenster nicht dazu, bleiben
+Streifen frei: im Fenster in der Farbe des Folienhintergrunds, also unsichtbar, im
+**Vollbild schwarz** — so hält es PowerPoint auch. Beamer und Hörsaalprojektoren sind
+in aller Regel 16:9, dort entfallen die Streifen ganz; sichtbar werden sie vor allem
+auf Laptopbildschirmen im Format 16:10.
 
 **Satzspiegel.** Der untere Streifen ist für die Fußzeile reserviert (`--pad-b`), damit
 Karten und Text nie darüber liegen. Abbildungen sind zusätzlich auf 400 px Höhe

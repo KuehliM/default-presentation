@@ -111,6 +111,9 @@
 
   --pad-x: 68px;              /* Satzspiegel links und rechts */
   --pad-b: 80px;              /* reservierter Streifen fuer die Fusszeile */
+  --grund: #edf2fa;           /* Folienhintergrund */
+  --rand:  var(--grund);      /* Streifen neben der Folie, wenn das
+                                 Fensterformat nicht 16:9 ist */
   --r-lg: 34px;               /* Radien der Formensprache */
   --r-md: 20px;
   --r-sm: 12px;
@@ -135,7 +138,7 @@
 html, body{ height:100% }
 body{
   margin:0; overflow:hidden;
-  background: var(--surface);   /* Randstreifen = Folienweiss, also unsichtbar */
+  background: var(--rand);      /* im Fenster nahtlos zur Folie */
   color: var(--ink);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
@@ -547,7 +550,7 @@ ul.refs i{ font-style:italic }
 /* ---------- 8 · Kartenentwurf: Flaechen und Gruende ------- */
 /* Dieser Block muss NACH Abschnitt 6 stehen: mehrere Regeln hier
    ueberschreiben dortige Werte gleicher Spezifitaet (etwa .cols). */
-.slide{ background:#edf2fa }
+.slide{ background: var(--grund) }
 .slide::before,
 .slide::after{ display:none }
 /* Die Auswahl ist bewusst spezifischer als die Grundregeln von
@@ -595,16 +598,17 @@ body.presenter .rail,
 body.presenter .progress{ display:none !important }
 body.presenter #pres{
   position:fixed; inset:0; display:grid; gap:0; padding:18px;
-  /* Links die grosse Folie und darunter die Notizen, rechts oben die
-     kleine Vorschau. Die beiden 18px-Spuren sind die Griffe; ihre
-     Nachbarn haengen an --pres-x und --pres-y und lassen sich damit
-     ziehen. Beides wird im Browser gemerkt. */
-  grid-template-columns: var(--pres-x, 62%) 18px 1fr;
-  grid-template-rows: auto var(--pres-y, 54%) 18px 1fr;
-  grid-template-areas: "head  head head"
-                       "now   gx   next"
-                       "gy    gx   next"
-                       "notes gx   next";
+  /* Links die aktuelle Folie und darunter die naechste, rechts ueber
+     die volle Hoehe die Notizen — sie sind meist stichpunktartig und
+     brauchen eine hohe, schmale Spalte statt einer breiten. Die beiden
+     18px-Spuren sind die Griffe; ihre Nachbarn haengen an --pres-x und
+     --pres-y. Beides wird im Browser gemerkt. */
+  grid-template-columns: var(--pres-x, 58%) 18px 1fr;
+  grid-template-rows: auto var(--pres-y, 62%) 18px 1fr;
+  grid-template-areas: "head head head"
+                       "now  gx   notes"
+                       "gy   gx   notes"
+                       "next gx   notes";
   color:#e9ecf0; font-size:15px;
 }
 .pres-head{
@@ -628,7 +632,7 @@ body.presenter #pres{
   font-variant-numeric:tabular-nums; color:var(--blau-50);
 }
 .pres-now{ grid-area:now }
-.pres-next{ grid-area:next; align-self:start }
+.pres-next{ grid-area:next; min-height:0 }
 .pres-notes{ grid-area:notes }
 
 /* Griffe zwischen den Bereichen */
@@ -652,10 +656,15 @@ body.presenter #pres{
 }
 .pres-label em{ font-style:normal; color:var(--blau-50); margin-left:8px }
 .pres-view{
-  position:relative; width:100%; max-height:100%; margin-inline:auto;
+  /* Absolut im Platzhalter mit margin:auto — so schrumpft die Vorschau
+     auf den verfuegbaren Platz und bleibt dabei mittig. Mit width:100%
+     wuerde die Hoehenbegrenzung nur beschneiden statt zu verkleinern. */
+  position:absolute; inset:0; margin:auto;
+  max-width:100%; max-height:100%;
   aspect-ratio: var(--stage-w) / var(--stage-h);
   overflow:hidden; border-radius:14px; background:#fff;
 }
+.pres-slot{ position:relative; flex:1 1 auto; min-height:0 }
 .pres-next .pres-view{ opacity:.72 }
 .pres-inner{
   position:absolute; top:0; left:0;
@@ -696,6 +705,12 @@ body.presenter #pres{
   padding:12px 22px; border-radius:999px; background:var(--ink); color:#fff;
   font-size:13.5px; max-width:70vw; text-align:center;
 }
+
+/* Im Vollbild werden die Streifen schwarz — so hält es PowerPoint
+   auch. Auf einem Beamer verschwinden sie damit ganz, und auf einem
+   Bildschirm im Seitenverhältnis 16:10 lenken sie nicht ab. */
+:root:fullscreen{ --rand:#000 }
+:root:-webkit-full-screen{ --rand:#000 }
 
 /* ---------- 9 · Bewegung reduziert, Druck ----------------- */
 @media (prefers-reduced-motion: reduce){
@@ -960,14 +975,14 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
   </header>
   <section class="pres-now">
     <h2 class="pres-label">Aktuelle Folie<em id="presStep"></em></h2>
-    <div class="pres-view" id="presNow"></div>
+    <div class="pres-slot"><div class="pres-view" id="presNow"></div></div>
   </section>
   <section class="pres-next">
     <h2 class="pres-label">Als Nächstes</h2>
-    <div class="pres-view" id="presNext"></div>
+    <div class="pres-slot"><div class="pres-view" id="presNext"></div></div>
   </section>
-  <div class="grip-x" id="gripX" role="separator" aria-orientation="vertical" aria-label="Breite der Folienvorschau verschieben" tabindex="0"></div>
-  <div class="grip-y" id="gripY" role="separator" aria-orientation="horizontal" aria-label="Höhe der Folienvorschau verschieben" tabindex="0"></div>
+  <div class="grip-x" id="gripX" role="separator" aria-orientation="vertical" aria-label="Breite zwischen Folien und Notizen verschieben" tabindex="0"></div>
+  <div class="grip-y" id="gripY" role="separator" aria-orientation="horizontal" aria-label="Höhe zwischen aktueller und nächster Folie verschieben" tabindex="0"></div>
   <section class="pres-notes">
     <h2 class="pres-label">Notizen</h2>
     <div class="pres-text" id="presNotes"></div>
@@ -1447,7 +1462,7 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
         if (e.key !== auf && e.key !== ab) return;
         e.preventDefault(); e.stopPropagation();
         const jetzt = parseFloat(getComputedStyle(document.documentElement)
-          .getPropertyValue(merkmal)) || (achse === 'x' ? 62 : 54);
+          .getPropertyValue(merkmal)) || (achse === 'x' ? 58 : 62);
         setzen(klemm(jetzt + (e.key === auf ? 2 : -2)));
       });
     }
