@@ -110,6 +110,7 @@
   --tabT:      var(--blau);
 
   --pad-x: 68px;              /* Satzspiegel links und rechts */
+  --pad-b: 80px;              /* reservierter Streifen fuer die Fusszeile */
   --r-lg: 34px;               /* Radien der Formensprache */
   --r-md: 20px;
   --r-sm: 12px;
@@ -164,7 +165,7 @@ body{
 .slide{
   position:absolute; inset:0;
   display:flex; flex-direction:column; justify-content:flex-start; gap:22px;
-  padding:58px var(--pad-x) 60px;
+  padding:58px var(--pad-x) var(--pad-b);
   background: var(--surface);
   overflow:hidden;
   opacity:0; visibility:hidden; pointer-events:none;
@@ -408,6 +409,11 @@ ul.refs{ margin:0; padding:0; list-style:none; display:flex; flex-direction:colu
 .slide > ul.refs{ padding:24px 28px }
 ul.refs li{ font-size:15px; line-height:1.45; padding-left:28px; text-indent:-28px }
 ul.refs i{ font-style:italic }
+
+/* Der Streifen der Fusszeile bleibt frei. Grafiken koennen sonst
+   in ihn hineinwachsen und Text ueberlagern — deshalb eine Obergrenze
+   fuer Abbildungen. Sie verkleinert die Zeichnung, verzerrt sie nicht. */
+.slide figure svg{ max-height: 400px }
 
 /* ---- Formensammlung: Diagramme, Ablaeufe, Kacheln --------- */
 
@@ -1295,6 +1301,7 @@ body.presenter #pres{
     const btnRun  = document.getElementById('presToggle');
     const btnZero = document.getElementById('presReset');
     let shown = { index: 0, step: 0, steps: 0 };
+    let gekoppelt = false;
 
     /* Vorschau: eine verkleinerte Kopie im echten Aufbaustand. */
     function preview(box, slide, atStep, full) {
@@ -1339,7 +1346,7 @@ body.presenter #pres{
 
     addEventListener('message', e => {
       if (e.source !== opener) return;
-      if (e.data && e.data.type === 'state') render(e.data);
+      if (e.data && e.data.type === 'state') { gekoppelt = true; render(e.data); }
     });
     addEventListener('resize', draw, { passive: true });
 
@@ -1363,6 +1370,16 @@ body.presenter #pres{
     /* Sofort etwas zeigen, auch bevor das erste Fenster antwortet. */
     render({ index: 0, step: 0, steps: stepsOf(slides[0]) });
     try { opener.postMessage({ type: 'hello' }, '*'); } catch (err) {}
+
+    /* Bleibt die Antwort aus, sagt das Fenster es — besser als
+       stumm auf Folie 1 stehen zu bleiben. */
+    setTimeout(() => {
+      if (gekoppelt) return;
+      elNotes.textContent =
+        'Dieses Fenster hat keine Verbindung zum Foliensatz. Es direkt zu öffnen '
+        + 'genügt nicht — im Foliensatz P drücken, dann öffnet es sich gekoppelt. '
+        + 'Blättern funktioniert hier so lange nicht.';
+    }, 2500);
   })();
 
   /* --- Startfolie aus der Adresszeile --------------------- */

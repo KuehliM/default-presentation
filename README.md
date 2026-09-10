@@ -181,6 +181,10 @@ im Quelltext, nicht umgekehrt. Der Verlauf kann von Schritt zu Schritt wandern
 **Barrierefreiheit.** Bei `prefers-reduced-motion` fällt jede Bewegung weg, der Inhalt
 bleibt vollständig. Das Register ist mit der Tastatur bedienbar.
 
+**Satzspiegel.** Der untere Streifen ist für die Fußzeile reserviert (`--pad-b`), damit
+Karten und Text nie darüber liegen. Abbildungen sind zusätzlich auf 400 px Höhe
+begrenzt — das verkleinert die Zeichnung, verzerrt sie nicht.
+
 ---
 
 ## Drucken
