@@ -1,0 +1,142 @@
+# Registerdeck
+
+Ein Foliensatz als **einzelne HTML-Datei**. Kein Framework, kein Server, kein Build,
+keine Internetverbindung — auch die Schriften stecken in der Datei. Doppelklick genügt.
+
+Gebaut für Vorträge in der Physikdidaktik: Pläne und Ergebnisse vor Fachpublikum,
+im Farbklang der RWTH Aachen.
+
+![Folienformat 16:9](https://img.shields.io/badge/Format-16%3A9-00549F) ![Eine Datei](https://img.shields.io/badge/Abh%C3%A4ngigkeiten-keine-00549F)
+
+---
+
+## Dateien
+
+| Datei | Zweck |
+|---|---|
+| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. Acht Folien, die alle Bausteine einmal zeigen. |
+| `anleitung.html` | Die Bedienungsanleitung — selbst ein Foliensatz, läuft auf derselben Technik. Erklärt Aufbau, Übergänge, Register und Bausteine. |
+| `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
+
+Für einen neuen Vortrag: `vorlage.html` kopieren und umbenennen. Das Original bleibt
+unangetastet als Ausgangspunkt.
+
+---
+
+## Steuerung
+
+| Taste | Wirkung |
+|---|---|
+| `→` `↓` `Leertaste` | erst nächster Einblendschritt, dann nächste Folie |
+| `←` `↑` | zurück — die Folie bleibt dabei fertig aufgebaut |
+| `1` … `9` | direkt zur Folie |
+| `Pos1` / `Ende` | erste / letzte Folie |
+| `O` oder `Esc` | Übersicht aller Folien |
+| `F` | Vollbild |
+
+Auf dem Tablet wischen. Die Foliennummer steht in der Adresszeile: `datei.html#3`
+springt direkt auf Folie 3.
+
+Am rechten Rand liegt der **Karteikasten**: in Ruhe sieht man nur die farbige Kante
+jeder Folie. Nähert sich die Maus, treten die Miniaturen hervor; auf einer Karte
+fährt sie ganz heraus und zeigt den Folientitel. Ein Klick springt dorthin.
+
+---
+
+## Wo steht welcher Text
+
+Alles Änderbare liegt im `<body>`. Der Kopfkommentar in der Datei führt dieselbe Liste.
+
+| Was | Wo |
+|---|---|
+| Text einer Folie | `<section class="slide">` — eine Folie je Abschnitt |
+| Beschriftung der Registerkarte | `data-title="…"` an der `<section>` |
+| Name und Tagung in der Fußzeile | `<p class="foot-meta">` — eine einzige Stelle |
+| Autor:innen und Einrichtung | `<div class="byline">` auf der Titelfolie |
+| Logo | `<div class="logo">` — zwei Stellen: Fußzeile und Titelfolie |
+| Folienformat | `--stage-w` / `--stage-h` im `<style>`, Abschnitt 1 |
+| Farben | `<style>`, Abschnitt 1 |
+
+### Eine Folie hinzufügen
+
+```html
+<section class="slide" data-title="Ausblick">
+  <p class="eyebrow" data-anim>Diskussion</p>
+  <h2 data-anim>Was daraus folgt</h2>
+  <ul class="points" data-anim>
+    <li>Erster Punkt.</li>
+    <li data-step="1">Erscheint beim ersten Pfeildruck.</li>
+  </ul>
+</section>
+```
+
+Register, Übersicht, Fortschrittsbalken und Zifferntasten richten sich automatisch
+nach der Zahl der Folien.
+
+---
+
+## Bausteine
+
+| Klasse | Wirkung |
+|---|---|
+| `.slide.hero` | Titel- und Abschlussfolie: große blaue Karte, weiße Schrift, ohne Fußzeile |
+| `.cols` | zwei gleich breite Spalten, jede als weiße Karte |
+| `.cols.wide-left` | dasselbe im Verhältnis 1,15 : 0,85 |
+| `ul.points` | Aufzählung, erste Ebene runder blauer Punkt |
+| `ul.points.long` | kleinerer Grad für textreiche Folien |
+| `ul.refs` | Quellenverzeichnis mit hängendem Einzug |
+| `.stats` / `.stat` | Kennzahlenkacheln: große blaue Zahl über der Beschriftung |
+| `.keys` | zweispaltige Definitionsliste |
+| `figure` + `figcaption` | Grafik oder Diagramm mit Bildunterschrift |
+| `pre` | Codeblock, blau getönt |
+| `.chip` | Pille für Agenda oder Schlagworte |
+| `.cite` / `.source-note` | Beleg im Fließtext, Fußnote unter dem Inhalt |
+| `.byline` | Autor:innen und Einrichtung |
+| `data-anim` | Element tritt beim Folienwechsel gestaffelt auf |
+| `data-step="n"` | Element erscheint erst beim n-ten Pfeildruck |
+| `data-step-until="n"` | … und verschwindet beim n-ten wieder |
+
+---
+
+## Wie es funktioniert
+
+**Bühne.** Alle Folien liegen deckungsgleich übereinander, genau eine trägt `.active`.
+Die Bühne misst fest 1280 × 720 px und wird als Ganzes per `transform: scale()` ans
+Fenster angepasst. Dadurch sind alle Maße in Pixeln verlässlich.
+
+**Übergänge.** Ein Vorzeichen entscheidet über die Richtung: die neue Folie kommt von
+der Seite herein, in die geblättert wird, die alte geht in dieselbe Richtung ab.
+Innerhalb der Folie treten Elemente gestaffelt auf.
+
+**Register.** Die Karte schiebt sich um ihre *eigene* Breite nach rechts aus dem Bild,
+abzüglich des sichtbar bleibenden Teils — `translateX(calc(100% - var(--peek)))`. Weil
+sich `100%` auf die Elementbreite bezieht, gilt dieselbe Regel für jede Titellänge.
+
+**Miniaturen.** Keine Bilder, sondern echte Kopien der Folien (`cloneNode`), per
+`scale()` verkleinert. Ändert man eine Folie, ändert sich die Miniatur mit.
+
+**Diagramme.** Achsen, Teilstriche, Beschriftung und Kurven entstehen aus den Zahlen
+im Quelltext, nicht umgekehrt. Der Verlauf kann von Schritt zu Schritt wandern
+(Morph), ohne dass es eine zweite Folie braucht.
+
+**Barrierefreiheit.** Bei `prefers-reduced-motion` fällt jede Bewegung weg, der Inhalt
+bleibt vollständig. Das Register ist mit der Tastatur bedienbar.
+
+---
+
+## Drucken
+
+Im Browser drucken ergibt ein PDF mit einer Folie je Seite (Ränder auf „keine" stellen).
+Einblendungen erscheinen dabei vollständig.
+
+**Bekannte Einschränkung:** Die Fußzeile fehlt im PDF, weil sie einmalig in der Bühne
+liegt und nicht je Seite wiederholt wird.
+
+---
+
+## Hinweis zu den Inhalten
+
+Die Vorlage enthält **Platzhalter**: Autor:innen, Zahlen und Quellenangaben sind
+erfunden und auf den Folien als solche gekennzeichnet. Einzige Ausnahme ist die
+korrekte Angabe zu Hestenes, Wells & Swackhamer (1992), *Force Concept Inventory*.
+Vor einem echten Vortrag alle übrigen Angaben ersetzen.
