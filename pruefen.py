@@ -14,7 +14,7 @@ Gemessen wird der **vollständig aufgebaute** Zustand: Elemente mit
 data-step sind zwar unsichtbar, belegen ihren Platz aber weiterhin.
 
     python3 pruefen.py                 # vorlage.html
-    python3 pruefen.py anleitung.html
+    python3 pruefen.py andere.html     # jede andere Datei
     python3 pruefen.py --json          # maschinenlesbar
 """
 

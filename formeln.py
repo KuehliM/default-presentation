@@ -18,7 +18,7 @@ Anfrage nach außen. Auf Tagungen steht selten der eigene Rechner auf
 dem Pult. Schrift als base64, keine URL bleibt übrig; das Skript
 prüft es nach jedem Lauf.
 
-    python3 formeln.py            # vorlage.html und anleitung.html
+    python3 formeln.py            # setzt alle Formeln neu
     python3 formeln.py --pruefen  # nur zeigen, was zu tun wäre
 
 Warum Fira Math: Es ist die Mathe-Schwester von Fira Sans, also
@@ -40,7 +40,7 @@ import subprocess
 import sys
 
 HIER     = pathlib.Path(__file__).parent
-DATEIEN  = ["vorlage.html", "anleitung.html"]
+DATEIEN  = ["vorlage.html"]
 WERKZEUG = HIER / "werkzeug"          # nicht im Repository, wird bei Bedarf geholt
 FIRA_MATH_URL = ("https://github.com/firamath/firamath/releases/download/"
                  "v0.3.4/FiraMath-Regular.otf")

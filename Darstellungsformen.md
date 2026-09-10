@@ -11,7 +11,8 @@ Protokoll unter `Sessions/`.
 
 ## Was gebaut ist
 
-Jede Form liegt in `vorlage.html` auf genau einer Folie.
+Jede Form liegt in `vorlage.html` auf genau einer Folie — der Foliensatz ist
+zugleich sein eigener Musterbogen.
 
 | # | Folie | Form | Zahlen kommen aus |
 |---|---|---|---|

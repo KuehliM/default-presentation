@@ -14,16 +14,18 @@ sie ohne Rückfrage befolgt werden können. **Zuerst lesen, dann anfassen.**
 
 | Datei | Rolle |
 |---|---|
-| `vorlage.html` | **Quelle der Wahrheit.** Standard-Foliensatz, 21 Folien — jede Darstellungsform genau einmal. |
-| `anleitung.html` | Bedienungsanleitung, selbst ein Foliensatz. Teilt sich den Unterbau. |
-| `technik-uebernehmen.py` | Überträgt Stylesheet, Vortragendenansicht, Skript **und die Überlagerungen** (`#schwarz`, `#tastenanzeige`) von der Vorlage in die Anleitung. |
-| `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. |
-| `Sessions/<datum>.md` | Protokolle. Bei nennenswerten Änderungen ein neues anlegen. |
-| `Darstellungsformen.md` | Vorrat: was gebaut ist und was noch kommen könnte. Vor neuen Formen dort nachsehen. |
+| `vorlage.html` | **Der Foliensatz.** 21 Folien, jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
 | `formeln.py` | Setzt alle Formeln: liest LaTeX aus `data-tex`, schreibt MathML hinein, bettet Fira Math ein. Nach jeder Formeländerung laufen lassen. |
+| `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. |
+| `README.md` | Die Dokumentation für Menschen: Bedienung, Bausteine, Formeln. **Einzige Stelle neben dem Skript, an der die Tastenbelegung steht.** |
+| `Darstellungsformen.md` | Vorrat: was gebaut ist und was noch kommen könnte. Vor neuen Formen dort nachsehen. |
+| `Sessions/<datum>.md` | Protokolle. Bei nennenswerten Änderungen ein neues anlegen. |
 
-**Regel:** Technik immer in `vorlage.html` ändern, danach `python3 technik-uebernehmen.py`.
-Nie direkt in `anleitung.html` am Stylesheet oder Skript arbeiten.
+**Regel:** Es gibt nur noch **einen** Foliensatz. Die frühere `anleitung.html` war eine
+zweite Datei mit demselben Unterbau und einem eigenen Übertragungsskript; beides ist am
+11.09. entfallen — der Aufwand stand in keinem Verhältnis, und die Anleitung war
+monatelang unbemerkt kaputt. Was sie erklärte, steht in der `README.md`; was sie vorführte,
+führt die Vorlage auf ihren eigenen Folien vor.
 
 ---
 
@@ -158,8 +160,8 @@ Im Quelltext steht LaTeX, das Erzeugnis daneben:
 ```
 
 Das Attribut ist die Quelle, das MathML das Erzeugnis. **Formel ändern heißt: Attribut
-ändern, dann `python3 formeln.py`.** Das Skript geht über `vorlage.html` und
-`anleitung.html`, übersetzt mit Temml und setzt den Stilblock mit der Schrift.
+ändern, dann `python3 formeln.py`.** Das Skript geht über `vorlage.html`,
+übersetzt mit Temml und setzt den Stilblock mit der Schrift.
 
 * **Die Kursive ist echt.** Fira Math bringt die Glyphen aus dem Unicode-Block
   „Mathematical Alphanumeric Symbols" mit; der Browser tauscht die Zeichen dorthin
@@ -207,14 +209,14 @@ und Zifferntasten richten sich selbst nach der Zahl der Folien.
 ## Steuerung
 
 `→ ↓ Leertaste Bild-ab` weiter · `← ↑ Bild-auf` zurück · `1…9` Folie · `Pos1/Ende`
-· `O`/`Esc` Übersicht · `F`/`F5` Vollbild · `P` Vortragendenansicht · `B`/`.`
+· `0`/`O` Übersicht (`Esc` schließt) · `F`/`F5` Vollbild · `P` Vortragendenansicht · `B`/`.`
 Schwarzbild · `K` Tastenanzeige. Bild-ab und Bild-auf sind absichtlich belegt: USB-
 Presenter senden genau die.
 
-**Die Tastenbelegung steht an drei Stellen:** im Skript von `vorlage.html`, in der
-Tabelle der `README.md` und auf der Folie „Steuerung" der `anleitung.html`. Wird eine
-Taste ergänzt, müssen alle drei nachgezogen werden — sonst dokumentiert der
-Foliensatz etwas anderes, als er tut.
+**Die Tastenbelegung steht an zwei Stellen:** im `switch` des Skripts und in der Tabelle
+der `README.md`. Wird eine Taste ergänzt, müssen beide nachgezogen werden — sonst
+dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es bis zum
+11.09. auf der Folie „Steuerung" der Anleitung; genau dort war sie einmal veraltet.
 
 ---
 
@@ -247,23 +249,25 @@ Foliensatz etwas anderes, als er tut.
   auf die Mittelachse — dort gehört der Bruchstrich hin.
 - **Hervorhebung um einen Bruch.** `.hl` muss `inline-block` sein. Als reines Inline-
   Element umfasst der Grund nur die Zeilenhöhe, der Nenner steht draußen.
-- **Elementnamen in Kommentaren.** Diese Falle ist zweimal zugeschnappt. Erst stand
-  `<script>` im Kopfkommentar, dann schrieb ich `<style>` in einen Kommentar des
-  KaTeX-Blocks — `technik-uebernehmen.py` zählte daraufhin zwei Stylesheets und brach
-  ab. In Kommentaren keine Elementnamen in spitzen Klammern.
+- **Elementnamen in Kommentaren.** Zweimal zugeschnappt: erst stand `<script>` im
+  Kopfkommentar des Stylesheets, dann `<style>` in einem Kommentar des Formelblocks.
+  Beide Male hat eine Suche nach dem Element den Kommentar erwischt und den halben Rest
+  mitgenommen. **In Kommentaren keine Elementnamen in spitzen Klammern.**
 - **Messwerte der Titelfolie schwanken.** Mit eingebautem KaTeX meldet `pruefen.py`
   für Folie 1 einen um 18 px höheren Inhalt und 3 % kleinere Grade. Nachgeprüft: die
   gerenderten Bilder sind **byteweise identisch**. Es ist ein Zeitartefakt der
   kopflosen Messung, kein Unterschied im Bild — nicht daran herumbessern.
 - **Skript ohne sein Element.** Das Skript greift beim ersten Tastendruck auf
-  `#schwarz` zu. In der Anleitung fehlte das Element, die Ausnahme flog vor allem
-  anderen — die Tastatur war dort tot, und niemand hat es gemerkt, weil `pruefen.py`
-  Geometrie misst, nicht Funktion. Wer dem Skript ein Element hinzufügt, trägt es in
-  `BLOECKE` von `technik-uebernehmen.py` ein. **Zum Abschluss beide Dateien einmal
+  `#schwarz` zu. In der früheren Anleitung fehlte das Element, die Ausnahme flog vor
+  allem anderen — die Tastatur war dort tot, monatelang, ohne dass es auffiel.
+  `pruefen.py` misst Geometrie, nicht Funktion. **Zum Abschluss den Foliensatz einmal
   durchblättern und auf JavaScript-Fehler horchen.**
-- **Register und Fensterhöhe.** Die Leiste hängt am Fenster, nicht an der Bühne. Bei
-  mehr Folien muss `passeRegister()` die Kartenhöhe nachführen, sonst läuft der Stapel
-  unten aus dem Bild. Feste Stufen reichen ab etwa 15 Folien nicht mehr.
+- **Register, Übersicht und Fensterhöhe.** Beide hängen am Fenster, nicht an der
+  skalierten Bühne, und beide rechnen ihre Größe aus Fensterhöhe und Folienzahl:
+  `passeRegister()` und `passeUebersicht()`, bei jeder Größenänderung neu. Feste Werte
+  reichten ab etwa 15 Folien nicht mehr — das Register lief unten aus dem Bild, die
+  Übersicht oben und unten. **Die Übersicht wird nie scrollbar; sie zeigt alle Folien
+  auf einen Blick und macht die Kacheln dafür kleiner.**
 
 ---
 
@@ -271,8 +275,11 @@ Foliensatz etwas anderes, als er tut.
 
 ```bash
 python3 pruefen.py            # muss 0 zurückgeben
-python3 technik-uebernehmen.py
+python3 formeln.py            # wenn eine Formel geändert wurde
 ```
+
+Dazu einmal durchblättern und auf JavaScript-Fehler horchen — `pruefen.py` misst
+Geometrie, nicht Funktion.
 
 Änderungen an Text oder Inhalt ohne Rückfrage. Änderungen an Farben, Schriftgraden,
 Geometrie oder Formensprache **nur auf ausdrückliche Bitte** — diese Entscheidungen

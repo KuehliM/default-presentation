@@ -1,24 +1,23 @@
 # Registerdeck
 
-Ein Foliensatz als **einzelne HTML-Datei**. Kein Framework, kein Server, kein Build,
-keine Internetverbindung — auch die Schriften stecken in der Datei. Doppelklick genügt.
+Eine Präsentationsvorlage als **eine einzige HTML-Datei**: dünner Fortschrittsbalken
+oben, Registerkarten am rechten Rand, die beim Überfahren mit dem Folientitel
+herausfahren. Keine externen Anfragen, keine Abhängigkeiten, Schriften eingebettet.
 
-Gebaut für Vorträge in der Physikdidaktik: Pläne und Ergebnisse vor Fachpublikum,
-im Farbklang der RWTH Aachen.
+**Warum eine Datei:** Auf einer Tagung steht selten der eigene Rechner auf dem Pult.
+`vorlage.html` läuft überall per Doppelklick — offline, ohne Installation, ohne Konto.
 
-![Folienformat 16:9](https://img.shields.io/badge/Format-16%3A9-00549F) ![Eine Datei](https://img.shields.io/badge/Abh%C3%A4ngigkeiten-keine-00549F)
+Kopieren, Text ersetzen, vortragen. Der Kopfkommentar der Datei sagt, wo was steht;
+dieses Dokument geht ins Einzelne.
 
----
 
 ## Dateien
 
 | Datei | Zweck |
 |---|---|
 | `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 21 Folien — jede Darstellungsform genau einmal. |
-| `anleitung.html` | Die Bedienungsanleitung — selbst ein Foliensatz, läuft auf derselben Technik. Erklärt Aufbau, Übergänge, Register und Bausteine. |
-| `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Bausteine, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
+| `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Regeln, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. `python3 pruefen.py` |
-| `technik-uebernehmen.py` | Überträgt Stylesheet, Vortragendenansicht und Skript von der Vorlage in die Anleitung, damit der Unterbau nur an einer Stelle gepflegt wird. |
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
 | `Darstellungsformen.md` | Vorrat an Darstellungsformen: was gebaut ist, was noch kommen könnte, in welcher Reihenfolge. |
 | `formeln.py` | Setzt alle Formeln: LaTeX aus `data-tex` wird zu MathML. Holt Temml und Fira Math selbst. |
@@ -36,7 +35,7 @@ unangetastet als Ausgangspunkt.
 | `←` `↑` `Bild auf` | zurück — die Folie bleibt dabei fertig aufgebaut |
 | `1` … `9` | direkt zur Folie |
 | `Pos1` / `Ende` | erste / letzte Folie |
-| `O` oder `Esc` | Übersicht aller Folien |
+| `0` oder `O` | Übersicht aller Folien — `Esc` schließt sie wieder |
 | `F` oder `F5` | Vollbild |
 | `P` | Vortragendenansicht im zweiten Fenster |
 | `B` oder `.` | Schwarzbild — jede Taste holt zurück |
@@ -327,21 +326,6 @@ liegt und nicht je Seite wiederholt wird.
 
 ---
 
-## Beide Dateien gleich halten
-
-`vorlage.html` und `anleitung.html` teilen sich Stylesheet, Vortragendenansicht und
-Skript — nur Folien und Notizen unterscheiden sich. **Die Vorlage ist die Quelle.**
-Nach einer Änderung an der Technik:
-
-```bash
-python3 technik-uebernehmen.py
-```
-
-Das Skript überträgt die drei geteilten Blöcke und lässt Titel, Fußzeile und Folien
-der Anleitung unangetastet. Es bricht ab, bevor es schreibt, falls dabei etwas
-Eigenes verloren ginge.
-
----
 
 ## Hinweis zu den Inhalten
 
