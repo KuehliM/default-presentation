@@ -98,6 +98,10 @@ den Notizen brauchst.
 | Doppelklick | zurück auf die Voreinstellung |
 | Tab, dann Pfeiltasten | in Schritten von 2 % verschieben |
 
+Die Notizen sind der Teil, den du im abgedunkelten Saal wirklich lesen musst. In der
+Kopfzeile stellen **A−** und **A+** ihren Schriftgrad zwischen 14 und 34 px; `+` und
+`−` auf der Tastatur tun dasselbe. Auch diese Wahl merkt sich der Browser.
+
 Die Einstellung merkt sich der Browser und stellt sie beim nächsten Öffnen wieder her.
 
 Die beiden Fenster verständigen sich über `postMessage`. Das ist bewusst so gewählt:

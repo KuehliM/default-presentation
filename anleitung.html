@@ -650,6 +650,10 @@ body.presenter #pres{
   transition:background-color .2s ease;
 }
 .pres-btn:hover{ background:rgba(233,236,240,.12) }
+.pres-btn.eng{ padding:8px 13px; font-family:var(--mono); font-weight:700 }
+.pres-grad{ display:flex; gap:6px; align-items:center }
+.pres-grad b{ font-size:11.5px; font-weight:700; letter-spacing:.14em;
+              text-transform:uppercase; color:rgba(233,236,240,.55); margin-right:4px }
 .pres-count{
   margin-left:auto; font-family:var(--mono); font-size:20px; font-weight:700;
   font-variant-numeric:tabular-nums; color:var(--blau-50);
@@ -718,7 +722,8 @@ body.presenter #pres{
 .pres-inner .stem{ stroke-dashoffset: 0 }
 .pres-inner .leaf{ opacity: 1 }
 .pres-text{
-  flex:1; min-height:0; overflow-y:auto; font-size:19px; line-height:1.55;
+  flex:1; min-height:0; overflow-y:auto; line-height:1.5;
+  font-size: calc(var(--notiz-grad, 19) * 1px);
   color:#e9ecf0; background:rgba(233,236,240,.06);
   border-radius:14px; padding:20px 24px;
 }
@@ -944,6 +949,7 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
           <li>Dieses zweite Fenster auf den Laptopbildschirm ziehen, im ersten <b>F</b> für Vollbild auf dem Beamer drücken.</li>
           <li>Geblättert wird in beiden Fenstern — der Zustand bleibt gekoppelt, auch die Einblendungen.</li>
           <li>Notizen stehen als <em>&lt;aside class="notes"&gt;</em> in der Folie und sind im Foliensatz unsichtbar.</li>
+          <li>Die Bereiche lassen sich an zwei Griffen verschieben, <b>A−</b> und <b>A+</b> stellen den Schriftgrad der Notizen.</li>
         </ul>
         <div style="display:flex;flex-direction:column;gap:12px">
           <pre>&lt;section <span class="k">class</span>="slide"&gt;
@@ -1015,6 +1021,11 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
     <span class="pres-time" id="presTime">00:00</span>
     <button class="pres-btn" id="presToggle" type="button">Uhr starten</button>
     <button class="pres-btn" id="presReset" type="button">Zurücksetzen</button>
+    <span class="pres-grad">
+      <b>Notizen</b>
+      <button class="pres-btn eng" id="gradKlein" type="button" aria-label="Notizen kleiner">A−</button>
+      <button class="pres-btn eng" id="gradGross" type="button" aria-label="Notizen größer">A+</button>
+    </span>
     <span class="pres-count" id="presCount">01 / 08</span>
   </header>
   <section class="pres-now">
@@ -1545,6 +1556,29 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
 
     ziehbar(document.getElementById('gripX'), '--pres-x', 'x');
     ziehbar(document.getElementById('gripY'), '--pres-y', 'y');
+
+    /* Schriftgrad der Notizen — im Saal oft die wichtigste Stellschraube */
+    const GRAD = { min: 14, max: 34, vor: 19, schritt: 2 };
+    let grad = GRAD.vor;
+    try {
+      const v = parseFloat(localStorage.getItem('notiz-grad'));
+      if (v >= GRAD.min && v <= GRAD.max) grad = v;
+    } catch (err) {}
+    const setzeGrad = g => {
+      grad = Math.max(GRAD.min, Math.min(GRAD.max, g));
+      document.documentElement.style.setProperty('--notiz-grad', grad);
+      try { localStorage.setItem('notiz-grad', grad); } catch (err) {}
+    };
+    setzeGrad(grad);
+    document.getElementById('gradKlein')
+      .addEventListener('click', () => setzeGrad(grad - GRAD.schritt));
+    document.getElementById('gradGross')
+      .addEventListener('click', () => setzeGrad(grad + GRAD.schritt));
+    /* Plus und Minus tun dasselbe, ohne zur Maus zu greifen. */
+    addEventListener('keydown', e => {
+      if (e.key === '+') { setzeGrad(grad + GRAD.schritt); e.preventDefault(); }
+      if (e.key === '-') { setzeGrad(grad - GRAD.schritt); e.preventDefault(); }
+    });
 
     /* Uhr */
     let t0 = 0, acc = 0, running = false;
