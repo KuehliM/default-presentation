@@ -594,19 +594,23 @@ body.presenter .stage,
 body.presenter .rail,
 body.presenter .progress{ display:none !important }
 body.presenter #pres{
-  position:fixed; inset:0; display:grid; gap:16px; padding:18px;
-  /* Links die grosse Folie und darunter die Notizen — so bleibt die
-     Hoehe genutzt. Rechts oben nur die kleine Vorschau. */
-  grid-template-columns: 1.6fr 1fr;
-  grid-template-rows: auto auto 1fr;
-  grid-template-areas: "head head"
-                       "now  next"
-                       "notes next";
+  position:fixed; inset:0; display:grid; gap:0; padding:18px;
+  /* Links die grosse Folie und darunter die Notizen, rechts oben die
+     kleine Vorschau. Die beiden 18px-Spuren sind die Griffe; ihre
+     Nachbarn haengen an --pres-x und --pres-y und lassen sich damit
+     ziehen. Beides wird im Browser gemerkt. */
+  grid-template-columns: var(--pres-x, 62%) 18px 1fr;
+  grid-template-rows: auto var(--pres-y, 54%) 18px 1fr;
+  grid-template-areas: "head  head head"
+                       "now   gx   next"
+                       "gy    gx   next"
+                       "notes gx   next";
   color:#e9ecf0; font-size:15px;
 }
 .pres-head{
   grid-area:head; display:flex; align-items:center; gap:14px;
-  padding-bottom:14px; border-bottom:1px solid rgba(233,236,240,.16);
+  padding-bottom:14px; margin-bottom:14px;
+  border-bottom:1px solid rgba(233,236,240,.16);
 }
 .pres-time{
   font-family:var(--mono); font-size:38px; font-weight:700;
@@ -626,6 +630,21 @@ body.presenter #pres{
 .pres-now{ grid-area:now }
 .pres-next{ grid-area:next; align-self:start }
 .pres-notes{ grid-area:notes }
+
+/* Griffe zwischen den Bereichen */
+.grip-x{ grid-area:gx; cursor:col-resize }
+.grip-y{ grid-area:gy; cursor:row-resize }
+.grip-x, .grip-y{ position:relative; touch-action:none }
+.grip-x::after, .grip-y::after{
+  content:""; position:absolute; top:50%; left:50%;
+  border-radius:99px; background:rgba(233,236,240,.22);
+  transition: background-color .18s ease;
+}
+.grip-x::after{ width:4px;  height:56px; transform:translate(-50%,-50%) }
+.grip-y::after{ height:4px; width:56px;  transform:translate(-50%,-50%) }
+.grip-x:hover::after, .grip-y:hover::after,
+.grip-x.zieht::after, .grip-y.zieht::after{ background:var(--blau-50) }
+.grip-x:focus-visible::after, .grip-y:focus-visible::after{ background:var(--blau-50) }
 .pres-now, .pres-next, .pres-notes{ display:flex; flex-direction:column; gap:9px; min-height:0 }
 .pres-label{
   margin:0; font-size:11.5px; font-weight:700; letter-spacing:.16em;
@@ -946,6 +965,8 @@ body.presenter #pres{
     <h2 class="pres-label">Als Nächstes</h2>
     <div class="pres-view" id="presNext"></div>
   </section>
+  <div class="grip-x" id="gripX" role="separator" aria-orientation="vertical" aria-label="Breite der Folienvorschau verschieben" tabindex="0"></div>
+  <div class="grip-y" id="gripY" role="separator" aria-orientation="horizontal" aria-label="Höhe der Folienvorschau verschieben" tabindex="0"></div>
   <section class="pres-notes">
     <h2 class="pres-label">Notizen</h2>
     <div class="pres-text" id="presNotes"></div>
@@ -1369,7 +1390,77 @@ body.presenter #pres{
       if (e.source !== opener) return;
       if (e.data && e.data.type === 'state') { gekoppelt = true; render(e.data); }
     });
-    addEventListener('resize', draw, { passive: true });
+    /* Der Massstab der Vorschau haengt nur an --tw. Aendert sich die
+       Breite des Kastens — durch Ziehen oder Fenstergroesse —, genuegt
+       es, --tw nachzufuehren; der Klon muss nicht neu gebaut werden. */
+    const fitViews = () => {
+      [elNow, elNext].forEach(b => {
+        const w = Math.round(b.clientWidth);
+        if (w) b.style.setProperty('--tw', w);
+      });
+    };
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(fitViews);
+      ro.observe(elNow); ro.observe(elNext);
+    } else {
+      addEventListener('resize', fitViews, { passive: true });
+    }
+
+    /* --- Bereiche verschieben ---------------------------- */
+    const GRENZE = { min: 24, max: 80 };
+    const klemm = v => Math.max(GRENZE.min, Math.min(GRENZE.max, v));
+
+    function ziehbar(griff, merkmal, achse) {
+      if (!griff) return;
+      const setzen = wert => {
+        document.documentElement.style.setProperty(merkmal, wert + '%');
+        try { localStorage.setItem(merkmal, wert); } catch (err) {}
+      };
+      griff.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        griff.setPointerCapture(e.pointerId);
+        griff.classList.add('zieht');
+        const kasten = document.getElementById('pres').getBoundingClientRect();
+        const zieh = ev => setzen(klemm(achse === 'x'
+          ? (ev.clientX - kasten.left - 18) / (kasten.width  - 36) * 100
+          : (ev.clientY - kasten.top  - 18) / (kasten.height - 36) * 100));
+        const los = () => {
+          griff.classList.remove('zieht');
+          griff.removeEventListener('pointermove', zieh);
+          griff.removeEventListener('pointerup', los);
+          griff.removeEventListener('pointercancel', los);
+        };
+        griff.addEventListener('pointermove', zieh);
+        griff.addEventListener('pointerup', los);
+        griff.addEventListener('pointercancel', los);
+      });
+      /* Doppelklick stellt die Voreinstellung wieder her. */
+      griff.addEventListener('dblclick', () => {
+        document.documentElement.style.removeProperty(merkmal);
+        try { localStorage.removeItem(merkmal); } catch (err) {}
+      });
+      /* Mit der Tastatur in Schritten von zwei Prozent. */
+      griff.addEventListener('keydown', e => {
+        const auf = achse === 'x' ? 'ArrowRight' : 'ArrowDown';
+        const ab  = achse === 'x' ? 'ArrowLeft'  : 'ArrowUp';
+        if (e.key !== auf && e.key !== ab) return;
+        e.preventDefault(); e.stopPropagation();
+        const jetzt = parseFloat(getComputedStyle(document.documentElement)
+          .getPropertyValue(merkmal)) || (achse === 'x' ? 62 : 54);
+        setzen(klemm(jetzt + (e.key === auf ? 2 : -2)));
+      });
+    }
+
+    /* Zuletzt gewaehlte Aufteilung wiederherstellen. */
+    try {
+      ['--pres-x', '--pres-y'].forEach(k => {
+        const v = localStorage.getItem(k);
+        if (v) document.documentElement.style.setProperty(k, v + '%');
+      });
+    } catch (err) {}
+
+    ziehbar(document.getElementById('gripX'), '--pres-x', 'x');
+    ziehbar(document.getElementById('gripY'), '--pres-y', 'y');
 
     /* Uhr */
     let t0 = 0, acc = 0, running = false;

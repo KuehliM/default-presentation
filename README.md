@@ -61,6 +61,21 @@ Geblättert werden kann in beiden Fenstern; der Zustand bleibt gekoppelt, auch d
 Einblendschritte. Die Vorschau der aktuellen Folie zeigt den echten Aufbaustand,
 die Vorschau der nächsten Folie zeigt sie fertig aufgebaut.
 
+### Aufteilung anpassen
+
+Zwischen den Bereichen liegen zwei Griffe — ein senkrechter zwischen Folie und
+Vorschau, ein waagerechter zwischen Folie und Notizen. Ziehen verschiebt die
+Aufteilung, je nachdem ob du im konkreten Vortrag mehr von der Folie oder mehr von
+den Notizen brauchst.
+
+| Bedienung | Wirkung |
+|---|---|
+| Ziehen | Bereich vergrößern oder verkleinern (24 – 80 %) |
+| Doppelklick | zurück auf die Voreinstellung |
+| Tab, dann Pfeiltasten | in Schritten von 2 % verschieben |
+
+Die Einstellung merkt sich der Browser und stellt sie beim nächsten Öffnen wieder her.
+
 Die beiden Fenster verständigen sich über `postMessage`. Das ist bewusst so gewählt:
 gemeinsamer Speicher und `BroadcastChannel` scheitern bei `file://` an der
 undurchsichtigen Herkunft, `postMessage` funktioniert auch dort.
