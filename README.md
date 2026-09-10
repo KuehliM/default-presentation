@@ -37,6 +37,23 @@ unangetastet als Ausgangspunkt.
 | `O` oder `Esc` | Übersicht aller Folien |
 | `F` | Vollbild |
 | `P` | Vortragendenansicht im zweiten Fenster |
+| `B` oder `.` | Schwarzbild — jede Taste holt zurück |
+| `K` | zeigt an, welche Taste ankommt |
+
+### Presenter am USB-Anschluss
+
+Ein Presenter meldet sich beim Rechner als **Tastatur**. Die üblichen Belegungen sind
+abgedeckt:
+
+| Knopf | sendet meist | hier |
+|---|---|---|
+| vor | `Bild ab`, manchmal `→` | weiter |
+| zurück | `Bild auf`, manchmal `←` | zurück |
+| Mitte | `B` oder `.` (Schwarzbild), `F5` (Vortrag starten) | Schwarzbild bzw. Vollbild |
+
+Die Modelle unterscheiden sich. Welche Taste dein Gerät wirklich schickt, zeigt **`K`**:
+Danach erscheint bei jedem Tastendruck unten der Name der Taste. Nochmal `K` beendet es.
+Schickt der mittlere Knopf etwas anderes, lässt es sich in einer Zeile ergänzen.
 
 Auf dem Tablet wischen. Die Foliennummer steht in der Adresszeile: `datei.html#3`
 springt direkt auf Folie 3.

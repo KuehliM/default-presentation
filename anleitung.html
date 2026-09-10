@@ -590,7 +590,7 @@ pre{ background:var(--blau-10); border-left:0; border-radius:var(--r-md) }
 .flow-box{ fill:#fff; stroke:#dbe3ef }
 .slide.hero{ padding:70px 100px 56px; gap:18px }
 .slide.hero::before{
-  display:block; left:56px; right:56px; top:48px; bottom:266px;
+  display:block; left:56px; right:56px; top:48px; bottom:212px;
   background:var(--blau); border-radius:var(--r-lg);
 }
 .slide.hero h1{ color:#fff }
@@ -598,7 +598,12 @@ pre{ background:var(--blau-10); border-left:0; border-radius:var(--r-md) }
 .slide.hero .lead{ color:rgba(255,255,255,.84) }
 .slide.hero .authors{ color:#fff }
 .slide.hero .affil{ color:rgba(255,255,255,.72) }
-.slide.hero .logo-lg{ margin-top:58px }
+/* Genau dort, wo auf allen anderen Folien das Logo der Fusszeile
+   steht — absolut gesetzt statt per margin-top:auto, das die
+   Unterkante unberechenbar gemacht hat. */
+.slide.hero .logo-lg{
+  position:absolute; left:var(--pad-x); bottom:26px; margin:0;
+}
 .slide.hero .chip{ background:rgba(255,255,255,.17); color:#fff }
 
 
@@ -730,6 +735,24 @@ body.presenter #pres{
 :root:fullscreen{ --rand:#000 }
 :root:-webkit-full-screen{ --rand:#000 }
 
+/* ---------- 8c · Presenter am USB-Anschluss --------------- */
+/* Ein Presenter meldet sich als Tastatur. Vor und Zurueck senden
+   ueblicherweise Bild ab und Bild auf, der mittlere Knopf je nach
+   Modell b oder Punkt fuer Schwarzbild und F5 fuer Vortrag starten.
+   Taste K zeigt an, was der eigene Presenter tatsaechlich sendet. */
+#schwarz{
+  position:fixed; inset:0; background:#000; z-index:95;
+  opacity:0; visibility:hidden;
+  transition: opacity .25s ease, visibility 0s linear .25s;
+}
+#schwarz.an{ opacity:1; visibility:visible; transition-delay:0s }
+#tastenanzeige{
+  position:fixed; left:50%; bottom:30px; transform:translateX(-50%); z-index:96;
+  padding:11px 20px; border-radius:999px;
+  background:var(--ink); color:#fff;
+  font-family:var(--mono); font-size:14px; white-space:nowrap;
+}
+
 /* ---------- 9 · Bewegung reduziert, Druck ----------------- */
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration:.001ms !important; animation-delay:0ms !important;
@@ -738,7 +761,8 @@ body.presenter #pres{
 @page{ size:1280px 720px; margin:0 }
 @media print{
   body{ overflow:visible; background:#fff }
-  .rail, .progress, .overview, .foot, #pres{ display:none !important }
+  .rail, .progress, .overview, .foot, #pres,
+  #schwarz, #tastenanzeige{ display:none !important }
   .stage{ position:static; display:block }
   .deck{ position:static; margin:0; transform:none; width:auto; height:auto }
   .slide{
@@ -947,6 +971,8 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
           <dt>O &nbsp;oder &nbsp;Esc</dt><dd>Übersicht aller Folien</dd>
           <dt>F</dt><dd>Vollbild</dd>
           <dt>P</dt><dd>Vortragendenansicht im zweiten Fenster</dd>
+          <dt>B &nbsp;oder &nbsp;.</dt><dd>Schwarzbild — jede Taste holt zurück</dd>
+          <dt>K</dt><dd>zeigt an, welche Taste ankommt (für USB-Presenter)</dd>
         </dl>
         <div style="display:flex;flex-direction:column;gap:12px">
           <p class="body">Eine Folie hinzufügen heißt: eine <code>&lt;section&gt;</code> ergänzen. Register, Übersicht, Balken und Zifferntasten richten sich automatisch danach.</p>
@@ -1294,8 +1320,28 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
   const setOverview = open => overview.classList.toggle('open', open);
 
   /* --- Tastatur ------------------------------------------- */
+  const vollbild = () => {
+    try {
+      document.fullscreenElement ? document.exitFullscreen()
+                                 : root.requestFullscreen?.();
+    } catch (err) {}
+  };
+
+  const schwarz        = document.getElementById('schwarz');
+  const tastenanzeige  = document.getElementById('tastenanzeige');
+  let   zeigeTasten    = false;
+
   addEventListener('keydown', e => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (zeigeTasten) {
+      tastenanzeige.textContent = 'key: ' + e.key + '   code: ' + e.code;
+    }
+    /* Aus dem Schwarzbild führt jede Taste zurück. */
+    if (schwarz.classList.contains('an')) {
+      schwarz.classList.remove('an');
+      e.preventDefault();
+      return;
+    }
     const open = overview.classList.contains('open');
 
     switch (e.key) {
@@ -1305,11 +1351,15 @@ inner.style.transform = <span class="k">'scale(0.059)'</span>; <span class="c">/
       case 'End':  nav('go', slides.length - 1); break;
       case 'p': case 'P': if (!isPresenter) openPresenter(); break;
       case 'Escape': case 'o': case 'O': if (!isPresenter) setOverview(!open); break;
-      case 'f': case 'F':
-        try {
-          document.fullscreenElement ? document.exitFullscreen()
-                                     : root.requestFullscreen?.();
-        } catch (err) {}
+      case 'f': case 'F': case 'F5':   /* F5: viele Presenter senden das */
+        vollbild(); break;
+      case 'b': case 'B': case '.':    /* Schwarzbild wie in PowerPoint */
+        if (!isPresenter) schwarz.classList.toggle('an');
+        break;
+      case 'k': case 'K':              /* zeigt, was der Presenter sendet */
+        zeigeTasten = !zeigeTasten;
+        tastenanzeige.hidden = !zeigeTasten;
+        tastenanzeige.textContent = 'Tastenanzeige an — K beendet sie';
         break;
       default:
         if (/^[1-9]$/.test(e.key)) { nav('go', Number(e.key) - 1); setOverview(false); }

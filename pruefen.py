@@ -61,7 +61,14 @@ window.addEventListener('load', () => setTimeout(() => {
     const eig = sr.width / W;
     const px = v => Math.round(v / eig);
 
-    const kinder = [...s.children].filter(k => k.tagName !== 'ASIDE');
+    /* Absolut gesetzte Kinder sind bewusst platziert (etwa das Logo
+       der Titelfolie in der Fussecke) und zaehlen nicht zum Fluss,
+       dessen Ueberlauf hier geprueft wird. */
+    const kinder = [...s.children].filter(k => {
+      if (k.tagName === 'ASIDE') return false;
+      const pos = getComputedStyle(k).position;
+      return pos !== 'absolute' && pos !== 'fixed';
+    });
     let oben = Infinity, unten = -Infinity, links = Infinity, rechts = -Infinity;
     for (const k of kinder) {
       const r = k.getBoundingClientRect();

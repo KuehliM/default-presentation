@@ -140,6 +140,15 @@ und Zifferntasten richten sich selbst nach der Zahl der Folien.
 
 ---
 
+## Steuerung
+
+`→ ↓ Leertaste Bild-ab` weiter · `← ↑ Bild-auf` zurück · `1…9` Folie · `Pos1/Ende`
+· `O`/`Esc` Übersicht · `F`/`F5` Vollbild · `P` Vortragendenansicht · `B`/`.`
+Schwarzbild · `K` Tastenanzeige. Bild-ab und Bild-auf sind absichtlich belegt: USB-
+Presenter senden genau die.
+
+---
+
 ## Fallen — schon einmal zugeschnappt
 
 - **Spezifität im SVG.** `.slide svg [data-step] { transform:none }` enthält einen
@@ -154,7 +163,9 @@ und Zifferntasten richten sich selbst nach der Zahl der Folien.
   beschnitten, nicht verkleinert. Zum Einpassen: absolut, `inset:0`, `margin:auto`,
   `max-width`/`max-height`.
 - **`margin-top:auto` in Flex.** Setzt die Unterkante unabhängig von Rändern und war
-  auf der Titelfolie 18 px zu tief. Feste Abstände sind vorhersagbar.
+  auf der Titelfolie 18 px zu tief. Für feste Ecken absolut positionieren.
+- **`position` prüfen, nicht raten.** `.slide > *` trägt `position:relative` aus der
+  Formen-Ebene. Ein Filter auf `static` schließt deshalb alles aus.
 - **Geklonte Folien erben.** Farbe und Schriftgrad kommen vom neuen Elternteil —
   in der dunklen Vortragendenansicht wurde die Folie deshalb grau.
 - **Suchmuster.** Die Zeichenkette `<script>` steht auch im Kopfkommentar des
