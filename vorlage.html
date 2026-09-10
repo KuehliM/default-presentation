@@ -409,6 +409,83 @@ ul.refs{ margin:0; padding:0; list-style:none; display:flex; flex-direction:colu
 ul.refs li{ font-size:15px; line-height:1.45; padding-left:28px; text-indent:-28px }
 ul.refs i{ font-style:italic }
 
+/* ---- Formensammlung: Diagramme, Ablaeufe, Kacheln --------- */
+
+/* Aufploppen — fuer Kacheln, Blaetter und Hervorhebungen */
+@keyframes pop{
+  0%  { opacity:0; transform: scale(.86) translateY(9px) }
+  62% { opacity:1; transform: scale(1.035) translateY(0) }
+  100%{ opacity:1; transform: scale(1) translateY(0) }
+}
+[data-step].shown.pops{ animation: pop .52s var(--ease) both }
+
+/* data-keep: Element ist von Anfang an sichtbar, .shown loest nur
+   seine eigene Bewegung aus (Deckel, Markierungen). */
+[data-step][data-keep]{ opacity:1; transform:none }
+
+/* Bildkacheln */
+.tiles{ display:grid; grid-template-columns:repeat(4, 1fr); gap:18px }
+.tile{
+  background:#fff; border-radius:var(--r-lg); padding:16px 16px 18px;
+  box-shadow:0 2px 12px rgba(0,42,80,.07);
+  display:flex; flex-direction:column; gap:11px;
+}
+.tile svg{ width:100%; height:auto; display:block; background:var(--blau-10); border-radius:var(--r-md) }
+.tile b{ font-size:14.5px; font-weight:700 }
+.tile span{ font-size:12.5px; line-height:1.35; color:var(--muted) }
+.sk{ fill:none; stroke:var(--blau); stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round }
+.sk-f{ fill:var(--blau); stroke:none }
+.sk-t{ fill:none; stroke:var(--blau-50); stroke-width:2; stroke-dasharray:4 4 }
+
+/* Boxplot */
+.bx-grid{ stroke:var(--sw-25); stroke-width:1 }
+.bx-ax{ stroke:var(--sw-50); stroke-width:1.5 }
+.bx-box{ fill:var(--blau-25); stroke:var(--blau); stroke-width:1.6 }
+.bx-med{ stroke:var(--blau); stroke-width:3.4; stroke-linecap:round }
+.bx-w{ stroke:var(--blau-75); stroke-width:1.6; stroke-linecap:round }
+.bx-out{ fill:none; stroke:var(--blau-75); stroke-width:1.6 }
+.bx-lab{ font-size:13px; font-weight:700; fill:var(--ink); }
+.bx-sub{ font-size:11.5px; fill:var(--muted) }
+.bx-mark{ stroke:var(--blau); stroke-width:1.6; stroke-dasharray:5 4 }
+.bx-note{ font-size:12.5px; font-weight:700; fill:var(--blau) }
+
+/* Kreislauf */
+.rg-node{ fill:#fff; stroke:var(--blau-50); stroke-width:1.8 }
+.rg-fill{ fill:var(--blau) }
+.rg-no{ font-family:var(--mono); font-size:11px; font-weight:700; fill:var(--blau-75) }
+.rg-t{ font-size:15px; font-weight:700; fill:var(--ink) }
+.rg-arc{ fill:none; stroke:var(--blau-50); stroke-width:2.6 }
+.rg-mid{ font-size:13px; font-weight:700; fill:var(--blau) }
+
+/* Trichter von oben nach unten */
+.fn-bar{ fill:var(--blau) }
+.fn-t{ font-size:15px; font-weight:700; fill:#fff }
+.fn-n{ font-family:var(--mono); font-size:15px; font-weight:700; fill:#fff; font-variant-numeric:tabular-nums }
+.fn-arrow{ fill:var(--blau-50) }
+.fn-drop{ font-size:12px; fill:var(--muted) }
+
+/* Kiste mit Deckel und Pflanze */
+.kiste-body{ fill:var(--blau) }
+.kiste-rim{ fill:var(--blau-75) }
+.kiste-lid{
+  fill:var(--blau-75);
+  transition: transform .9s var(--ease);
+  transform-box: fill-box; transform-origin:50% 100%;
+}
+/* Schlaegt .slide svg [data-step]{transform:none} aus Abschnitt 2. */
+.slide svg .kiste-lid.shown{ transform: translate(-84px, -128px) rotate(-11deg) }
+.kiste-schatten{ fill:rgba(0,42,80,.10) }
+.stem{
+  fill:none; stroke:#3d7a1c; stroke-width:5.5; stroke-linecap:round;
+  stroke-dasharray:100; stroke-dashoffset:100;
+}
+.plant.shown .stem{ animation: grow 1.6s ease .12s forwards }
+@keyframes grow{ to{ stroke-dashoffset:0 } }
+.leaf{ fill:#57ab27; opacity:0; transform-box:fill-box; transform-origin:center }
+.plant.shown .leaf   { animation: pop .55s var(--ease) .55s both }
+.plant.shown .leaf.l2{ animation-delay:.95s }
+.plant.shown .leaf.l3{ animation-delay:1.30s }
+
 /* Tastentabelle */
 .keys{ display:grid; grid-template-columns:auto 1fr; gap:12px 18px; align-items:baseline }
 .keys dt{ font-family:var(--mono); font-size:13px; font-weight:400; color:var(--blau); white-space:nowrap }
@@ -697,6 +774,82 @@ body.presenter #pres{
       <aside class="notes">Erst die Messpunkte stehen lassen. Dann die Gerade: sieht passabel aus, sagt aber für den Startzeitpunkt −1,08 m voraus. Dann die Parabel. Hier eine Pause machen.</aside>
     </section>
 
+    <!-- Boxplots — Verteilungen im Vergleich .................... -->
+    <section class="slide" data-title="Verteilungen">
+      <p class="eyebrow" data-anim>Ergebnisse</p>
+      <h2 data-anim>Verteilungen statt Mittelwerte</h2>
+      <figure data-anim>
+        <svg viewBox="0 0 1112 330" role="img" aria-label="Vier Boxplots: Kontroll- und Interventionsgruppe jeweils vor und nach der Erhebung."><line class="bx-grid" x1="78" y1="274.0" x2="1092" y2="274.0"/><text class="bx-sub" x="66" y="278.0" text-anchor="end">0</text><line class="bx-grid" x1="78" y1="230.7" x2="1092" y2="230.7"/><text class="bx-sub" x="66" y="234.7" text-anchor="end">5</text><line class="bx-grid" x1="78" y1="187.3" x2="1092" y2="187.3"/><text class="bx-sub" x="66" y="191.3" text-anchor="end">10</text><line class="bx-grid" x1="78" y1="144.0" x2="1092" y2="144.0"/><text class="bx-sub" x="66" y="148.0" text-anchor="end">15</text><line class="bx-grid" x1="78" y1="100.7" x2="1092" y2="100.7"/><text class="bx-sub" x="66" y="104.7" text-anchor="end">20</text><line class="bx-grid" x1="78" y1="57.3" x2="1092" y2="57.3"/><text class="bx-sub" x="66" y="61.3" text-anchor="end">25</text><line class="bx-grid" x1="78" y1="14.0" x2="1092" y2="14.0"/><text class="bx-sub" x="66" y="18.0" text-anchor="end">30</text><line class="bx-ax" x1="78" y1="14" x2="78" y2="274.0"/><text class="bx-sub" x="20" y="144.0" text-anchor="middle" transform="rotate(-90 20 144.0)">Punkte im Konzepttest (von 30)</text><g><line class="bx-w" x1="204.8" y1="118.0" x2="204.8" y2="157.0"/><line class="bx-w" x1="204.8" y1="183.0" x2="204.8" y2="204.7"/><line class="bx-w" x1="178.8" y1="118.0" x2="230.8" y2="118.0"/><line class="bx-w" x1="178.8" y1="204.7" x2="230.8" y2="204.7"/><rect class="bx-box" x="150.8" y="157.0" width="108" height="26.0" rx="6"/><line class="bx-med" x1="154.8" y1="170.0" x2="254.8" y2="170.0"/><text class="bx-lab" x="204.8" y="298" text-anchor="middle">Prä</text><text class="bx-sub" x="204.8" y="315" text-anchor="middle">Kontrolle</text></g><g><line class="bx-w" x1="458.2" y1="118.0" x2="458.2" y2="139.7"/><line class="bx-w" x1="458.2" y1="170.0" x2="458.2" y2="196.0"/><line class="bx-w" x1="432.2" y1="118.0" x2="484.2" y2="118.0"/><line class="bx-w" x1="432.2" y1="196.0" x2="484.2" y2="196.0"/><rect class="bx-box" x="404.2" y="139.7" width="108" height="30.3" rx="6"/><line class="bx-med" x1="408.2" y1="152.7" x2="508.2" y2="152.7"/><circle class="bx-out" cx="458.2" cy="92.0" r="3.6"/><text class="bx-lab" x="458.2" y="298" text-anchor="middle">Post</text><text class="bx-sub" x="458.2" y="315" text-anchor="middle">Kontrolle</text></g><g data-step="1" class="pops"><line class="bx-w" x1="711.8" y1="109.3" x2="711.8" y2="148.3"/><line class="bx-w" x1="711.8" y1="183.0" x2="711.8" y2="213.3"/><line class="bx-w" x1="685.8" y1="109.3" x2="737.8" y2="109.3"/><line class="bx-w" x1="685.8" y1="213.3" x2="737.8" y2="213.3"/><rect class="bx-box" x="657.8" y="148.3" width="108" height="34.7" rx="6"/><line class="bx-med" x1="661.8" y1="161.3" x2="761.8" y2="161.3"/><text class="bx-lab" x="711.8" y="298" text-anchor="middle">Prä</text><text class="bx-sub" x="711.8" y="315" text-anchor="middle">Intervention</text></g><g data-step="1" class="pops"><line class="bx-w" x1="965.2" y1="66.0" x2="965.2" y2="96.3"/><line class="bx-w" x1="965.2" y1="131.0" x2="965.2" y2="170.0"/><line class="bx-w" x1="939.2" y1="66.0" x2="991.2" y2="66.0"/><line class="bx-w" x1="939.2" y1="170.0" x2="991.2" y2="170.0"/><rect class="bx-box" x="911.2" y="96.3" width="108" height="34.7" rx="6"/><line class="bx-med" x1="915.2" y1="118.0" x2="1015.2" y2="118.0"/><circle class="bx-out" cx="965.2" cy="40.0" r="3.6"/><text class="bx-lab" x="965.2" y="298" text-anchor="middle">Post</text><text class="bx-sub" x="965.2" y="315" text-anchor="middle">Intervention</text></g><g data-step="2"><line class="bx-mark" x1="711.8" y1="161.3" x2="965.2" y2="161.3"/><text class="bx-note" x="838.5" y="149.3" text-anchor="middle">Median +5</text></g></svg>
+        <figcaption>Kasten von Q1 bis Q3, Strich beim Median, Antennen bis 1,5·IQA, Kreise für Werte darüber hinaus. Alle Kennwerte sind aus den Rohdaten im Quelltext gerechnet.</figcaption>
+      </figure>
+      <aside class="notes">Erst die Kontrollgruppe stehen lassen. Dann die Intervention einblenden und auf die Streuung hinweisen, nicht nur auf den Median.</aside>
+    </section>
+
+    <!-- Rundlauf — Kreisprozess .................................. -->
+    <section class="slide" data-title="Rundlauf">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Ein Kreis, der sich schließt</h2>
+      <div class="cols wide-left" data-anim>
+        <ul class="points">
+          <li>Vier Stationen auf einem Ring, die Pfeile dazwischen entstehen aus Winkeln — nicht aus geratenen Koordinaten.</li>
+          <li>Jede Station tritt einzeln auf. Beim Vortragen kann man an jeder anhalten.</li>
+          <li>Für alles Zyklische: Entwicklungsforschung, Modellbildung, Regelkreise.</li>
+          <li>Beschriftung und Zahl der Stationen stehen im Quelltext direkt über der Grafik.</li>
+        </ul>
+        <figure>
+          <svg viewBox="0 0 400 380" role="img" aria-label="Kreisprozess mit vier Stationen: Analyse, Entwurf, Erprobung, Bilanz."><defs><marker id="rgA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8ebae5"/></marker></defs><g data-step="1"><path class="rg-arc" d="M263.6 88.2 A120 120 0 0 1 301.8 126.4" marker-end="url(#rgA)"/></g><g data-step="2"><path class="rg-arc" d="M301.8 253.6 A120 120 0 0 1 263.6 291.8" marker-end="url(#rgA)"/></g><g data-step="3"><path class="rg-arc" d="M136.4 291.8 A120 120 0 0 1 98.2 253.6" marker-end="url(#rgA)"/></g><g data-step="4"><path class="rg-arc" d="M98.2 126.4 A120 120 0 0 1 136.4 88.2" marker-end="url(#rgA)"/></g><g data-step="0" class="pops"><circle class="rg-node" cx="200.0" cy="70.0" r="56"/><text class="rg-no" x="200.0" y="62.0" text-anchor="middle">01</text><text class="rg-t" x="200.0" y="84.0" text-anchor="middle">Analyse</text></g><g data-step="1" class="pops"><circle class="rg-node" cx="320.0" cy="190.0" r="56"/><text class="rg-no" x="320.0" y="182.0" text-anchor="middle">02</text><text class="rg-t" x="320.0" y="204.0" text-anchor="middle">Entwurf</text></g><g data-step="2" class="pops"><circle class="rg-node" cx="200.0" cy="310.0" r="56"/><text class="rg-no" x="200.0" y="302.0" text-anchor="middle">03</text><text class="rg-t" x="200.0" y="324.0" text-anchor="middle">Erprobung</text></g><g data-step="3" class="pops"><circle class="rg-node" cx="80.0" cy="190.0" r="56"/><text class="rg-no" x="80.0" y="182.0" text-anchor="middle">04</text><text class="rg-t" x="80.0" y="204.0" text-anchor="middle">Bilanz</text></g><text class="rg-mid" x="200" y="186" text-anchor="middle">Design-Based</text><text class="rg-mid" x="200" y="206" text-anchor="middle">Research</text></svg>
+        </figure>
+      </div>
+      <aside class="notes">Station für Station aufbauen. Beim Schließen des Kreises betonen, dass die Bilanz wieder in die Analyse mündet.</aside>
+    </section>
+
+    <!-- Ablauf von oben nach unten — Trichter .................... -->
+    <section class="slide" data-title="Von oben nach unten">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Wer am Ende übrig bleibt</h2>
+      <div class="cols" data-anim>
+        <figure>
+          <svg viewBox="0 0 560 356" role="img" aria-label="Trichter über vier Stufen: von 612 angeschriebenen auf 214 vollständige Datensätze."><g data-step="0" class="pops"><rect class="fn-bar" x="50.0" y="12" width="460" height="58" rx="16" opacity="0.78"/><text class="fn-t" x="72.0" y="48">Angeschrieben</text><text class="fn-n" x="488.0" y="48" text-anchor="end">612</text></g><g data-step="3"><path class="fn-arrow" d="M270 76 h20 l-10 14 z"/><text class="fn-drop" x="314.0" y="90">−194 ohne Rückmeldung</text></g><g data-step="1" class="pops"><rect class="fn-bar" x="87.0" y="96" width="386" height="58" rx="16" opacity="0.85"/><text class="fn-t" x="109.0" y="132">Eingewilligt</text><text class="fn-n" x="451.0" y="132" text-anchor="end">418</text></g><g data-step="1"><path class="fn-arrow" d="M270 160 h20 l-10 14 z"/><text class="fn-drop" x="314.0" y="174">−123 nur ein Termin</text></g><g data-step="2" class="pops"><rect class="fn-bar" x="124.0" y="180" width="312" height="58" rx="16" opacity="0.93"/><text class="fn-t" x="146.0" y="216">Beide Termine</text><text class="fn-n" x="414.0" y="216" text-anchor="end">295</text></g><g data-step="2"><path class="fn-arrow" d="M270 244 h20 l-10 14 z"/><text class="fn-drop" x="314.0" y="258">−81 unvollständig</text></g><g data-step="3" class="pops"><rect class="fn-bar" x="161.0" y="264" width="238" height="58" rx="16" opacity="1.00"/><text class="fn-t" x="183.0" y="300">Vollständige Daten</text><text class="fn-n" x="377.0" y="300" text-anchor="end">214</text></g></svg>
+        </figure>
+        <ul class="points">
+          <li>Der senkrechte Ablauf zeigt Schwund: Jede Stufe ist schmaler als die vorige, der Verlust steht daneben.</li>
+          <li>Stufen und Zahlen stehen als Liste im Quelltext, Breiten und Abstände rechnet die Grafik daraus.</li>
+          <li>Genauso brauchbar für Auswahlverfahren, Kodierschritte oder jede Kette mit Ausfällen.</li>
+          <li>Jede Stufe kommt einzeln — die Aufmerksamkeit bleibt beim gesprochenen Wort.</li>
+        </ul>
+      </div>
+      <aside class="notes">Stufe für Stufe aufbauen und die Verluste benennen. Das nimmt die Frage nach der Ausschöpfungsquote vorweg.</aside>
+    </section>
+
+    <!-- Kacheln, die nacheinander aufploppen ..................... -->
+    <section class="slide" data-title="Aufploppen">
+      <p class="eyebrow" data-anim>Material</p>
+      <h2 data-anim>Eines nach dem anderen</h2>
+      <div class="tiles" data-anim><div class="tile pops" data-step="0"><svg viewBox="0 0 160 110" role="img" aria-label="Skizze: Fadenpendel"><path class="sk" d="M34 20 H126"/><path class="sk" d="M40 20 l-8 -8 M56 20 l-8 -8 M72 20 l-8 -8 M88 20 l-8 -8 M104 20 l-8 -8 M120 20 l-8 -8"/><path class="sk-t" d="M80 20 V88"/><path class="sk" d="M80 20 L112 82"/><circle class="sk-f" cx="112" cy="82" r="11"/><path class="sk-t" d="M80 62 A24 24 0 0 0 96 74"/></svg><b>Fadenpendel</b><span>Periodendauer und Länge</span></div><div class="tile pops" data-step="1"><svg viewBox="0 0 160 110" role="img" aria-label="Skizze: Federschwinger"><path class="sk" d="M24 22 V96"/><path class="sk" d="M24 30 l-8 -8 M24 46 l-8 -8 M24 62 l-8 -8 M24 78 l-8 -8 M24 94 l-8 -8"/><path class="sk" d="M24 58 h10 l7 -13 l12 26 l12 -26 l12 26 l7 -13 h6"/><rect class="sk-f" x="90" y="38" width="42" height="40" rx="7"/></svg><b>Federschwinger</b><span>Rückstellkraft und Masse</span></div><div class="tile pops" data-step="2"><svg viewBox="0 0 160 110" role="img" aria-label="Skizze: Schiefe Ebene"><path class="sk" d="M22 94 H140 L22 34 Z"/><rect class="sk-f" x="52" y="52" width="26" height="18" rx="4" transform="rotate(26.9 65 61)"/><path class="sk-t" d="M96 74 L124 88"/><path class="sk" d="M118 78 l10 10 l-14 2" /></svg><b>Schiefe Ebene</b><span>Hangabtrieb und Reibung</span></div><div class="tile pops" data-step="3"><svg viewBox="0 0 160 110" role="img" aria-label="Skizze: Stromkreis"><path class="sk" d="M36 34 H124 V84 H36 Z"/><path class="sk" d="M70 34 h20" stroke="#e8f1fa" stroke-width="7"/><path class="sk" d="M74 26 V42 M84 30 V38"/><circle class="sk" cx="80" cy="84" r="13"/><path class="sk" d="M71 75 l18 18 M89 75 l-18 18"/></svg><b>Stromkreis</b><span>Spannung, Strom, Widerstand</span></div></div>
+      <p class="source-note" data-anim>Platzhalter für Fotos oder Screenshots: Das <code>&lt;svg&gt;</code> in der Kachel gegen ein <code>&lt;img&gt;</code> tauschen, alles andere bleibt.</p>
+      <aside class="notes">Kachel für Kachel aufrufen und jeweils zwei Sätze dazu sagen. Nicht alle auf einmal zeigen — sonst liest das Publikum voraus.</aside>
+    </section>
+
+    <!-- Kiste mit Deckel und wachsender Pflanze .................. -->
+    <section class="slide" data-title="Deckel ab">
+      <p class="eyebrow" data-anim>Metapher</p>
+      <h2 data-anim>Was unter dem Deckel wächst</h2>
+      <div class="cols" data-anim>
+        <figure>
+          <svg viewBox="0 0 420 390" role="img" aria-label="Eine Kiste, deren Deckel abgehoben wird und in der eine Pflanze heranwächst."><ellipse class="kiste-schatten" cx="210" cy="368" rx="118" ry="14"/><g class="plant" data-step="2">  <path class="stem" pathLength="100" d="M210 268 C210 232 192 196 204 150 C210 128 208 120 206 112"/>  <ellipse class="leaf l1" cx="176" cy="212" rx="30" ry="14" transform="rotate(-26 176 212)"/>  <ellipse class="leaf l2" cx="240" cy="176" rx="30" ry="14" transform="rotate(24 240 176)"/>  <ellipse class="leaf l3" cx="192" cy="124" rx="21" ry="11" transform="rotate(-42 192 124)"/></g><rect class="kiste-body" x="110" y="212" width="200" height="148" rx="16"/><rect class="kiste-rim" x="110" y="212" width="200" height="14" rx="7"/><rect class="kiste-lid" data-step="1" data-keep x="96" y="184" width="228" height="30" rx="11"/></svg>
+        </figure>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <ul class="points">
+            <li>Erster Schritt: Der Deckel hebt sich ab und legt sich schräg zur Seite.</li>
+            <li>Zweiter Schritt: Der Stängel wächst, danach klappen die Blätter nacheinander auf.</li>
+            <li>Das Wachstum ist keine Bildfolge, sondern ein Pfad, dessen Strichmuster von 100 auf 0 läuft.</li>
+          </ul>
+          <p class="source-note">Gedacht als Bild für alles Verdeckte: eine Black Box, die geöffnet wird, ein Prozess, der erst sichtbar wird, wenn man hinsieht.</p>
+        </div>
+      </div>
+      <aside class="notes">Erst reden, dann den Deckel heben. Die Pflanze braucht gut anderthalb Sekunden — solange nicht weiterklicken.</aside>
+    </section>
+
     <!-- Abschlussfolie — derselbe Typ .hero wie die Titelfolie ... -->
     <section class="slide hero" data-title="Vielen Dank">
       <p class="eyebrow" data-anim>DPG-Frühjahrstagung Dresden · 2026</p>
@@ -956,6 +1109,10 @@ body.presenter #pres{
   };
 
   /* --- Register und Übersicht aufbauen -------------------- */
+  /* Bei vielen Folien schrumpfen die Karten, damit der Stapel in
+     die Fensterhöhe passt. */
+  const railThumb = slides.length > 11 ? 54 : slides.length > 9 ? 60 : 66;
+  root.style.setProperty('--peek-hover', (railThumb + 26) + 'px');
   slides.forEach((slide, i) => {
     const title = slide.dataset.title || ('Folie ' + (i + 1));
     const no    = pad(i + 1);
@@ -969,7 +1126,7 @@ body.presenter #pres{
     label.innerHTML = '<span class="no"></span><span class="tx"></span>';
     label.querySelector('.no').textContent = no;
     label.querySelector('.tx').textContent = title;
-    tab.append(makeThumb(slide, 66), label);
+    tab.append(makeThumb(slide, railThumb), label);
     tab.addEventListener('click', e => { go(i); if (e.detail > 0) tab.blur(); });
     rail.appendChild(tab);
 

@@ -127,12 +127,33 @@ nach der Zahl der Folien.
 | `figure` + `figcaption` | Grafik oder Diagramm mit Bildunterschrift |
 | `pre` | Codeblock, blau getönt |
 | `.chip` | Pille für Agenda oder Schlagworte |
+| `.tiles` / `.tile` | Kachelreihe für Bilder oder Skizzen |
+| `.pops` | Element ploppt beim Erscheinen auf, statt einzublenden |
+| `data-keep` | Element ist von Anfang an sichtbar; `data-step` löst nur seine eigene Bewegung aus (etwa den Deckel) |
 | `.cite` / `.source-note` | Beleg im Fließtext, Fußnote unter dem Inhalt |
 | `.byline` | Autor:innen und Einrichtung |
 | `<aside class="notes">` | Sprechnotizen — nur in der Vortragendenansicht sichtbar |
 | `data-anim` | Element tritt beim Folienwechsel gestaffelt auf |
 | `data-step="n"` | Element erscheint erst beim n-ten Pfeildruck |
 | `data-step-until="n"` | … und verschwindet beim n-ten wieder |
+
+---
+
+## Formensammlung
+
+Fünf Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
+Platzhalter — es geht um die Form.
+
+| Folie | Was sie hergibt |
+|---|---|
+| **Verteilungen** | Boxplots aus Rohdaten: Quartile, Antennen bis 1,5·IQA und Ausreißer werden im Skript gerechnet, nicht eingetragen. Vier Gruppen, in zwei Schritten aufgebaut. |
+| **Rundlauf** | Kreisprozess mit vier Stationen. Positionen und Bogenpfeile entstehen aus Winkeln; der letzte Pfeil schließt den Kreis als eigener Schritt. |
+| **Von oben nach unten** | Trichter über vier Stufen mit Schwund daneben — für Stichprobenauswahl, Kodierschritte, jede Kette mit Ausfällen. |
+| **Aufploppen** | Vier Kacheln, die nacheinander aufspringen. Das `<svg>` in der Kachel lässt sich gegen ein `<img>` tauschen. |
+| **Deckel ab** | Eine Kiste, deren Deckel sich abhebt und in der eine Pflanze wächst. Das Wachstum ist ein Pfad, dessen Strichmuster von 100 auf 0 läuft. |
+
+Alle Grafiken sind Inline-SVG in denselben Farben und derselben Schrift — kein Bild,
+keine Fremdbibliothek, nichts nachzuladen.
 
 ---
 
