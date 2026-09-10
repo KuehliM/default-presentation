@@ -30,12 +30,12 @@ unangetastet als Ausgangspunkt.
 
 | Taste | Wirkung |
 |---|---|
-| `→` `↓` `Leertaste` | erst nächster Einblendschritt, dann nächste Folie |
-| `←` `↑` | zurück — die Folie bleibt dabei fertig aufgebaut |
+| `→` `↓` `Leertaste` `Bild ab` | erst nächster Einblendschritt, dann nächste Folie |
+| `←` `↑` `Bild auf` | zurück — die Folie bleibt dabei fertig aufgebaut |
 | `1` … `9` | direkt zur Folie |
 | `Pos1` / `Ende` | erste / letzte Folie |
 | `O` oder `Esc` | Übersicht aller Folien |
-| `F` | Vollbild |
+| `F` oder `F5` | Vollbild |
 | `P` | Vortragendenansicht im zweiten Fenster |
 | `B` oder `.` | Schwarzbild — jede Taste holt zurück |
 | `K` | zeigt an, welche Taste ankommt |

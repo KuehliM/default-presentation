@@ -147,6 +147,11 @@ und Zifferntasten richten sich selbst nach der Zahl der Folien.
 Schwarzbild · `K` Tastenanzeige. Bild-ab und Bild-auf sind absichtlich belegt: USB-
 Presenter senden genau die.
 
+**Die Tastenbelegung steht an drei Stellen:** im Skript von `vorlage.html`, in der
+Tabelle der `README.md` und auf der Folie „Steuerung" der `anleitung.html`. Wird eine
+Taste ergänzt, müssen alle drei nachgezogen werden — sonst dokumentiert der
+Foliensatz etwas anderes, als er tut.
+
 ---
 
 ## Fallen — schon einmal zugeschnappt
