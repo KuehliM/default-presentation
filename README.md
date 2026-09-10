@@ -114,6 +114,28 @@ Alles Änderbare liegt im `<body>`. Der Kopfkommentar in der Datei führt diesel
 | Folienformat | `--stage-w` / `--stage-h` im `<style>`, Abschnitt 1 |
 | Farben | `<style>`, Abschnitt 1 |
 
+### Gliederungsebenen
+
+Verschachtelte `<ul>` brauchen keine Klasse — die Ebene ergibt sich aus der Tiefe.
+
+```html
+<ul class="points">
+  <li>Erhebung in zwei Wellen
+    <ul>
+      <li>Vortest im September
+        <ul><li>Konzepttest und Fragebogen</li></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+| Ebene | Marke | Schriftgrad |
+|---|---|---|
+| 1 | runder Punkt, Blau 100 % | 19 px |
+| 2 | Strich, Blau 75 % | 17 px |
+| 3 | Viereck, Blau 50 % | 15,5 px |
+
 ### Eine Folie hinzufügen
 
 ```html
@@ -139,7 +161,7 @@ nach der Zahl der Folien.
 | `.slide.hero` | Titel- und Abschlussfolie: große blaue Karte, weiße Schrift, ohne Fußzeile |
 | `.cols` | zwei gleich breite Spalten, jede als weiße Karte |
 | `.cols.wide-left` | dasselbe im Verhältnis 1,15 : 0,85 |
-| `ul.points` | Aufzählung, erste Ebene runder blauer Punkt |
+| `ul.points` | Aufzählung mit drei Ebenen: runder Punkt, Strich, Viereck — einfach `<ul>` verschachteln, jede Ebene wird etwas kleiner |
 | `ul.points.long` | kleinerer Grad für textreiche Folien |
 | `ul.refs` | Quellenverzeichnis mit hängendem Einzug |
 | `.stats` / `.stat` | Kennzahlenkacheln: große blaue Zahl über der Beschriftung |

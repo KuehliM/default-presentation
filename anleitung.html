@@ -168,7 +168,7 @@ body{
 .slide{
   position:absolute; inset:0;
   display:flex; flex-direction:column; justify-content:flex-start; gap:22px;
-  padding:58px var(--pad-x) var(--pad-b);
+  padding:46px var(--pad-x) var(--pad-b);
   background: var(--surface);
   overflow:hidden;
   opacity:0; visibility:hidden; pointer-events:none;
@@ -315,28 +315,47 @@ body{
   margin:0 0 6px; font-size:12.5px; font-weight:700;
   letter-spacing:.15em; text-transform:uppercase; color:var(--blau);
 }
-h1, h2{ position:relative; margin-bottom:26px }
+h1, h2{ position:relative; margin-bottom:20px }
 h1{
-  margin:0 0 6px; font-size:84px; line-height:1.02; font-weight:700; letter-spacing:-.032em; color:var(--blau); text-wrap:balance;
+  margin:0 0 4px; font-size:84px; line-height:1.02; font-weight:700; letter-spacing:-.032em; color:var(--blau); text-wrap:balance;
 }
 h2{
-  margin:0 0 6px; font-size:46px; line-height:1.1; font-weight:700; letter-spacing:-.026em; text-wrap:balance;
+  margin:0 0 4px; font-size:46px; line-height:1.08; font-weight:700; letter-spacing:-.026em; text-wrap:balance;
 }
-.lead{ margin:0; font-size:23px; line-height:1.5; font-weight:400; color:var(--muted); max-width:56ch }
+.lead{ margin:0; font-size:24px; line-height:1.5; font-weight:400; color:var(--muted); max-width:56ch }
 .cols{ display:grid; grid-template-columns:1fr 1fr; gap:52px; align-items:start }
 .cols.wide-left{ grid-template-columns:1.15fr .85fr }
-.body{ margin:0; font-size:18px; line-height:1.55 }
+.body{ margin:0; font-size:19px; line-height:1.55 }
 ul.points{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:14px }
-ul.points li{ font-size:18px; line-height:1.45; padding-left:26px; position:relative }
-ul.points li::before{                  /* erste Ebene: runder Punkt */
+ul.points li{ font-size:19px; line-height:1.45; padding-left:26px; position:relative }
+ul.points li::before{                  /* 1. Ebene: runder Punkt */
   content:""; position:absolute; left:2px; top:.52em;
   width:7px; height:7px; border-radius:50%; background:var(--blau);
+}
+
+/* 2. Ebene: Strich, kleiner und heller. 3. Ebene: kleines Viereck.
+   Jede Ebene hat einen laengeren Selektor und schlaegt damit die
+   vorige — ohne !important. */
+ul.points ul{
+  margin:9px 0 2px; padding:0; list-style:none;
+  display:flex; flex-direction:column; gap:8px;
+}
+ul.points ul li{ font-size:17px; line-height:1.42; padding-left:23px }
+ul.points ul li::before{
+  top:.66em; left:2px; width:11px; height:2px;
+  border-radius:1px; background:var(--blau-75);
+}
+ul.points ul ul{ margin:7px 0 1px; gap:6px }
+ul.points ul ul li{ font-size:15.5px; line-height:1.4; padding-left:21px }
+ul.points ul ul li::before{
+  top:.56em; left:3px; width:6px; height:6px;
+  border-radius:1px; background:var(--blau-50);
 }
 ul.points li em{ font-style:normal; font-family:var(--mono); font-size:15px; color:var(--tabT) }
 pre{
   margin:0; padding:18px 20px; overflow-x:auto;
   background: var(--surface-2); border-left:3px solid var(--tab);
-  font-family:var(--mono); font-size:14px; line-height:1.7;
+  font-family:var(--mono); font-size:14.5px; line-height:1.7;
 }
 pre .c{ color:var(--sw-75) }
 pre .k{ color:var(--tabT); font-weight:700 }
@@ -351,7 +370,7 @@ code{ font-family:var(--mono); font-size:.92em }
 .chip{
   display:inline-flex; align-items:center; padding:9px 20px;
   border-radius:999px; background:var(--blau-10); color:var(--blau);
-  font-size:14px; font-weight:500;
+  font-size:15px; font-weight:500;
 }
 
 /* Diagramm auf der Register-Folie */
@@ -371,7 +390,7 @@ code{ font-family:var(--mono); font-size:.92em }
 /* Grafik und Diagramm */
 figure{ margin:0; display:flex; flex-direction:column; gap:10px }
 figure svg{ width:100%; height:auto; display:block; overflow:visible }
-figcaption{ font-size:12.5px; line-height:1.45; color:var(--muted) }
+figcaption{ font-size:13.5px; line-height:1.45; color:var(--muted) }
 .flow-box{ fill:var(--surface); stroke:var(--sw-25) }
 .flow-no{ font-family:var(--mono); font-size:11px; fill:var(--tabT) }
 .flow-tt{ font-size:15px; font-weight:500; fill:var(--ink) }
@@ -396,17 +415,17 @@ figcaption{ font-size:12.5px; line-height:1.45; color:var(--muted) }
   font-size:44px; font-weight:700; line-height:1; color:var(--blau);
   font-variant-numeric:tabular-nums; letter-spacing:-.02em;
 }
-.stat span{ font-size:14px; line-height:1.35; color:var(--muted) }
+.stat span{ font-size:14.5px; line-height:1.35; color:var(--muted) }
 
 /* Textfolie: laengere Stichpunkte mit Belegen im Fliesstext */
-ul.points.long li{ font-size:17.5px; line-height:1.5 }
+ul.points.long li{ font-size:18.5px; line-height:1.5 }
 .cite{ color:var(--muted); white-space:nowrap }
-.source-note{ margin:0; font-size:13px; color:var(--muted) }
+.source-note{ margin:0; font-size:13.5px; color:var(--muted) }
 
 /* Quellenverzeichnis mit haengendem Einzug */
 ul.refs{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:13px }
 .slide > ul.refs{ padding:24px 28px }
-ul.refs li{ font-size:15px; line-height:1.45; padding-left:28px; text-indent:-28px }
+ul.refs li{ font-size:16px; line-height:1.45; padding-left:28px; text-indent:-28px }
 ul.refs i{ font-style:italic }
 
 /* Der Streifen der Fusszeile bleibt frei. Grafiken koennen sonst
@@ -436,8 +455,8 @@ ul.refs i{ font-style:italic }
   display:flex; flex-direction:column; gap:11px;
 }
 .tile svg{ width:100%; height:auto; display:block; background:var(--blau-10); border-radius:var(--r-md) }
-.tile b{ font-size:14.5px; font-weight:700 }
-.tile span{ font-size:12.5px; line-height:1.35; color:var(--muted) }
+.tile b{ font-size:15px; font-weight:700 }
+.tile span{ font-size:13px; line-height:1.35; color:var(--muted) }
 .sk{ fill:none; stroke:var(--blau); stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round }
 .sk-f{ fill:var(--blau); stroke:none }
 .sk-t{ fill:none; stroke:var(--blau-50); stroke-width:2; stroke-dasharray:4 4 }
@@ -494,8 +513,8 @@ ul.refs i{ font-style:italic }
 
 /* Tastentabelle */
 .keys{ display:grid; grid-template-columns:auto 1fr; gap:12px 18px; align-items:baseline }
-.keys dt{ font-family:var(--mono); font-size:13px; font-weight:400; color:var(--blau); white-space:nowrap }
-.keys dd{ margin:0; font-size:17px; color:var(--muted) }
+.keys dt{ font-family:var(--mono); font-size:13.5px; font-weight:400; color:var(--blau); white-space:nowrap }
+.keys dd{ margin:0; font-size:18px; color:var(--muted) }
 
 
 /* Sprechnotizen: im Foliensatz unsichtbar, nur im zweiten
@@ -542,9 +561,9 @@ ul.refs i{ font-style:italic }
 /* Titelblock: Autor:innen und Einrichtung */
 .byline{ display:flex; flex-direction:column; gap:4px }
 .byline p{ margin:0 }
-.authors{ font-size:19px; line-height:1.4 }
+.authors{ font-size:20px; line-height:1.4 }
 .authors b{ font-weight:700 }
-.affil{ font-size:16px; line-height:1.4; color:var(--muted) }
+.affil{ font-size:17px; line-height:1.4; color:var(--muted) }
 
 /* ---------- 8 · Kartenentwurf: Flaechen und Gruende ------- */
 /* Dieser Block muss NACH Abschnitt 6 stehen: mehrere Regeln hier
