@@ -16,6 +16,8 @@ im Farbklang der RWTH Aachen.
 |---|---|
 | `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. Acht Folien, die alle Bausteine einmal zeigen. |
 | `anleitung.html` | Die Bedienungsanleitung — selbst ein Foliensatz, läuft auf derselben Technik. Erklärt Aufbau, Übergänge, Register und Bausteine. |
+| `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Bausteine, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
+| `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. `python3 pruefen.py` |
 | `technik-uebernehmen.py` | Überträgt Stylesheet, Vortragendenansicht und Skript von der Vorlage in die Anleitung, damit der Unterbau nur an einer Stelle gepflegt wird. |
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
 
