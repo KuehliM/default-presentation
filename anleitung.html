@@ -488,6 +488,7 @@ ul.refs i{ font-style:italic }
 .plant.shown .stem{ animation: grow 1.6s ease .12s forwards }
 @keyframes grow{ to{ stroke-dashoffset:0 } }
 .leaf{ fill:#57ab27; opacity:0; transform-box:fill-box; transform-origin:center }
+.leaf > ellipse{ fill:inherit }
 .plant.shown .leaf   { animation: pop .55s var(--ease) .55s both }
 .plant.shown .leaf.l2{ animation-delay:.95s }
 .plant.shown .leaf.l3{ animation-delay:1.30s }
@@ -655,7 +656,16 @@ body.presenter #pres{
   color: var(--ink); font-size:16px;
 }
 .pres-inner .slide [data-anim]{ opacity:1 !important; animation:none !important }
-.pres-inner .slide [data-step]{ transition:none !important }
+/* Die Vorschau ist eine Momentaufnahme, keine Vorfuehrung. Ohne diese
+   Sperre liefe jede Animation ein zweites Mal, sobald die Vorschau nach
+   dem Morph des Diagramms neu gezeichnet wird — der Klon ist dann neu
+   und startet alles von vorn. Stattdessen der Endzustand ohne Bewegung. */
+.pres-inner *, .pres-inner *::before, .pres-inner *::after{
+  animation: none !important;
+  transition: none !important;
+}
+.pres-inner .stem{ stroke-dashoffset: 0 }
+.pres-inner .leaf{ opacity: 1 }
 .pres-text{
   flex:1; min-height:0; overflow-y:auto; font-size:19px; line-height:1.55;
   color:#e9ecf0; background:rgba(233,236,240,.06);
