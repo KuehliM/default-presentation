@@ -28,6 +28,8 @@ BLOECKE = [
     ("Stylesheet", r"(?s)<style>.*?</style>", None),
     ("Vortragendenansicht", r'(?s)<!-- Vortragendenansicht.*?\n</div>', "<script>\n(() => {"),
     ("Skript", r"(?s)<script>\n\(\(\) => \{.*?</script>", None),
+    ("Überlagerungen", r'(?s)<div id="schwarz"></div>\n<div id="tastenanzeige" hidden></div>',
+     '<div class="stage">'),
 ]
 
 

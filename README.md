@@ -14,12 +14,14 @@ im Farbklang der RWTH Aachen.
 
 | Datei | Zweck |
 |---|---|
-| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. Acht Folien, die alle Bausteine einmal zeigen. |
+| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 21 Folien — jede Darstellungsform genau einmal. |
 | `anleitung.html` | Die Bedienungsanleitung — selbst ein Foliensatz, läuft auf derselben Technik. Erklärt Aufbau, Übergänge, Register und Bausteine. |
 | `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Bausteine, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. `python3 pruefen.py` |
 | `technik-uebernehmen.py` | Überträgt Stylesheet, Vortragendenansicht und Skript von der Vorlage in die Anleitung, damit der Unterbau nur an einer Stelle gepflegt wird. |
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
+| `Darstellungsformen.md` | Vorrat an Darstellungsformen: was gebaut ist, was noch kommen könnte, in welcher Reihenfolge. |
+| `formeln.py` | Setzt alle Formeln: LaTeX aus `data-tex` wird zu MathML. Holt Temml und Fira Math selbst. |
 
 Für einen neuen Vortrag: `vorlage.html` kopieren und umbenennen. Das Original bleibt
 unangetastet als Ausgangspunkt.
@@ -193,8 +195,65 @@ nach der Zahl der Folien.
 | `pre` | Codeblock, blau getönt |
 | `.chip` | Pille für Schlagworte — vorhanden, in der Vorlage derzeit ungenutzt |
 | `.tiles` / `.tile` | Kachelreihe für Bilder oder Skizzen |
+| `.zeit` | Zeitleiste: Phasen und Messzeitpunkte auf einem Raster mit `--spalten`, `--von`, `--dauer`, `--bei` |
+| `table.vgl` | Vergleichstabelle; `.mk.ja` / `.mk.halb` / `.mk.nein` als Ausfüllgrad, `.num` für Ziffernschrift |
+| `.zitat` | eine Äußerung, groß gesetzt, mit `.zitat-quelle` als Beleg |
+| `.trans` | Transkript aus Zeilennummer, Sprecher, Text und Kodierung; `<mark>` hebt Stellen hervor |
+| `.herleit` | schrittweise Herleitung, alle Zeilen am Relationszeichen bündig |
+| `.m` | Formel im Fließtext; `<i>` setzt das Formelzeichen kursiv, `.ein` hält Einheiten aufrecht |
+| `.frac` / `.wurzel` / `.vec` | Bruch, gezeichnete Wurzel, Pfeil über dem Zeichen |
+| `.gr` | griechische Buchstaben und mathematische Zeichen — siehe Hinweis unten |
+| `.hl` | hebt den Term hervor, um den es gerade geht |
 | `.pops` | Element ploppt beim Erscheinen auf, statt einzublenden |
 | `data-keep` | Element ist von Anfang an sichtbar; `data-step` löst nur seine eigene Bewegung aus (etwa den Deckel) |
+
+### Was der eingebettete Zeichensatz nicht kann
+
+Eingebettet ist nur der lateinische Zeichenvorrat. Vorhanden sind `· × − ½ ¼ ¾ ² ³ ° ± µ`,
+**nicht** vorhanden sind `Δ π σ α β θ ω √ ≈ ≤ ≥ ≠ → ←`. Deshalb:
+
+* Die Wurzel ist **gezeichnet** (`.wurzel`) und wächst mit ihrem Inhalt — sie braucht kein Zeichen.
+* Alles Übrige holt `.gr` aus der Systemschrift (Lucida Grande, dann Helvetica Neue).
+  Nachgemessen: von den verfügbaren Schriften passt Lucida Grande am besten zu Fira Sans.
+* In Tabellen stehen Ausfüllgrade (`.mk`) statt Häkchen.
+
+Diese Bausteine sind der **Notbehelf** und stammen aus der Zeit vor dem echten
+Formelsatz. Für richtige Mathematik siehe den nächsten Abschnitt.
+
+## Formeln
+
+Der handgebaute Satz oben (`.frac`, `.wurzel`, `.vec`) reicht für eine Formel im
+Fließtext, aber nicht für echte Mathematik: In der Datei steckt **kein kursiver
+Schnitt**, jedes `<i>` wird vom Browser künstlich geneigt, und es gibt weder
+Wurzelzeichen noch mitwachsende Klammern noch die Abstandsregeln des Formelsatzes.
+
+Deshalb setzt der Foliensatz Formeln als **MathML in Fira Math** — der Mathe-Schwester
+der Hausschrift. Den Satz erledigt der Browser, ohne JavaScript und ohne Bibliothek.
+
+Im Quelltext steht LaTeX:
+
+```html
+<span class="tex" data-tex="T = 2\pi\sqrt{\dfrac{l}{g}}"></span>
+```
+
+Danach `python3 formeln.py` — das Skript füllt jeden solchen Kasten mit MathML und
+bettet die Schrift ein. Das Attribut bleibt die Quelle, das MathML ist das Erzeugnis.
+Formel ändern heißt: Attribut ändern, Skript laufen lassen.
+
+Die Kursive ist dabei **echt**: Fira Math bringt eigene Glyphen für Formelzeichen mit,
+der Browser tauscht die Buchstaben dorthin. Ein `<i>` hätte die aufrechte Form nur
+schräg gestellt — kursive Schnitte enthält die Datei keine.
+
+Hervorheben geht mit `\colorbox{#e8f1fa}{$…$}`, griechische Einzelzeichen **außerhalb**
+einer Formel mit `<span class="gr">Δ</span>`.
+
+Alles ist **eingebettet**: die Schrift als base64, keine URL bleibt übrig. Die Datei
+stellt keine einzige Anfrage nach außen und läuft auf einem fremden Rechner ohne Netz —
+`formeln.py` prüft das nach jedem Lauf. Vorausgesetzt wird MathML Core: Chrome und Edge
+ab 109, Safari ab 16.4, Firefox seit je.
+
+Temml und Fira Math holt das Skript beim ersten Mal selbst nach `werkzeug/` (nicht im
+Repository).
 | `.cite` / `.source-note` | Beleg im Fließtext, Fußnote unter dem Inhalt |
 | `.byline` | Autor:innen und Einrichtung |
 | `<aside class="notes">` | Sprechnotizen — nur in der Vortragendenansicht sichtbar |
