@@ -83,7 +83,7 @@ dürfen kleiner sein.
 |---|---|---|
 | Titelfolie | `h1` | 84 px |
 | Folientitel | `h2` | 46 px |
-| Untertitel, Vorspann | `.lead` | 24 px |
+| Untertitel, Vorspann | `.lead` | 26 px |
 | Aufzählung Ebene 1 | `ul.points li` | 19 px |
 | Aufzählung Ebene 2 | verschachteltes `ul` | 17 px |
 | Aufzählung Ebene 3 | doppelt verschachtelt | 15,5 px |
