@@ -235,13 +235,9 @@ body{
 .rail-item.current{ transform: translateX(calc(100% - var(--peek) - 13px)) }
 .rail-item.current::before{ background: var(--blau) }
 .rail-item.current .thumb{ box-shadow: inset 0 0 0 2px var(--blau) }
-/* Versetzter Rahmen — das Knopfmotiv der RWTH-Website */
-.rail-item.current::after{
-  content:""; position:absolute; left:-5px; right:0; top:-5px; bottom:-5px;
-  border:1px solid var(--tab); border-right:0; pointer-events:none;
-  opacity:0; transition:opacity .3s ease;
-}
-.rail:hover .rail-item.current::after{ opacity:1 }
+/* Die offene Folie erkennt man am kraeftigen Streifen und am Rahmen
+   der Miniatur — ein zusaetzlicher versetzter Rahmen wuerde von der
+   Karte beschnitten und ist deshalb entfallen. */
 
 /* Maus im Register: alle Karten treten einen Schritt vor … */
 .rail:hover .rail-item,
@@ -257,8 +253,8 @@ body{
 
 .rail-label{ display:flex; align-items:baseline; gap:10px; white-space:nowrap }
 .rail-label .no{
-  font-family: var(--mono); font-size:11px; font-weight:400;
-  color: var(--tabT); font-variant-numeric: tabular-nums;
+  font-family: var(--mono); font-size:11px; font-weight:700;
+  color: var(--blau); font-variant-numeric: tabular-nums;
 }
 .rail-label .tx{ font-size:13.5px; font-weight:500; letter-spacing:-.005em }
 
@@ -509,7 +505,10 @@ ul.refs i{ font-style:italic }
 /* ---------- 7 · Fusszeile und Logo ------------------------ */
 .slide::before, .slide::after{ content:""; position:absolute; pointer-events:none; z-index:0 }
 .slide > *{ position:relative; z-index:1 }
-.rail-item{ border-radius: var(--r-md) 0 0 var(--r-md) }
+/* Links abgerundet, rechts flach am Bildschirmrand. overflow:hidden
+   sorgt dafuer, dass der Farbstreifen die Rundung mitmacht — sonst
+   schaut die runde Ecke der Karte hinter dem eckigen Streifen hervor. */
+.rail-item{ border-radius: 14px 0 0 14px; overflow:hidden }
 .thumb{ border-radius: var(--r-sm) }
 .ov-item .thumb{ border-radius: var(--r-md) }
 

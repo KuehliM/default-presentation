@@ -40,8 +40,9 @@ Auf dem Tablet wischen. Die Foliennummer steht in der Adresszeile: `datei.html#3
 springt direkt auf Folie 3.
 
 Am rechten Rand liegt der **Karteikasten**: in Ruhe sieht man nur die farbige Kante
-jeder Folie. Nähert sich die Maus, treten die Miniaturen hervor; auf einer Karte
-fährt sie ganz heraus und zeigt den Folientitel. Ein Klick springt dorthin.
+jeder Folie — kräftiges Blau für die offene, helles Blau für die übrigen. Nähert sich
+die Maus, treten die Miniaturen hervor; auf einer Karte fährt sie ganz heraus und zeigt
+Vorschau, Foliennummer und Titel. Ein Klick springt dorthin.
 
 ---
 
