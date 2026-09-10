@@ -187,7 +187,7 @@ nach der Zahl der Folien.
 | `.keys` | zweispaltige Definitionsliste |
 | `figure` + `figcaption` | Grafik oder Diagramm mit Bildunterschrift |
 | `pre` | Codeblock, blau getönt |
-| `.chip` | Pille für Agenda oder Schlagworte |
+| `.chip` | Pille für Schlagworte — vorhanden, in der Vorlage derzeit ungenutzt |
 | `.tiles` / `.tile` | Kachelreihe für Bilder oder Skizzen |
 | `.pops` | Element ploppt beim Erscheinen auf, statt einzublenden |
 | `data-keep` | Element ist von Anfang an sichtbar; `data-step` löst nur seine eigene Bewegung aus (etwa den Deckel) |

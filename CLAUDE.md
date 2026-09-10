@@ -112,7 +112,7 @@ Schatten.
 | `.stats` / `.stat` | Kennzahlenkacheln |
 | `.keys` | zweispaltige Definitionsliste |
 | `.tiles` / `.tile` | Kachelreihe für Bilder oder Skizzen |
-| `.chip` | Pille für Agenda oder Schlagworte |
+| `.chip` | Pille für Schlagworte — vorhanden, derzeit ungenutzt |
 | `.cite` / `.source-note` | Beleg im Fließtext, Fußnote |
 | `.pops` | ploppt beim Erscheinen auf statt einzublenden |
 | `data-anim` | tritt beim Folienwechsel gestaffelt auf |
