@@ -15,7 +15,7 @@ dieses Dokument geht ins Einzelne.
 
 | Datei | Zweck |
 |---|---|
-| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 23 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
+| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 28 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
 | `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Regeln, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. `python3 pruefen.py` |
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
@@ -35,7 +35,7 @@ unangetastet als Ausgangspunkt.
 | `→` `↓` `Leertaste` `Bild ab` | erst nächster Einblendschritt, dann nächste Folie |
 | `←` `↑` `Bild auf` | zurück — die Folie bleibt dabei fertig aufgebaut |
 | `1` … `9` | direkt zur Folie |
-| `0` oder `O` | Übersicht aller Folien — `Esc` schließt sie wieder |
+| `0` oder `O` | Übersicht aller Folien, gruppiert nach Abschnittstrennern und Anhang — `Esc` schließt sie wieder |
 | `Pos1` / `Ende` | erste / letzte Folie |
 | `F` oder `F5` | Vollbild |
 | `P` | Vortragendenansicht im zweiten Fenster |
@@ -196,6 +196,10 @@ nach der Zahl der Folien.
 | `.chip` | Pille für Schlagworte — vorhanden, in der Vorlage derzeit ungenutzt |
 | `.slide.anhang` | Folie für die Fragerunde, nur über die Übersicht erreichbar |
 | `.tiles` / `.tile` | Kachelreihe für Bilder oder Skizzen |
+| `.kacheln` / `.kachel` | Große Kacheln mit wenig Inhalt: Nummer (`.nr`), Schlagwort (`b`), eine Zeile (`span`). Eine Kachel mit `data-step` und `data-keep` wird beim Schritt blau |
+| `.kette` / `.glied` / `.kette-kopf` | Chevron-Kette: Pfeilköpfe als Phasen, darunter je eine Spalte Stichpunkte. Glieder lassen sich mit `data-step` nacheinander aufbauen |
+| `.karten` / `.karte` | Karten mit Titelschild: `h3` als blaue Pille auf der Oberkante, darunter Stichpunkte — für Kategorien |
+| `.slide.trenner` | Abschnittstrenner: blaue Karte, großer Abschnittstitel, Agenda als Chips mit `.aktiv` für den laufenden. Jeder Trenner eröffnet in der Übersicht automatisch eine eigene Gruppe mit Trennzeile |
 | `.zeit` | Zeitleiste: Phasen und Messzeitpunkte auf einem Raster mit `--spalten`, `--von`, `--dauer`, `--bei`. `.zeit-ebene` legt eine zweite Ebene darüber, `.zeit-marke.klein` setzt deren Anfang und Ende als kleine Punkte — Karte und Punkt in derselben Farbe |
 | `table.vgl` | Vergleichstabelle; `.mk.ja` / `.mk.halb` / `.mk.nein` als Ausfüllgrad, `.num` für Ziffernschrift |
 | `.zitat` | eine Äußerung, groß gesetzt, mit `.zitat-quelle` als Beleg |
@@ -291,11 +295,12 @@ ist die Zahl darauf nicht mehr präsent.
 
 ## Formensammlung
 
-Sechs Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
+Sieben Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
 Platzhalter — es geht um die Form.
 
 | Folie | Was sie hergibt |
 |---|---|
+| **Einschätzung** | Likert-Stapelbalken: fünf Anteile je Aussage, Ablehnung grau nach links, Zustimmung blau nach rechts, die Mitte halb auf jeder Seite. Skala aus den Daten, sortiert nach Zustimmung. Ein Schritt zeigt die Summen. |
 | **Verteilungen** | Boxplots aus Rohdaten: Quartile, Antennen bis 1,5·IQA und Ausreißer werden im Skript gerechnet, nicht eingetragen. Vier Gruppen, in zwei Schritten eingeblendet. |
 | **Wünsche** | Zehn waagerechte Balken, absteigend nach Nennungen. Die Liste im Skript darf ungeordnet sein — sortiert wird beim Aufbau. Ein Schritt legt eine Bezugslinie („Hälfte der Befragten") hinein. |
 | **Rundlauf** | Kreisprozess mit vier Stationen. Positionen und Bogenpfeile entstehen aus Winkeln; der letzte Pfeil schließt den Kreis als eigener Schritt. |

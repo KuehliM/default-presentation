@@ -16,7 +16,7 @@ zugleich sein eigener Musterbogen.
 
 | # | Folie | Form | Zahlen kommen aus |
 |---|---|---|---|
-| 01 · 22 | Registerdeck · Vielen Dank | Titel- und Dankfolie | — |
+| 01 · 27 | Registerdeck · Vielen Dank | Titel- und Dankfolie | — |
 | 02 | Agenda | Aufzählung, drei Ebenen | — |
 | 03 | Forschungsstand | reine Textfolie mit Belegen | — |
 | 04 | Erkenntnisgewinn | **Ablaufkette** mit zwei Rückwegen | Quelltext |
@@ -25,25 +25,35 @@ zugleich sein eigener Musterbogen.
 | 07 | Stichprobe | Kennzahlenkacheln | — |
 | 08 | Erhebungsplan | **Zeitleiste** aus Phasen und Marken, zweite Ebene darüber | Quelltext |
 | 09 | Vergleich | **Tabelle** mit Ausfüllgraden | — |
-| 10 | Freier Fall | **Streudiagramm** mit Ausgleichsgerade, Morph in die Parabel | Skript |
-| 11 | Verteilungen | **Boxplots** | Quelltext |
-| 12 | Gruppenmittel | **Säulen mit 95-%-Intervall** | Skript, `buildKI` |
-| 13 | Wünsche | **Balken waagerecht**, Nennungen absteigend, Bezugslinie | Skript, `buildBalken` |
-| 14 | Zugewinn | **Nachtest gegen Vortest**, Linien gleichen *g* | Skript, `buildHake` |
-| 15 | Stimmen | **Zitat**, groß gesetzt | — |
-| 16 | Transkript | **Transkript** mit Kodierspalte | — |
-| 17 | Rundlauf | **Kreisprozess** | Winkel im Skript |
-| 18 | Von oben nach unten | **Trichter** mit Schwund je Stufe | Quelltext |
-| 19 | Aufploppen | **Kachelreihe** | — |
-| 20 | Deckel ab | Metapherngrafik | — |
-| 21 | Quellen | Quellenverzeichnis | — |
-| 23 | Zusammenfassung | **Schlussfolie**, bleibt in der Diskussion stehen | — |
+| 10 | Entwicklungszyklus | **Chevron-Kette** mit Spalten darunter | — |
+| 11 | Praktikumsablauf | **Große Kacheln**, ein Schlagwort je Kachel | — |
+| 12 | Erhebung | **Karten mit Titelschild**, Stichpunkte nach Kategorien | — |
+| 13 | Ergebnisse | **Abschnittstrenner** mit Agenda-Chips | — |
+| 14 | Freier Fall | **Streudiagramm** mit Ausgleichsgerade, Morph in die Parabel | Skript |
+| 15 | Verteilungen | **Boxplots** | Quelltext |
+| 16 | Gruppenmittel | **Säulen mit 95-%-Intervall** | Skript, `buildKI` |
+| 17 | Wünsche | **Balken waagerecht**, Nennungen absteigend, Bezugslinie | Skript, `buildBalken` |
+| 18 | Einschätzung | **Likert-Stapelbalken**, divergierend um die Mitte | Skript, `buildLikert` |
+| 19 | Zugewinn | **Nachtest gegen Vortest**, Linien gleichen *g* | Skript, `buildHake` |
+| 20 | Stimmen | **Zitat**, groß gesetzt | — |
+| 21 | Transkript | **Transkript** mit Kodierspalte | — |
+| 22 | Rundlauf | **Kreisprozess** | Winkel im Skript |
+| 23 | Von oben nach unten | **Trichter** mit Schwund je Stufe | Quelltext |
+| 24 | Aufploppen | **Kachelreihe** mit Skizzen | — |
+| 25 | Deckel ab | Metapherngrafik | — |
+| 26 | Quellen | Quellenverzeichnis | — |
+| 28 | Zusammenfassung | **Schlussfolie**, bleibt in der Diskussion stehen | — |
 | A1 | Wie gut trennen die Items? | **Itemkennwerte**: Schwierigkeit gegen Trennschärfe | Skript, `buildItem` |
 | A2 | Was genau gerechnet wurde | Varianzanalyse als Tabelle | — |
 | A3 | Voraussetzungen erfüllt? | geprüfte Voraussetzungen | — |
 
-**Abgedeckt sind damit:** lineare Folge, Kreis, Trichter, Streuung, Verteilung,
-Gruppenvergleich, Rangfolge, Zeit (zwei Ebenen), Tabelle, Zitat, Transkript, Formel.
+**Abgedeckt sind damit:** lineare Folge (Kette, Chevrons), Kreis, Trichter, Streuung,
+Verteilung, Gruppenvergleich, Rangfolge, Zustimmung (Likert), Zeit (zwei Ebenen),
+Tabelle, Kacheln, Kategorien, Abschnittstrenner, Zitat, Transkript, Formel.
+
+Die vier PowerPoint-Muster, die Max am 11.09. gezeigt hat (Kästen mit Titelschild,
+Ablauf mit Detailkästen, große Schlagwort-Kacheln, Chevron-Kette mit Spalten), sind
+damit auf den Folien 10, 11 und 12 in der Formensprache der Vorlage nachgebaut.
 
 ---
 
@@ -51,7 +61,6 @@ Gruppenvergleich, Rangfolge, Zeit (zwei Ebenen), Tabelle, Zitat, Transkript, For
 
 | Form | Sagt aus | Aufwand |
 |---|---|---|
-| **Divergierende Stapelbalken** (Likert) | Wie sich Zustimmung verteilt, um die Mitte zentriert. Für Fragebogenitems unverzichtbar. | mittel |
 | **Übergangsmatrix / Sankey Prä→Post** | Wer wechselt von der Fehlvorstellung zum Fachkonzept — und wer zurück. Bei Concept Inventories der Befund, den jeder Mittelwert verschluckt. | groß |
 | **Forest Plot** | Mehrere Effektstärken mit Intervall untereinander. Für den Forschungsstand und für Subgruppen. | mittel |
 | **Item-Heatmap** | Lösungshäufigkeit je Item × Gruppe. Ergänzt die Kennwertkarte auf A1, ersetzt sie nicht. | mittel |
@@ -64,9 +73,8 @@ Gruppenvergleich, Rangfolge, Zeit (zwei Ebenen), Tabelle, Zitat, Transkript, For
 | Form | Sagt aus | Aufwand |
 |---|---|---|
 | **Schwimmbahnen** | Wer macht was wann. Zeilen sind Rollen (Lehrkraft, Lernende, Material), Spalten Phasen. Für Unterrichtsverläufe die klarste Form. | mittel |
-| **Spirale** | Es wiederholt sich, aber es kommt voran. Der Kreisprozess auf Folie 17 zeigt nur den geschlossenen Kreis — Design-Based Research braucht den offenen. | mittel |
+| **Spirale** | Es wiederholt sich, aber es kommt voran. Der Kreisprozess auf Folie 22 zeigt nur den geschlossenen Kreis — Design-Based Research braucht den offenen. | mittel |
 | **Verzweigung** | Hier wird entschieden. Ja/Nein-Weiche mit zwei Pfaden: Ausschlussverfahren, Kodierregeln, Auswertungslogik. | mittel |
-| **Chevron-Kette** | Dieselbe Aussage wie die Kette auf Folie 04, aber kompakter und mit Richtungsdruck. Gut für sechs Phasen nebeneinander. | klein |
 | **Gegenläufige Ketten** | Zwei Stränge laufen aufeinander zu. Theorie ↔ Empirie, fachliche Klärung ↔ Lernerperspektive. | mittel |
 | **Arbeits- und Zeitplan** (Gantt) | Projektphasen über Quartalen, Stand als Linie. Für den Teil „Pläne". | mittel |
 
@@ -95,16 +103,14 @@ Gruppenvergleich, Rangfolge, Zeit (zwei Ebenen), Tabelle, Zitat, Transkript, For
 |---|---|---|
 | **Beschriftete Versuchsskizze** | Aufbau mit Zeigern, die einzeln erscheinen. Die `.sk`-Klassen der Kacheln gibt es schon. | mittel |
 | **Freikörperbild** | Kraftpfeile am Körper, einzeln einblendbar — der klassische Gegenstand von Fehlvorstellungen. | mittel |
-| **Repräsentationswechsel** | Realbild → Diagramm → Formel, nebeneinander oder per Morph ineinander. Der Morph von Folie 10 ist wiederverwendbar. | groß |
+| **Repräsentationswechsel** | Realbild → Diagramm → Formel, nebeneinander oder per Morph ineinander. Der Morph von Folie 14 ist wiederverwendbar. | groß |
 
 ## Vorrat F — Medien und Rhetorik
 
 | Form | Sagt aus | Aufwand |
 |---|---|---|
 | **Bild vollflächig / mit Unterschrift** | Offener Punkt 8.2 im Protokoll: Text nie über der Fußzeile, Fotos gelegentlich schon. Vor dem Bauen ist zu klären, ob solche Bilder bis zur Kante laufen. | klein, aber eine Entscheidung nötig |
-| **Abschnittstrenner** | Zwischenfolie, die den laufenden Agendapunkt hervorhebt. | klein |
 | **Merksatzfolie** | Eine Aussage groß, sonst nichts. | klein |
-| **Backup-Folien** | Nach der Dankfolie für die Fragerunde. Nur eine Konvention, wie sie sich abheben. | klein |
 
 ---
 
@@ -118,8 +124,8 @@ Vorgeschlagene Reihenfolge, falls nichts dagegen spricht:
 4. **Verzweigung** — Auswertungs- und Kodierlogik
 5. **Baum** — Kategoriensystem
 
-Danach aus Vorrat A die **Likert-Stapelbalken** und die **Übergangsmatrix**; letztere
-ist die aufwendigste und inhaltlich die stärkste.
+Danach aus Vorrat A die **Übergangsmatrix** — die aufwendigste und inhaltlich die
+stärkste.
 
 ### Randbedingungen, die für alles gelten
 

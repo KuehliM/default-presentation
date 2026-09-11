@@ -14,7 +14,7 @@ sie ohne Rückfrage befolgt werden können. **Zuerst lesen, dann anfassen.**
 
 | Datei | Rolle |
 |---|---|
-| `vorlage.html` | **Der Foliensatz.** 23 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
+| `vorlage.html` | **Der Foliensatz.** 28 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
 | `formeln.py` | Setzt alle Formeln: liest LaTeX aus `data-tex`, schreibt MathML hinein, bettet Fira Math ein. Nach jeder Formeländerung laufen lassen. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. |
 | `schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein (Latein, Griechisch, Pfeile, Rechenzeichen). `--pruefen` meldet Zeichen, die aus der Schrift fallen. Nur bei Änderung des Vorrats laufen lassen. |
@@ -77,6 +77,10 @@ Erfahrungswerte aus dem gemessenen Bestand (`python3 pruefen.py`):
 | Kopf + Vergleichstabelle, 4 Spalten × 5 Zeilen | 525 px | 81 % |
 | Kopf + Zeitleiste (zwei Ebenen, 7 Marken) + 2 Stichpunkte | 562 px | 87 % |
 | Kopf + 10 waagerechte Balken mit Unterschrift | 545 px | 84 % |
+| Kopf + Likert, 6 Aussagen mit Legende | 545 px | 84 % |
+| Kopf + Chevron-Kette, 3 Spalten à 2–3 Punkte | 442 px | 67 % |
+| Kopf + 4 große Kacheln | 494 px | 76 % |
+| Kopf + 2 Karten mit Titelschild à 2 Punkte | 474 px | 72 % |
 | Kopf + Transkript, 6 Zeilen | 442 px | 67 % |
 
 Ab **92 % Füllstand** meldet `pruefen.py` „eng". Darüber wird es auf einem Beamer
@@ -127,7 +131,7 @@ Schatten.
 | `.stats` / `.stat` | Kennzahlenkacheln |
 | `.keys` | zweispaltige Definitionsliste |
 | `.tiles` / `.tile` | Kachelreihe für Bilder oder Skizzen |
-| `.chip` | Pille für Schlagworte — vorhanden, derzeit ungenutzt |
+| `.chip` | Pille für Schlagworte — im Abschnittstrenner als Agenda-Chips genutzt |
 | `.cite` / `.source-note` | Beleg im Fließtext, Fußnote |
 | `.pops` | ploppt beim Erscheinen auf statt einzublenden |
 | `data-anim` | tritt beim Folienwechsel gestaffelt auf |
@@ -136,6 +140,10 @@ Schatten.
 | `data-keep` | bleibt sichtbar, `data-step` löst nur die eigene Bewegung aus |
 | `<aside class="notes">` | Sprechnotizen, nur in der Vortragendenansicht |
 | `.slide.anhang` | Folie für die Fragerunde — eigener Abschnitt unten |
+| `.slide.trenner` | Abschnittstrenner: blaue Karte über der Fläche, Agenda als Chips, der laufende mit `.aktiv`; Fußzeile bleibt. **Eröffnet in der Übersicht automatisch eine Gruppe** — Trennzeile mit dem `data-title`, die Folien danach in neuer Zeile |
+| `.kacheln` / `.kachel` | große Kacheln: `.nr`, Schlagwort in `b`, eine Zeile in `span`; `data-step` + `data-keep` färbt eine Kachel beim Schritt blau |
+| `.kette` / `.glied` / `.kette-kopf` | Chevron-Kette: Pfeilkopf (clip-path) über einer Spalte `ul.points`; das erste Glied ohne Kerbe, links gerundet |
+| `.karten` / `.karte` | Karten mit Titelschild: `h3` sitzt als blaue Pille halb auf der Oberkante, darunter `ul.points` |
 
 ### Anhangsfolien
 
@@ -147,7 +155,17 @@ jede andere Folie. Eigen sind ihm nur drei Dinge:
 * **Fortschrittsbalken** zählt ihn nicht (`total` lässt ihn aus, `scaleX` ist auf 1
   begrenzt). Auf der letzten Vortragsfolie steht der Balken voll und bleibt es.
 * **Register** zeigt ihn nicht — es bliebe sonst für den Vortrag weniger Platz. Die
-  **Übersicht** zeigt ihn, abgesetzt unter einer Trennzeile.
+  **Übersicht** zeigt ihn, abgesetzt unter einer Trennzeile — als letzte Gruppe.
+
+### Gruppen in der Übersicht
+
+Die Übersicht (`0`) ist in **Gruppen** geteilt: Jede `.slide.trenner` eröffnet eine
+(Trennzeile mit ihrem `data-title`, die Folien bis zum nächsten Trenner beginnen in
+einer neuen Zeile), der Anhang bildet die letzte. Die Folien vor dem ersten Trenner
+stehen ohne Zeile oben. Das geschieht **automatisch** aus den Klassen (`gruppen` im
+Skript, `passeUebersicht()` rechnet die Trennzeilen in die Kachelgröße ein): Wer
+einen Abschnittstrenner einbaut, muss dafür nichts weiter tun. Angefangene Zeilen
+stehen mittig — so gewünscht, nicht linksbündig „nachbessern".
 * **Kein Aufbau.** Eine Schleife entfernt `data-anim` und `data-step` von allen
   Anhangsfolien; sie muss **nach** den Diagramm-Bauern stehen, die `data-step` selbst
   setzen. In der Fragerunde soll die Antwort sofort ganz dastehen.
@@ -172,6 +190,7 @@ Titel nach der **Frage** benennen, nicht nach dem Inhalt.
 | `.tex` + `data-tex` | Formel: LaTeX im Attribut, MathML darin — von `formeln.py` gesetzt |
 | `#kiSvg` | Säulen mit 95-%-Konfidenzintervall — Werte im Skript, `buildKI` |
 | `#balkenSvg` | Balken waagerecht, Nennungen absteigend — sortiert im Skript, `buildBalken` |
+| `#likertSvg` | Likert: divergierende Stapelbalken, Ablehnung grau nach links, Zustimmung blau nach rechts; Skala aus den Daten — `buildLikert` |
 | `#hakeSvg` | Zugewinn: Nachtest gegen Vortest mit Linien gleichen *g* — `buildHake` |
 
 ### Formelsatz

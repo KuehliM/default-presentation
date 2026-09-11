@@ -119,6 +119,7 @@
 
    Bausteine: .cols  ul.points  ul.refs  .stats  .keys  .tiles
      figure  table.vgl  .zeit  .zitat  .trans  .herleit  .chip
+     .kacheln  .kette  .karten  .slide.trenner
      Vollstaendig beschrieben in der README.
    ============================================================ */
 
@@ -340,6 +341,7 @@ body{
   display:flex; flex-wrap:wrap; justify-content:center; align-content:center;
   gap: calc(var(--ov-gap, 18) * 1px);
 }
+/* Angefangene Zeilen stehen mittig — Max' Wunsch, nicht linksbuendig. */
 /* Die Kachelbreite rechnet passeUebersicht() aus Fenster und
    Folienzahl. Alle Folien sollen auf einen Blick zu sehen sein —
    lieber kleiner als scrollbar. */
@@ -361,7 +363,7 @@ body{
    zeichen, damit man das Kuerzen sieht. */
 .ov-cap .tx{ overflow:hidden; text-overflow:ellipsis }
 .ov-cap .no{ font-family:var(--mono); font-size:.8em; color:var(--tabT); flex:none }
-/* Trennzeile vor dem Anhang: der Vortrag hoert hier auf. */
+/* Trennzeile vor jeder Gruppe: Abschnitt oder Anhang. */
 .ov-trenner{
   flex-basis:100%; margin:12px 0 2px;
   display:flex; align-items:center; gap:18px;
@@ -674,6 +676,76 @@ table.vgl .num{ font-family:var(--mono); font-variant-numeric:tabular-nums }
 .zeit-marke span{ font-size:13.5px; line-height:1.3; color:var(--muted); white-space:nowrap }
 .zeit-marke.klein b{ font-size:15px; color:var(--sw-75) }
 
+/* Grosse Kacheln — ein Schlagwort je Kachel, wenig Text.
+   Die Nummer oben, das Schlagwort unten (margin-bottom:auto).
+   Eine Kachel mit data-step und data-keep wird beim Schritt blau:
+   die Phase, um die es heute geht. */
+.kacheln{ display:grid; grid-template-columns:repeat(4, 1fr); gap:18px }
+.kachel{
+  background:#fff; border-radius:var(--r-lg); padding:26px 26px 28px; min-height:310px;
+  box-shadow:0 2px 12px rgba(0,42,80,.07);
+  display:flex; flex-direction:column; gap:10px;
+  transition: background .45s ease, color .45s ease;
+}
+.kachel .nr{
+  font-family:var(--mono); font-size:14px; font-weight:700; letter-spacing:.08em;
+  color:var(--blau); margin-bottom:auto;
+}
+.kachel b{ font-size:30px; line-height:1.1; font-weight:700; letter-spacing:-.02em; text-wrap:balance }
+.kachel span{ font-size:16px; line-height:1.4; color:var(--muted) }
+.kachel.stark, .kachel[data-keep].shown{ background:var(--blau); color:#fff }
+.kachel.stark .nr, .kachel[data-keep].shown .nr{ color:var(--blau-50) }
+.kachel.stark span, .kachel[data-keep].shown span{ color:rgba(255,255,255,.82) }
+
+/* Chevron-Kette — Phasen als Pfeilkoepfe, darunter je eine Spalte
+   mit Stichpunkten. Der Kopf ist ein beschnittenes Rechteck
+   (clip-path); das erste Glied hat links keine Kerbe. */
+.kette{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; --spitze:22px }
+.glied{ display:flex; flex-direction:column; gap:14px; min-width:0 }
+.kette-kopf{
+  background:var(--blau); color:#fff; font-size:18px; font-weight:500; line-height:1.2;
+  padding:15px 30px 15px calc(var(--spitze) + 22px); text-align:center; white-space:nowrap;
+  clip-path: polygon(0 0, calc(100% - var(--spitze)) 0, 100% 50%,
+                     calc(100% - var(--spitze)) 100%, 0 100%, var(--spitze) 50%);
+}
+.glied:first-child .kette-kopf{
+  padding-left:22px; border-radius:14px 0 0 14px;   /* Rundung bleibt, clip-path schneidet nur rechts */
+  clip-path: polygon(0 0, calc(100% - var(--spitze)) 0, 100% 50%, calc(100% - var(--spitze)) 100%, 0 100%);
+}
+.glied ul.points{
+  background:#fff; border-radius:var(--r-lg); padding:22px 24px; flex:1;
+  box-shadow:0 2px 12px rgba(0,42,80,.07);
+}
+.glied ul.points li{ font-size:17px; line-height:1.42 }
+
+/* Karten mit Titelschild — Stichpunkte nach Kategorien gruppiert.
+   Das Schild sitzt halb auf der Oberkante der Karte; padding-top
+   des Stapels laesst dem ersten Schild Platz. */
+.karten{ display:flex; flex-direction:column; gap:30px; padding-top:16px }
+.karte{
+  position:relative; background:#fff; border-radius:var(--r-lg); padding:32px 28px 24px;
+  box-shadow:0 2px 12px rgba(0,42,80,.07);
+}
+.karte h3{
+  position:absolute; top:-19px; left:24px; margin:0;
+  padding:8px 20px; border-radius:999px; background:var(--blau); color:#fff;
+  font-size:16px; font-weight:500; line-height:1.2;
+}
+
+/* Abschnittstrenner — blaue Karte ueber der ganzen Flaeche, der
+   laufende Punkt der Agenda als weisser Chip. Fusszeile bleibt. */
+.slide.trenner{ justify-content:center; padding:40px calc(var(--pad-x) + 56px) var(--pad-b); gap:18px }
+.slide.trenner::before{
+  display:block; left:var(--pad-x); right:var(--pad-x); top:40px; bottom:var(--pad-b);
+  background:var(--blau); border-radius:var(--r-lg);
+}
+.slide.trenner .eyebrow{ color:var(--blau-50) }
+.slide.trenner h2{ color:#fff; font-size:72px; letter-spacing:-.03em }
+.slide.trenner .lead{ color:rgba(255,255,255,.84) }
+.trenner-agenda{ display:flex; flex-wrap:wrap; gap:12px; margin:14px 0 0 }
+.trenner-agenda .chip{ background:rgba(255,255,255,.14); color:rgba(255,255,255,.74); font-size:16px }
+.trenner-agenda .chip.aktiv{ background:#fff; color:var(--blau) }
+
 /* Zitat */
 .zitat{ margin:0; font-size:33px; line-height:1.36; font-weight:300; letter-spacing:-.012em }
 .zitat::before{
@@ -720,6 +792,22 @@ table.vgl .num{ font-family:var(--mono); font-variant-numeric:tabular-nums }
 .bk-sub{ font-size:12.5px; fill:var(--muted) }
 .bk-ref{ stroke:var(--sw-75); stroke-width:1.4; stroke-dasharray:5 4 }
 .bk-note{ font-size:12.5px; font-weight:700; fill:var(--sw-75) }
+/* Likert — divergierende Stapelbalken um die neutrale Mitte.
+   Ablehnung in Grau nach links, Zustimmung in Blau nach rechts;
+   die Mitte teilt sich um die Nulllinie. Weisser Strich als Fuge. */
+.lk-seg{ stroke:#fff; stroke-width:1.5 }
+.lk-seg.s1{ fill:var(--sw-75) }
+.lk-seg.s2{ fill:var(--sw-50) }
+.lk-seg.s3{ fill:var(--sw-25) }
+.lk-seg.s4{ fill:var(--blau-50) }
+.lk-seg.s5{ fill:var(--blau) }
+.lk-lab{ font-size:15px; fill:var(--ink) }
+.lk-sum{ font-size:14px; font-weight:700; fill:var(--ink); font-variant-numeric:tabular-nums }
+.lk-sum.zu{ fill:var(--blau) }
+.lk-sum.ab{ fill:var(--sw-75) }
+.lk-mid{ stroke:var(--sw-50); stroke-width:1.5 }
+.lk-sub{ font-size:12.5px; fill:var(--muted) }
+.lk-leg{ font-size:13px; fill:var(--ink) }
 
 /* Itemkennwerte: Schwierigkeit gegen Trennschaerfe */
 .it-grid{ stroke:var(--sw-25); stroke-width:1 }
@@ -1256,6 +1344,90 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Nicht Zeile für Zeile vorlesen. Nur die letzte Zeile betonen und dann weiter.</aside>
     </section>
 
+    <!-- Chevron-Kette — Phasen als Pfeilkoepfe, je eine Spalte ... -->
+    <section class="slide" data-title="Entwicklungszyklus">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Vom Bedarf zum Praktikum</h2>
+      <div class="kette" data-anim>
+        <div class="glied">
+          <div class="kette-kopf">Ausgangssituation</div>
+          <ul class="points">
+            <li>Datenauswertung mit Python ist gewünscht — von Lehrenden wie Studierenden.</li>
+            <li>Bisher Tabellenvorlagen, die Auswertung bleibt eine Blackbox.</li>
+          </ul>
+        </div>
+        <div class="glied" data-step="1">
+          <div class="kette-kopf">Entwurf</div>
+          <ul class="points">
+            <li>Praktikumsanleitung und zwei Notebooks: Einführung, Auswertung.</li>
+            <li>Federpendel als Beispiel, gemessen mit dem Smartphone.</li>
+          </ul>
+        </div>
+        <div class="glied" data-step="2">
+          <div class="kette-kopf">Durchführung</div>
+          <ul class="points">
+            <li>Vielfältige Lerneffekte, auch über die Physik hinaus.</li>
+            <li>Hoher zeitlicher Aufwand für beide Seiten.</li>
+            <li>Braucht weitere Iterationsschritte.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="source-note" data-anim>Die Kette liest sich von links nach rechts und baut sich so auf. Alle Inhalte sind Platzhalter.</p>
+      <aside class="notes">Jedes Glied einzeln aufrufen. Beim dritten kurz innehalten: der Aufwand ist der Punkt, nach dem gefragt wird.</aside>
+    </section>
+
+    <!-- Grosse Kacheln — vier Phasen, ein Schlagwort je Kachel ...... -->
+    <section class="slide" data-title="Praktikumsablauf">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Vier Phasen, ein Nachmittag</h2>
+      <div class="kacheln">
+        <div class="kachel" data-anim><span class="nr">01</span><b>Vorbereitung</b><span>Installation und Einführungs-Notebook, zu Hause</span></div>
+        <div class="kachel" data-anim><span class="nr">02</span><b>Messung</b><span>Federpendel, aufgenommen mit dem Smartphone</span></div>
+        <div class="kachel" data-anim data-step="1" data-keep><span class="nr">03</span><b>Auswertung</b><span>Datenauswertungs-Notebook, Schritt für Schritt</span></div>
+        <div class="kachel" data-anim><span class="nr">04</span><b>Nachbereitung</b><span>Notebook fertigstellen und abgeben</span></div>
+      </div>
+      <p class="source-note" data-anim>Ein Pfeildruck hebt die Phase hervor, um die es geht. Alle Inhalte sind Platzhalter.</p>
+      <aside class="notes">Nicht vorlesen — die vier Wörter stehen da. Beim Schritt sagen, warum die Auswertung der Kern ist.</aside>
+    </section>
+
+    <!-- Karten mit Titelschild — Kategorien mit Stichpunkten ........ -->
+    <section class="slide" data-title="Erhebung">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Was wir erheben</h2>
+      <div class="karten" data-anim>
+        <div class="karte">
+          <h3>Lernzuwachs</h3>
+          <ul class="points">
+            <li>Prä-Post-Test zur Datenauswertung, sechs Aufgaben.</li>
+            <li>Ermöglicht das Modul die gewünschte Selbstständigkeit?</li>
+          </ul>
+        </div>
+        <div class="karte" data-step="1">
+          <h3>Bearbeitungszeit und Motivation</h3>
+          <ul class="points">
+            <li>Beobachtungen während des Praktikums, protokolliert je Gruppe.</li>
+            <li>Gespräche im Anschluss, leitfadengestützt.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="source-note" data-anim>Alle Inhalte sind Platzhalter.</p>
+      <aside class="notes">Zwei Stränge, quantitativ und qualitativ. Die zweite Karte erst nach dem ersten Satz zum Test.</aside>
+    </section>
+
+    <!-- Abschnittstrenner — blaue Karte, laufender Agendapunkt ...... -->
+    <section class="slide trenner" data-title="Ergebnisse">
+      <p class="eyebrow" data-anim>Abschnitt 3 von 4</p>
+      <h2 data-anim>Ergebnisse</h2>
+      <p class="lead" data-anim>Was der Test zeigt — und was nicht.</p>
+      <div class="trenner-agenda" data-anim>
+        <span class="chip">Hintergrund</span>
+        <span class="chip">Methode</span>
+        <span class="chip aktiv">Ergebnisse</span>
+        <span class="chip">Ausblick</span>
+      </div>
+      <aside class="notes">Kurz durchatmen. Ein Satz zur Überleitung, dann weiter — die Folie trägt sich selbst.</aside>
+    </section>
+
     <!-- Diagramm — Achsen aus echten Werten, Morph in 2 Schritten ... -->
     <section class="slide" data-title="Freier Fall">
       <p class="eyebrow" data-anim>Ergebnisse</p>
@@ -1306,6 +1478,17 @@ ul.points li math{ font-size:20px }
         <figcaption>Offene Frage, Mehrfachnennung möglich. Die Reihenfolge entsteht beim Aufbau aus den Zahlen — im Quelltext dürfen sie ungeordnet stehen. Alle Werte sind Platzhalter.</figcaption>
       </figure>
       <aside class="notes">Nur die ersten drei nennen. Beim Schritt die Linie: alles darüber hat mehr als die Hälfte der Befragten genannt.</aside>
+    </section>
+
+    <!-- Likert — divergierende Stapelbalken ....................... -->
+    <section class="slide" data-title="Einschätzung">
+      <p class="eyebrow" data-anim>Ergebnisse</p>
+      <h2 data-anim>Wie die Studierenden das Modul einschätzen</h2>
+      <figure data-anim>
+        <svg id="likertSvg" viewBox="0 0 1112 330" role="img" aria-label="Divergierende Stapelbalken: sechs Aussagen zum Modul auf einer fünfstufigen Skala, Ablehnung nach links, Zustimmung nach rechts."></svg>
+        <figcaption>Fünfstufige Skala, n = 214. Grau lehnt ab, Blau stimmt zu; die Mitte teilt sich um die Nulllinie. Sortiert nach Zustimmung — im Skript, nicht im Quelltext. Alle Werte sind Platzhalter.</figcaption>
+      </figure>
+      <aside class="notes">Die oberste Zeile ist die Botschaft. Beim Schritt die Summen: dann die unterste Zeile ansprechen — die ist der Preis.</aside>
     </section>
 
     <!-- Zugewinn — Nachtest gegen Vortest, Linien gleichen g ... -->
@@ -1620,6 +1803,17 @@ ul.points li math{ font-size:20px }
      des ganzen Vortrags schrumpfen), und sie treten ohne Aufbau auf. */
   const istAnhang    = sl => sl.classList.contains('anhang');
   const ersterAnhang = slides.findIndex(istAnhang);
+  const istTrenner   = sl => sl.classList.contains('trenner');
+  /* Gruppen der Uebersicht: jede Trennerfolie eroeffnet eine, der
+     Anhang die letzte. Eine Trennzeile traegt den Titel der Gruppe,
+     ihre Folien beginnen in einer neuen Zeile. Wer eine Trennerfolie
+     einbaut, muss dafuer nichts weiter tun. */
+  const eroeffnetGruppe = i => i > 0 && (istTrenner(slides[i]) || i === ersterAnhang);
+  const gruppen = [];                              /* Folien je Gruppe */
+  slides.forEach((sl, i) => {
+    if (i === 0 || eroeffnetGruppe(i)) gruppen.push(0);
+    gruppen[gruppen.length - 1]++;
+  });
   const nummer       = i => istAnhang(slides[i]) ? 'A' + (i - ersterAnhang + 1) : pad(i + 1);
 
   /* Dieselbe Datei laeuft in zwei Rollen: als Foliensatz und — mit
@@ -1884,6 +2078,70 @@ ul.points li math{ font-size:20px }
   })();
 
   /* ========================================================
+     Likert: divergierende Stapelbalken
+     Je Aussage fuenf Anteile in Prozent, von „stimme gar nicht zu“
+     bis „stimme voll zu“. Ablehnung waechst nach links, Zustimmung
+     nach rechts, die Mitte liegt halb auf jeder Seite der Null.
+     Sortiert wird hier nach Zustimmung. Schritt 1 zeigt die Summen.
+     ======================================================== */
+  (function buildLikert(){
+    const svg = document.getElementById('likertSvg');
+    if (!svg) return;
+
+    const STUFEN = ['stimme gar nicht zu', 'stimme eher nicht zu', 'teils, teils', 'stimme eher zu', 'stimme voll zu'];
+    const A = [                                    /* Platzhalterwerte, Prozent */
+      { t:'Ich konnte die Auswertung selbst durchführen', p:[4, 8, 14, 38, 36] },
+      { t:'Der Zeitaufwand war angemessen',               p:[12, 24, 22, 28, 14] },
+      { t:'Die Notebooks waren verständlich aufgebaut',   p:[2, 6, 12, 41, 39] },
+      { t:'Ich hätte mehr Betreuung gebraucht',           p:[22, 31, 21, 17, 9] },
+      { t:'Python möchte ich weiter nutzen',              p:[6, 10, 20, 31, 33] },
+      { t:'Die Einführung hat mich gut vorbereitet',      p:[3, 9, 18, 40, 30] },
+    ].slice().sort((a, b) => (b.p[3] + b.p[4]) - (a.p[3] + a.p[4]));
+    const w = 1112, h = 330, ml = 372, mr = 64, mt = 6, mb = 74;
+    /* Skala symmetrisch um die Mitte, so weit wie der laengste Ausschlag
+       (Ablehnung oder Zustimmung samt halber Mitte), auf 10 % gerundet. */
+    const weite = Math.ceil(Math.max(...A.map(a => Math.max(a.p[0] + a.p[1], a.p[3] + a.p[4]) + a.p[2] / 2)) / 10) * 10;
+    const feld = w - ml - mr, mitte = ml + feld / 2, k = feld / (2 * weite);   /* px je Prozent */
+    const f1 = x => x.toFixed(1);
+    const zeile = (h - mt - mb) / A.length, bh = Math.round(zeile * .62);
+
+    let g = '';
+    for (let v = -Math.floor(weite / 25) * 25; v <= weite; v += 25) {
+      g += '<text class="lk-sub" x="' + f1(mitte + v * k) + '" y="' + (h - mb + 20) + '" text-anchor="middle">' +
+           (v === 0 ? '0' : Math.abs(v) + ' %') + '</text>';
+    }
+    g += '<text class="lk-sub" x="' + f1(mitte - weite * k / 2) + '" y="' + (h - mb + 40) + '" text-anchor="middle">Ablehnung</text>' +
+         '<text class="lk-sub" x="' + f1(mitte + weite * k / 2) + '" y="' + (h - mb + 40) + '" text-anchor="middle">Zustimmung</text>';
+
+    let summen = '';
+    A.forEach((a, i) => {
+      const y = mt + zeile * i + (zeile - bh) / 2, cy = y + bh / 2 + 5;
+      const ab = a.p[0] + a.p[1], zu = a.p[3] + a.p[4];
+      let x = mitte - (ab + a.p[2] / 2) * k;         /* linker Rand des Balkens */
+      a.p.forEach((v, j) => {
+        g += '<rect class="lk-seg s' + (j + 1) + '" x="' + f1(x) + '" y="' + f1(y) + '" width="' + f1(v * k) +
+             '" height="' + bh + '"' + (j === 0 ? ' rx="4"' : j === 4 ? ' rx="4"' : '') + '/>';
+        x += v * k;
+      });
+      g += '<text class="lk-lab" x="' + (ml - 16) + '" y="' + f1(cy) + '" text-anchor="end">' + a.t + '</text>';
+      summen += '<text class="lk-sum ab" x="' + f1(mitte - (ab + a.p[2] / 2) * k - 9) + '" y="' + f1(cy) +
+                '" text-anchor="end">' + ab + ' %</text>' +
+                '<text class="lk-sum zu" x="' + f1(mitte + (zu + a.p[2] / 2) * k + 9) + '" y="' + f1(cy) + '">' + zu + ' %</text>';
+    });
+    g += '<line class="lk-mid" x1="' + f1(mitte) + '" y1="' + mt + '" x2="' + f1(mitte) + '" y2="' + (h - mb + 4) + '"/>';
+
+    /* Legende: fuenf Felder in einer Reihe */
+    let lx = ml;
+    STUFEN.forEach((t, j) => {
+      g += '<rect class="lk-seg s' + (j + 1) + '" x="' + lx + '" y="' + (h - 14) + '" width="14" height="14" rx="3"/>' +
+           '<text class="lk-leg" x="' + (lx + 20) + '" y="' + (h - 3) + '">' + t + '</text>';
+      lx += 20 + t.length * 6.6 + 26;
+    });
+    g += '<g data-step="1">' + summen + '</g>';
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
      Zugewinn: Nachtest gegen Vortest
      Die Linien gleichen Zugewinns folgen g = (Post − Prä) /
      (100 − Prä) — der Kennwert, den Concept Inventories nutzen.
@@ -2063,13 +2321,12 @@ ul.points li math{ font-size:20px }
     const rand = 34, kopf = 52, bild = 22;      /* Rand, Zeile "Uebersicht", Beschriftung */
     const gap  = slides.length > 16 ? 14 : 18;
     const flB  = window.innerWidth  - 2 * rand;
-    /* Die Trennzeile vor dem Anhang belegt eine eigene Zeile. */
-    const flH  = window.innerHeight - 2 * rand - kopf - (ersterAnhang >= 0 ? 46 : 0);
+    /* Jede Trennzeile (vor einer Gruppe) belegt eine eigene Zeile. */
+    const flH  = window.innerHeight - 2 * rand - kopf - (gruppen.length - 1) * 46;
     let beste = 0;
     for (let sp = 1; sp <= slides.length; sp++) {
-      /* Der Anhang beginnt in einer neuen Zeile, nicht neben dem Vortrag. */
-      const ze = ersterAnhang < 0 ? Math.ceil(slides.length / sp)
-               : Math.ceil(ersterAnhang / sp) + Math.ceil((slides.length - ersterAnhang) / sp);
+      /* Jede Gruppe beginnt in einer neuen Zeile, nicht neben der vorigen. */
+      const ze = gruppen.reduce((summe, n) => summe + Math.ceil(n / sp), 0);
       const ausBreite = (flB - gap * (sp - 1)) / sp;
       const ausHoehe  = ((flH - gap * (ze - 1)) / ze - bild) * (W / H);
       beste = Math.max(beste, Math.min(ausBreite, ausHoehe));
@@ -2101,12 +2358,13 @@ ul.points li math{ font-size:20px }
     tab.addEventListener('click', e => { go(i); if (e.detail > 0) tab.blur(); });
     if (!anhang) { rail.appendChild(tab); railItems.push(tab); }
 
-    /* Trennzeile vor der ersten Anhangsfolie — in der Fragerunde
-       will man den Anhang auf einen Blick vom Vortrag scheiden. */
-    if (i === ersterAnhang) {
+    /* Trennzeile vor jeder Gruppe: Abschnitt (Titel der Trennerfolie)
+       oder Anhang — in der Fragerunde will man den auf einen Blick
+       vom Vortrag scheiden. */
+    if (eroeffnetGruppe(i)) {
       const trenner = document.createElement('p');
       trenner.className = 'ov-trenner';
-      trenner.textContent = 'Anhang';
+      trenner.textContent = i === ersterAnhang ? 'Anhang' : title;
       ovGrid.appendChild(trenner);
     }
 
