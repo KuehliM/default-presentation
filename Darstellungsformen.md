@@ -16,33 +16,34 @@ zugleich sein eigener Musterbogen.
 
 | # | Folie | Form | Zahlen kommen aus |
 |---|---|---|---|
-| 01 · 21 | Registerdeck · Vielen Dank | Titel- und Dankfolie | — |
+| 01 · 22 | Registerdeck · Vielen Dank | Titel- und Dankfolie | — |
 | 02 | Agenda | Aufzählung, drei Ebenen | — |
 | 03 | Forschungsstand | reine Textfolie mit Belegen | — |
 | 04 | Erkenntnisgewinn | **Ablaufkette** mit zwei Rückwegen | Quelltext |
 | 05 | Formelsatz | **Formeln** als MathML in Fira Math | LaTeX in `data-tex` |
 | 06 | Herleitung | **schrittweise Herleitung**, am Relationszeichen bündig | LaTeX in `data-tex` |
 | 07 | Stichprobe | Kennzahlenkacheln | — |
-| 08 | Erhebungsplan | **Zeitleiste** aus Phasen und Marken | Quelltext |
+| 08 | Erhebungsplan | **Zeitleiste** aus Phasen und Marken, zweite Ebene darüber | Quelltext |
 | 09 | Vergleich | **Tabelle** mit Ausfüllgraden | — |
 | 10 | Freier Fall | **Streudiagramm** mit Ausgleichsgerade, Morph in die Parabel | Skript |
 | 11 | Verteilungen | **Boxplots** | Quelltext |
-| 12 | Gruppenmittel | **Balken mit 95-%-Intervall** | Skript, `buildKI` |
-| 13 | Zugewinn | **Nachtest gegen Vortest**, Linien gleichen *g* | Skript, `buildHake` |
-| 14 | Stimmen | **Zitat**, groß gesetzt | — |
-| 15 | Transkript | **Transkript** mit Kodierspalte | — |
-| 16 | Rundlauf | **Kreisprozess** | Winkel im Skript |
-| 17 | Von oben nach unten | **Trichter** mit Schwund je Stufe | Quelltext |
-| 18 | Aufploppen | **Kachelreihe** | — |
-| 19 | Deckel ab | Metapherngrafik | — |
-| 20 | Quellen | Quellenverzeichnis | — |
-| 22 | Zusammenfassung | **Schlussfolie**, bleibt in der Diskussion stehen | — |
+| 12 | Gruppenmittel | **Säulen mit 95-%-Intervall** | Skript, `buildKI` |
+| 13 | Wünsche | **Balken waagerecht**, Nennungen absteigend, Bezugslinie | Skript, `buildBalken` |
+| 14 | Zugewinn | **Nachtest gegen Vortest**, Linien gleichen *g* | Skript, `buildHake` |
+| 15 | Stimmen | **Zitat**, groß gesetzt | — |
+| 16 | Transkript | **Transkript** mit Kodierspalte | — |
+| 17 | Rundlauf | **Kreisprozess** | Winkel im Skript |
+| 18 | Von oben nach unten | **Trichter** mit Schwund je Stufe | Quelltext |
+| 19 | Aufploppen | **Kachelreihe** | — |
+| 20 | Deckel ab | Metapherngrafik | — |
+| 21 | Quellen | Quellenverzeichnis | — |
+| 23 | Zusammenfassung | **Schlussfolie**, bleibt in der Diskussion stehen | — |
 | A1 | Wie gut trennen die Items? | **Itemkennwerte**: Schwierigkeit gegen Trennschärfe | Skript, `buildItem` |
 | A2 | Was genau gerechnet wurde | Varianzanalyse als Tabelle | — |
 | A3 | Voraussetzungen erfüllt? | geprüfte Voraussetzungen | — |
 
 **Abgedeckt sind damit:** lineare Folge, Kreis, Trichter, Streuung, Verteilung,
-Gruppenvergleich, Zeit, Tabelle, Zitat, Transkript, Formel.
+Gruppenvergleich, Rangfolge, Zeit (zwei Ebenen), Tabelle, Zitat, Transkript, Formel.
 
 ---
 
@@ -63,7 +64,7 @@ Gruppenvergleich, Zeit, Tabelle, Zitat, Transkript, Formel.
 | Form | Sagt aus | Aufwand |
 |---|---|---|
 | **Schwimmbahnen** | Wer macht was wann. Zeilen sind Rollen (Lehrkraft, Lernende, Material), Spalten Phasen. Für Unterrichtsverläufe die klarste Form. | mittel |
-| **Spirale** | Es wiederholt sich, aber es kommt voran. Der Kreisprozess auf Folie 16 zeigt nur den geschlossenen Kreis — Design-Based Research braucht den offenen. | mittel |
+| **Spirale** | Es wiederholt sich, aber es kommt voran. Der Kreisprozess auf Folie 17 zeigt nur den geschlossenen Kreis — Design-Based Research braucht den offenen. | mittel |
 | **Verzweigung** | Hier wird entschieden. Ja/Nein-Weiche mit zwei Pfaden: Ausschlussverfahren, Kodierregeln, Auswertungslogik. | mittel |
 | **Chevron-Kette** | Dieselbe Aussage wie die Kette auf Folie 04, aber kompakter und mit Richtungsdruck. Gut für sechs Phasen nebeneinander. | klein |
 | **Gegenläufige Ketten** | Zwei Stränge laufen aufeinander zu. Theorie ↔ Empirie, fachliche Klärung ↔ Lernerperspektive. | mittel |

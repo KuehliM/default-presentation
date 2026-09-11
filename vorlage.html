@@ -577,7 +577,7 @@ ul.refs i{ font-style:italic }
 /* Tastentabelle */
 .keys{ display:grid; grid-template-columns:auto 1fr; gap:12px 18px; align-items:baseline }
 .keys dt{ font-family:var(--mono); font-size:13.5px; font-weight:400; color:var(--blau); white-space:nowrap }
-.keys dd{ margin:0; font-size:18px; color:var(--muted) }
+.keys dd{ margin:0; font-size:18px; color:var(--ink) }
 
 
 /* Sprechnotizen: im Foliensatz unsichtbar, nur im zweiten
@@ -603,8 +603,12 @@ ul.refs i{ font-style:italic }
   border-left:1px solid var(--line); padding-left:16px;
 }
 
-/* Vergleichstabelle */
-table.vgl{ width:100%; border-collapse:collapse; font-size:18px; line-height:1.42 }
+/* Vergleichstabelle
+   border-collapse:separate, nicht collapse: im Collapse-Modus
+   ignoriert der Browser die Polsterung am Tabellenelement, und der
+   Text klebte an der Kante der abgerundeten Karte. Die Linien
+   kommen ohnehin von den Zellen. */
+table.vgl{ width:100%; border-collapse:separate; border-spacing:0; font-size:18px; line-height:1.42 }
 table.vgl th, table.vgl td{ text-align:left; padding:12px 16px; vertical-align:top }
 table.vgl th:first-child, table.vgl td:first-child{ padding-left:0 }
 table.vgl thead th{
@@ -624,31 +628,51 @@ table.vgl .num{ font-family:var(--mono); font-variant-numeric:tabular-nums }
    Ein Raster mit --spalten gleich breiten Spalten. Jede Phase
    sagt, wo sie beginnt (--von) und wie viele Spalten sie belegt
    (--dauer); jede Marke, auf welcher Spalte sie sitzt (--bei).
-   Damit bleibt der Plan im Quelltext lesbar. */
+   Damit bleibt der Plan im Quelltext lesbar.
+   Zeilen: 1 zweite Ebene (.zeit-ebene), 2 Phasen, 3 Achse,
+   4 Beschriftung der Marken. minmax(0,1fr) haelt die Spalten
+   gleich breit, auch wenn eine Beschriftung breiter ist als ihre
+   Spalte — sie ragt dann mittig darueber hinaus.
+   Farbcode: Phasen und ihre Marken in Blau, die Ebene darueber
+   und ihre kleinen Marken in Grau — Karte und Punkt gleich. */
 .zeit{
-  display:grid; grid-template-columns:repeat(var(--spalten), 1fr);
-  grid-template-rows:auto 15px auto; align-items:center;
+  display:grid; grid-template-columns:repeat(var(--spalten), minmax(0,1fr));
+  grid-template-rows:auto auto 15px auto; align-items:center;
 }
 .zeit-phase{
-  grid-row:1; grid-column: var(--von) / span var(--dauer);
+  grid-row:2; grid-column: var(--von) / span var(--dauer);
   margin:0 4px 16px; padding:10px 14px; border-radius:999px; text-align:center;
   background:var(--blau-25); color:var(--blau); font-size:15px; font-weight:500;
+  white-space:nowrap;
 }
 .zeit-phase.stark{ background:var(--blau); color:#fff }
+.zeit-ebene{
+  grid-row:1; grid-column: var(--von) / span var(--dauer);
+  margin:0 4px 10px; padding:7px 14px; border-radius:999px; text-align:center;
+  background:var(--sw-75); color:#fff; font-size:15px; font-weight:500;
+  white-space:nowrap;
+}
 .zeit-achse{
-  grid-row:2; grid-column:1 / -1; height:3px; border-radius:2px;
+  grid-row:3; grid-column:1 / -1; height:3px; border-radius:2px;
   background:var(--blau-50); align-self:center;
 }
 .zeit-marke{
-  grid-row:2 / 4; grid-column: var(--bei);
+  grid-row:3 / 5; grid-column: var(--bei); min-width:0;
   display:flex; flex-direction:column; align-items:center; text-align:center;
 }
 .zeit-marke::before{
   content:""; flex:none; width:15px; height:15px; border-radius:50%;
   background:#fff; box-shadow:0 0 0 3.5px var(--blau); margin-bottom:15px;
 }
-.zeit-marke b{ font-size:17px; line-height:1.2 }
-.zeit-marke span{ font-size:13.5px; line-height:1.3; color:var(--muted) }
+/* Kleine Marke: Anfang oder Ende der zweiten Ebene. Der Kasten
+   bleibt 15px hoch, damit der Punkt auf der Achse sitzt. */
+.zeit-marke.klein::before{
+  width:9px; height:9px; margin:3px 0 18px;
+  background:var(--sw-75); box-shadow:0 0 0 2px #fff;
+}
+.zeit-marke b{ font-size:17px; line-height:1.2; white-space:nowrap }
+.zeit-marke span{ font-size:13.5px; line-height:1.3; color:var(--muted); white-space:nowrap }
+.zeit-marke.klein b{ font-size:15px; color:var(--sw-75) }
 
 /* Zitat */
 .zitat{ margin:0; font-size:33px; line-height:1.36; font-weight:300; letter-spacing:-.012em }
@@ -687,6 +711,15 @@ table.vgl .num{ font-family:var(--mono); font-variant-numeric:tabular-nums }
 .ki-lab{ font-size:15px; fill:var(--ink) }
 .ki-sub{ font-size:12.5px; fill:var(--muted) }
 .ki-span{ stroke:var(--blau); stroke-width:1.4; fill:none }
+/* Balken waagerecht — Nennungen, absteigend; eine Reihe, eine Farbe */
+.bk-grid{ stroke:var(--sw-25); stroke-width:1 }
+.bk-ax{ stroke:var(--sw-50); stroke-width:1.5 }
+.bk-bar{ fill:var(--blau) }
+.bk-lab{ font-size:15px; fill:var(--ink) }
+.bk-val{ font-size:14px; font-weight:500; fill:var(--ink); font-variant-numeric:tabular-nums }
+.bk-sub{ font-size:12.5px; fill:var(--muted) }
+.bk-ref{ stroke:var(--sw-75); stroke-width:1.4; stroke-dasharray:5 4 }
+.bk-note{ font-size:12.5px; font-weight:700; fill:var(--sw-75) }
 
 /* Itemkennwerte: Schwierigkeit gegen Trennschaerfe */
 .it-grid{ stroke:var(--sw-25); stroke-width:1 }
@@ -992,7 +1025,11 @@ body.presenter #pres{
 }
 math{ font-family:'Fira Math', math }
 .tex{ display:inline-block }
-.keys dd .tex math,
+/* Eine Formel im Fließtext einer Definitionsliste (A3) laeuft
+   im Grad des Textes mit; nur wo die Formel allein steht
+   (.formeln, Folie Formelsatz), gilt der Grundgrad. Reihenfolge
+   zaehlt: .formeln ist auch .keys, die spaetere Regel gewinnt. */
+.keys dd math{ font-size:19px }
 .formeln dd math{ font-size:26px; line-height:1.5 }
 .herleit math{ font-size:23px }
 /* In der Begründungsspalte gilt deren eigener Grad, nicht der der
@@ -1161,21 +1198,27 @@ ul.points li math{ font-size:20px }
     <section class="slide" data-title="Erhebungsplan">
       <p class="eyebrow" data-anim>Methode</p>
       <h2 data-anim>Wann was erhoben wird</h2>
-      <div class="zeit" style="--spalten:14" data-anim>
+      <!-- 18 Spalten = 18 Monate, Sep 25 bis Feb 27. -->
+      <div class="zeit" style="--spalten:18" data-anim>
+        <div class="zeit-ebene" style="--von:9; --dauer:6" data-step="4">Umsetzung für den Schuleinsatz</div>
         <div class="zeit-achse"></div>
-        <div class="zeit-phase" style="--von:1; --dauer:3">Vorbereitung</div>
-        <div class="zeit-phase stark" style="--von:5; --dauer:6" data-step="1">Intervention · 12 Wochen</div>
-        <div class="zeit-phase" style="--von:12; --dauer:3" data-step="3">Auswertung</div>
-        <div class="zeit-marke" style="--bei:4"><b>Sep 25</b><span>Vortest</span></div>
-        <div class="zeit-marke" style="--bei:11" data-step="2"><b>Jan 26</b><span>Nachtest</span></div>
-        <div class="zeit-marke" style="--bei:14" data-step="3"><b>Mrz 26</b><span>Follow-up</span></div>
+        <div class="zeit-phase" style="--von:1; --dauer:4">Pilotstudie</div>
+        <div class="zeit-phase stark" style="--von:5; --dauer:8" data-step="1">Hauptstudie · 8 Monate</div>
+        <div class="zeit-phase" style="--von:13; --dauer:6" data-step="3">Auswertung</div>
+        <div class="zeit-marke" style="--bei:3"><b>Nov 25</b><span>Pilotierung</span></div>
+        <div class="zeit-marke" style="--bei:5" data-step="1"><b>Jan 26</b><span>Vortest</span></div>
+        <div class="zeit-marke" style="--bei:12" data-step="2"><b>Aug 26</b><span>Nachtest</span></div>
+        <div class="zeit-marke" style="--bei:16" data-step="3"><b>Dez 26</b><span>Follow-up</span></div>
+        <div class="zeit-marke" style="--bei:18" data-step="3"><b>Feb 27</b><span>Bericht</span></div>
+        <div class="zeit-marke klein" style="--bei:9" data-step="4"><b>Mai 26</b><span>Schulen an Bord</span></div>
+        <div class="zeit-marke klein" style="--bei:14" data-step="4"><b>Okt 26</b><span>Material fertig</span></div>
       </div>
       <ul class="points" data-anim>
-        <li>Die Leiste ist ein Raster: Jede Phase sagt im Quelltext, bei welcher Spalte sie beginnt und wie viele sie belegt.</li>
-        <li>Der Abstand zwischen Nachtest und Follow-up ist damit maßstäblich und nicht geschätzt.</li>
+        <li>Die Leiste ist ein Raster: Jede Phase sagt im Quelltext, bei welcher Spalte sie beginnt und wie viele sie belegt — Abstände sind damit maßstäblich.</li>
+        <li data-step="4">Eine zweite Ebene liegt darüber und teilt sich die Achse: Anfang und Ende stehen als kleine Punkte, in der Farbe ihrer Karte.</li>
       </ul>
       <p class="source-note" data-anim>Alle Angaben auf dieser Folie sind Platzhalter.</p>
-      <aside class="notes">Kurz halten. Wichtig ist nur der Abstand zum Follow-up — danach wird regelmäßig gefragt.</aside>
+      <aside class="notes">Kurz halten. Wichtig ist nur der Abstand zum Follow-up — danach wird regelmäßig gefragt. Die Umsetzung für die Schule erst beim letzten Schritt, sonst zieht sie die Aufmerksamkeit vom Design ab.</aside>
     </section>
 
     <!-- Vergleichstabelle — Bedingungen nebeneinander .......... -->
@@ -1236,7 +1279,7 @@ ul.points li math{ font-size:20px }
       <p class="eyebrow" data-anim>Ergebnisse</p>
       <h2 data-anim>Verteilungen statt Mittelwerte</h2>
       <figure data-anim>
-        <svg viewBox="0 0 1112 330" role="img" aria-label="Vier Boxplots: Kontroll- und Interventionsgruppe jeweils vor und nach der Erhebung."><line class="bx-grid" x1="78" y1="274.0" x2="1092" y2="274.0"/><text class="bx-sub" x="66" y="278.0" text-anchor="end">0</text><line class="bx-grid" x1="78" y1="230.7" x2="1092" y2="230.7"/><text class="bx-sub" x="66" y="234.7" text-anchor="end">5</text><line class="bx-grid" x1="78" y1="187.3" x2="1092" y2="187.3"/><text class="bx-sub" x="66" y="191.3" text-anchor="end">10</text><line class="bx-grid" x1="78" y1="144.0" x2="1092" y2="144.0"/><text class="bx-sub" x="66" y="148.0" text-anchor="end">15</text><line class="bx-grid" x1="78" y1="100.7" x2="1092" y2="100.7"/><text class="bx-sub" x="66" y="104.7" text-anchor="end">20</text><line class="bx-grid" x1="78" y1="57.3" x2="1092" y2="57.3"/><text class="bx-sub" x="66" y="61.3" text-anchor="end">25</text><line class="bx-grid" x1="78" y1="14.0" x2="1092" y2="14.0"/><text class="bx-sub" x="66" y="18.0" text-anchor="end">30</text><line class="bx-ax" x1="78" y1="14" x2="78" y2="274.0"/><text class="bx-sub" x="20" y="144.0" text-anchor="middle" transform="rotate(-90 20 144.0)">Punkte im Konzepttest (von 30)</text><g><line class="bx-w" x1="204.8" y1="118.0" x2="204.8" y2="157.0"/><line class="bx-w" x1="204.8" y1="183.0" x2="204.8" y2="204.7"/><line class="bx-w" x1="178.8" y1="118.0" x2="230.8" y2="118.0"/><line class="bx-w" x1="178.8" y1="204.7" x2="230.8" y2="204.7"/><rect class="bx-box" x="150.8" y="157.0" width="108" height="26.0" rx="6"/><line class="bx-med" x1="154.8" y1="170.0" x2="254.8" y2="170.0"/><text class="bx-lab" x="204.8" y="298" text-anchor="middle">Prä</text><text class="bx-sub" x="204.8" y="315" text-anchor="middle">Kontrolle</text></g><g><line class="bx-w" x1="458.2" y1="118.0" x2="458.2" y2="139.7"/><line class="bx-w" x1="458.2" y1="170.0" x2="458.2" y2="196.0"/><line class="bx-w" x1="432.2" y1="118.0" x2="484.2" y2="118.0"/><line class="bx-w" x1="432.2" y1="196.0" x2="484.2" y2="196.0"/><rect class="bx-box" x="404.2" y="139.7" width="108" height="30.3" rx="6"/><line class="bx-med" x1="408.2" y1="152.7" x2="508.2" y2="152.7"/><circle class="bx-out" cx="458.2" cy="92.0" r="3.6"/><text class="bx-lab" x="458.2" y="298" text-anchor="middle">Post</text><text class="bx-sub" x="458.2" y="315" text-anchor="middle">Kontrolle</text></g><g data-step="1" class="pops"><line class="bx-w" x1="711.8" y1="109.3" x2="711.8" y2="148.3"/><line class="bx-w" x1="711.8" y1="183.0" x2="711.8" y2="213.3"/><line class="bx-w" x1="685.8" y1="109.3" x2="737.8" y2="109.3"/><line class="bx-w" x1="685.8" y1="213.3" x2="737.8" y2="213.3"/><rect class="bx-box" x="657.8" y="148.3" width="108" height="34.7" rx="6"/><line class="bx-med" x1="661.8" y1="161.3" x2="761.8" y2="161.3"/><text class="bx-lab" x="711.8" y="298" text-anchor="middle">Prä</text><text class="bx-sub" x="711.8" y="315" text-anchor="middle">Intervention</text></g><g data-step="1" class="pops"><line class="bx-w" x1="965.2" y1="66.0" x2="965.2" y2="96.3"/><line class="bx-w" x1="965.2" y1="131.0" x2="965.2" y2="170.0"/><line class="bx-w" x1="939.2" y1="66.0" x2="991.2" y2="66.0"/><line class="bx-w" x1="939.2" y1="170.0" x2="991.2" y2="170.0"/><rect class="bx-box" x="911.2" y="96.3" width="108" height="34.7" rx="6"/><line class="bx-med" x1="915.2" y1="118.0" x2="1015.2" y2="118.0"/><circle class="bx-out" cx="965.2" cy="40.0" r="3.6"/><text class="bx-lab" x="965.2" y="298" text-anchor="middle">Post</text><text class="bx-sub" x="965.2" y="315" text-anchor="middle">Intervention</text></g><g data-step="2"><line class="bx-mark" x1="711.8" y1="161.3" x2="965.2" y2="161.3"/><text class="bx-note" x="838.5" y="149.3" text-anchor="middle">Median +5</text></g></svg>
+        <svg viewBox="0 0 1112 330" role="img" aria-label="Vier Boxplots: Kontroll- und Interventionsgruppe jeweils vor und nach der Erhebung."><line class="bx-grid" x1="78" y1="274.0" x2="1092" y2="274.0"/><text class="bx-sub" x="66" y="278.0" text-anchor="end">0</text><line class="bx-grid" x1="78" y1="230.7" x2="1092" y2="230.7"/><text class="bx-sub" x="66" y="234.7" text-anchor="end">5</text><line class="bx-grid" x1="78" y1="187.3" x2="1092" y2="187.3"/><text class="bx-sub" x="66" y="191.3" text-anchor="end">10</text><line class="bx-grid" x1="78" y1="144.0" x2="1092" y2="144.0"/><text class="bx-sub" x="66" y="148.0" text-anchor="end">15</text><line class="bx-grid" x1="78" y1="100.7" x2="1092" y2="100.7"/><text class="bx-sub" x="66" y="104.7" text-anchor="end">20</text><line class="bx-grid" x1="78" y1="57.3" x2="1092" y2="57.3"/><text class="bx-sub" x="66" y="61.3" text-anchor="end">25</text><line class="bx-grid" x1="78" y1="14.0" x2="1092" y2="14.0"/><text class="bx-sub" x="66" y="18.0" text-anchor="end">30</text><line class="bx-ax" x1="78" y1="14" x2="78" y2="274.0"/><text class="bx-sub" x="20" y="144.0" text-anchor="middle" transform="rotate(-90 20 144.0)">Punkte im Konzepttest (von 30)</text><g><line class="bx-w" x1="204.8" y1="118.0" x2="204.8" y2="157.0"/><line class="bx-w" x1="204.8" y1="183.0" x2="204.8" y2="204.7"/><line class="bx-w" x1="178.8" y1="118.0" x2="230.8" y2="118.0"/><line class="bx-w" x1="178.8" y1="204.7" x2="230.8" y2="204.7"/><rect class="bx-box" x="150.8" y="157.0" width="108" height="26.0" rx="6"/><line class="bx-med" x1="154.8" y1="170.0" x2="254.8" y2="170.0"/><text class="bx-lab" x="204.8" y="298" text-anchor="middle">Prä</text><text class="bx-sub" x="204.8" y="315" text-anchor="middle">Kontrolle</text></g><g><line class="bx-w" x1="458.2" y1="118.0" x2="458.2" y2="139.7"/><line class="bx-w" x1="458.2" y1="170.0" x2="458.2" y2="196.0"/><line class="bx-w" x1="432.2" y1="118.0" x2="484.2" y2="118.0"/><line class="bx-w" x1="432.2" y1="196.0" x2="484.2" y2="196.0"/><rect class="bx-box" x="404.2" y="139.7" width="108" height="30.3" rx="6"/><line class="bx-med" x1="408.2" y1="152.7" x2="508.2" y2="152.7"/><circle class="bx-out" cx="458.2" cy="92.0" r="3.6"/><text class="bx-lab" x="458.2" y="298" text-anchor="middle">Post</text><text class="bx-sub" x="458.2" y="315" text-anchor="middle">Kontrolle</text></g><g data-step="1"><line class="bx-w" x1="711.8" y1="109.3" x2="711.8" y2="148.3"/><line class="bx-w" x1="711.8" y1="183.0" x2="711.8" y2="213.3"/><line class="bx-w" x1="685.8" y1="109.3" x2="737.8" y2="109.3"/><line class="bx-w" x1="685.8" y1="213.3" x2="737.8" y2="213.3"/><rect class="bx-box" x="657.8" y="148.3" width="108" height="34.7" rx="6"/><line class="bx-med" x1="661.8" y1="161.3" x2="761.8" y2="161.3"/><text class="bx-lab" x="711.8" y="298" text-anchor="middle">Prä</text><text class="bx-sub" x="711.8" y="315" text-anchor="middle">Intervention</text></g><g data-step="1"><line class="bx-w" x1="965.2" y1="66.0" x2="965.2" y2="96.3"/><line class="bx-w" x1="965.2" y1="131.0" x2="965.2" y2="170.0"/><line class="bx-w" x1="939.2" y1="66.0" x2="991.2" y2="66.0"/><line class="bx-w" x1="939.2" y1="170.0" x2="991.2" y2="170.0"/><rect class="bx-box" x="911.2" y="96.3" width="108" height="34.7" rx="6"/><line class="bx-med" x1="915.2" y1="118.0" x2="1015.2" y2="118.0"/><circle class="bx-out" cx="965.2" cy="40.0" r="3.6"/><text class="bx-lab" x="965.2" y="298" text-anchor="middle">Post</text><text class="bx-sub" x="965.2" y="315" text-anchor="middle">Intervention</text></g><g data-step="2"><line class="bx-mark" x1="711.8" y1="161.3" x2="965.2" y2="161.3"/><text class="bx-note" x="838.5" y="149.3" text-anchor="middle">Median +5</text></g></svg>
         <figcaption>Kasten von Q1 bis Q3, Strich beim Median, Antennen bis 1,5·IQA, Kreise für Werte darüber hinaus. Alle Kennwerte sind aus den Rohdaten im Quelltext gerechnet.</figcaption>
       </figure>
       <aside class="notes">Erst die Kontrollgruppe stehen lassen. Dann die Intervention einblenden und auf die Streuung hinweisen, nicht nur auf den Median.</aside>
@@ -1252,6 +1295,17 @@ ul.points li math{ font-size:20px }
       </figure>
       <p class="source-note" data-anim>Alle Werte sind Platzhalter und stehen als Zahlen im Quelltext.</p>
       <aside class="notes">Erst die Vortests stehen lassen — sie liegen gleichauf, das ist die Voraussetzung. Dann die Nachtests, dann die Klammer.</aside>
+    </section>
+
+    <!-- Balken waagerecht — Nennungen, absteigend sortiert ...... -->
+    <section class="slide" data-title="Wünsche">
+      <p class="eyebrow" data-anim>Ergebnisse</p>
+      <h2 data-anim>Was sich Lehrkräfte wünschen</h2>
+      <figure data-anim>
+        <svg id="balkenSvg" viewBox="0 0 1112 330" role="img" aria-label="Waagerechte Balken: zehn Wünsche von Lehrkräften an das Material, nach Zahl der Nennungen absteigend sortiert."></svg>
+        <figcaption>Offene Frage, Mehrfachnennung möglich. Die Reihenfolge entsteht beim Aufbau aus den Zahlen — im Quelltext dürfen sie ungeordnet stehen. Alle Werte sind Platzhalter.</figcaption>
+      </figure>
+      <aside class="notes">Nur die ersten drei nennen. Beim Schritt die Linie: alles darüber hat mehr als die Hälfte der Befragten genannt.</aside>
     </section>
 
     <!-- Zugewinn — Nachtest gegen Vortest, Linien gleichen g ... -->
@@ -1411,7 +1465,7 @@ ul.points li math{ font-size:20px }
       <ul class="points" data-anim>
         <li><b>Der Test misst, was er messen soll.</b> Nach der Kennwertprüfung bleiben 21 der 24 Items im Instrument, die interne Konsistenz liegt bei <span class="tex" data-tex="\alpha = 0{,}84"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>α</mi><mo>=</mo><mn>0,84</mn></mrow></math></span>.</li>
         <li><b>Die Intervention wirkt — aber ungleich.</b> Die Wechselwirkung Zeit × Gruppe ist bedeutsam <span class="tex" data-tex="F(1; 210) = 18{,}4,\ \ p < 0{,}001,\ \ \eta_p^2 = 0{,}08"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>F</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo separator="true">;</mo><mn>210</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>18,4</mn><mo separator="true">,</mo><mtext> </mtext><mtext> </mtext><mi>p</mi><mo>&lt;</mo><mn>0,001</mn><mo separator="true">,</mo><mtext> </mtext><mtext> </mtext><msubsup><mi>η</mi><mi>p</mi><mn>2</mn></msubsup><mo>=</mo><mn>0,08</mn></mrow></math></span>. Den Zuwachs tragen vor allem Klassen mit niedrigem Vorwissen.</li>
-        <li><b>Offen bleibt die Haltbarkeit.</b> Das Follow-up acht Wochen nach der Intervention steht aus. Erst danach lässt sich sagen, ob der Zuwachs bleibt.</li>
+        <li><b>Offen bleibt die Haltbarkeit.</b> Das Follow-up vier Monate nach der Intervention steht aus. Erst danach lässt sich sagen, ob der Zuwachs bleibt.</li>
       </ul>
       <dl class="keys" data-anim>
         <dt>Kontakt</dt><dd>Maximilian Kühlkamp · vorname.nachname@rwth-aachen.de</dd>
@@ -1771,6 +1825,61 @@ ul.points li math{ font-size:20px }
            '<text class="ki-val" x="' + f1((a[0].cx + a[1].cx) / 2) + '" y="' + f1(y - 8) +
            '" text-anchor="middle" fill="#00549f">+' + de(d.toFixed(1)) + ' Punkte</text></g>';
     }
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Balken waagerecht: Nennungen zu Wünschen
+     Zahlen als Liste im Quelltext, Reihenfolge beliebig — sortiert
+     wird hier, absteigend. Die Spalte fuer die Beschriftung ist so
+     breit wie der laengste Eintrag braucht; der Rest gehoert den
+     Balken. Schritt 1 legt die Linie „Haelfte der Befragten“ hinein.
+     ======================================================== */
+  (function buildBalken(){
+    const svg = document.getElementById('balkenSvg');
+    if (!svg) return;
+
+    const N = 48;                                  /* Befragte, Platzhalter */
+    const W = [                                    /* Nennungen, Platzhalter */
+      { t:'Fertige Arbeitsblätter',            n:41 },
+      { t:'Versuchsanleitungen',               n:33 },
+      { t:'Lösungen mit Erwartungshorizont',   n:37 },
+      { t:'Digitale Simulationen',             n:29 },
+      { t:'Fortbildung zum Einsatz',           n:19 },
+      { t:'Differenzierungsangebote',          n:24 },
+      { t:'Zeitplan für die Reihe',            n:16 },
+      { t:'Bewertungsraster',                  n:12 },
+      { t:'Fachliche Hintergrundtexte',        n:5  },
+      { t:'Elterninformation',                 n:7  },
+    ].slice().sort((a, b) => b.n - a.n);
+    const XMAX = 45, TICKS = [0, 10, 20, 30, 40];
+    const w = 1112, h = 330, ml = 268, mr = 56, mt = 8, mb = 54;
+    const X  = v => ml + v / XMAX * (w - ml - mr);
+    const f1 = x => x.toFixed(1);
+    const zeile = (h - mt - mb) / W.length, bh = Math.round(zeile * .66);
+
+    let g = '';
+    TICKS.forEach(v => {
+      g += '<line class="bk-grid" x1="' + f1(X(v)) + '" y1="' + mt + '" x2="' + f1(X(v)) + '" y2="' + (h - mb) + '"/>' +
+           '<text class="bk-sub" x="' + f1(X(v)) + '" y="' + (h - mb + 20) + '" text-anchor="middle">' + v + '</text>';
+    });
+    g += '<line class="bk-ax" x1="' + ml + '" y1="' + mt + '" x2="' + ml + '" y2="' + (h - mb) + '"/>';
+    g += '<text class="bk-sub" x="' + f1((ml + w - mr) / 2) + '" y="' + (h - mb + 44) + '" text-anchor="middle">' +
+         'Nennungen (n = ' + N + ' Lehrkräfte)</text>';
+
+    W.forEach((e, i) => {
+      const y = mt + zeile * i + (zeile - bh) / 2;
+      g += '<rect class="bk-bar" x="' + ml + '" y="' + f1(y) + '" width="' + f1(X(e.n) - ml) +
+           '" height="' + bh + '" rx="4"/>' +
+           '<text class="bk-lab" x="' + (ml - 14) + '" y="' + f1(y + bh / 2 + 5) + '" text-anchor="end">' + e.t + '</text>' +
+           '<text class="bk-val" x="' + f1(X(e.n) + 10) + '" y="' + f1(y + bh / 2 + 5) + '">' + e.n + '</text>';
+    });
+
+    /* Schritt 1: die Haelfte der Befragten als Bezugslinie */
+    const halb = N / 2;
+    g += '<g data-step="1">' +
+         '<line class="bk-ref" x1="' + f1(X(halb)) + '" y1="' + mt + '" x2="' + f1(X(halb)) + '" y2="' + (h - mb) + '"/>' +
+         '<text class="bk-note" x="' + f1(X(halb) + 8) + '" y="' + (h - mb - 8) + '">Hälfte der Befragten</text></g>';
     svg.innerHTML = g;
   })();
 

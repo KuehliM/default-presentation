@@ -14,7 +14,7 @@ sie ohne Rückfrage befolgt werden können. **Zuerst lesen, dann anfassen.**
 
 | Datei | Rolle |
 |---|---|
-| `vorlage.html` | **Der Foliensatz.** 22 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
+| `vorlage.html` | **Der Foliensatz.** 23 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
 | `formeln.py` | Setzt alle Formeln: liest LaTeX aus `data-tex`, schreibt MathML hinein, bettet Fira Math ein. Nach jeder Formeländerung laufen lassen. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. |
 | `schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein (Latein, Griechisch, Pfeile, Rechenzeichen). `--pruefen` meldet Zeichen, die aus der Schrift fallen. Nur bei Änderung des Vorrats laufen lassen. |
@@ -74,8 +74,9 @@ Erfahrungswerte aus dem gemessenen Bestand (`python3 pruefen.py`):
 | Kopf + zwei Spalten mit Diagramm und Text | 583 px | 91 % |
 | Kopf + Quellenverzeichnis, 5 Einträge | 423 px | 64 % |
 | Kopf + Herleitung, 6 Zeilen mit Brüchen und Wurzeln | 577 px | 90 % |
-| Kopf + Vergleichstabelle, 4 Spalten × 5 Zeilen | 477 px | 73 % |
-| Kopf + Zeitleiste + 2 Stichpunkte | 493 px | 76 % |
+| Kopf + Vergleichstabelle, 4 Spalten × 5 Zeilen | 525 px | 81 % |
+| Kopf + Zeitleiste (zwei Ebenen, 7 Marken) + 2 Stichpunkte | 562 px | 87 % |
+| Kopf + 10 waagerechte Balken mit Unterschrift | 545 px | 84 % |
 | Kopf + Transkript, 6 Zeilen | 442 px | 67 % |
 
 Ab **92 % Füllstand** meldet `pruefen.py` „eng". Darüber wird es auf einem Beamer
@@ -163,13 +164,14 @@ Titel nach der **Frage** benennen, nicht nach dem Inhalt.
 
 | Klasse | Wirkung |
 |---|---|
-| `.zeit` | Zeitleiste. Raster mit `--spalten`; `.zeit-phase` trägt `--von` und `--dauer`, `.zeit-marke` trägt `--bei` |
+| `.zeit` | Zeitleiste. Raster mit `--spalten`; `.zeit-phase` trägt `--von` und `--dauer`, `.zeit-marke` trägt `--bei`. Darüber eine zweite Ebene: `.zeit-ebene` (grau) mit `.zeit-marke.klein` für Anfang und Ende — Karte und Punkt in derselben Farbe |
 | `table.vgl` | Vergleichstabelle; `.mk.ja` / `.mk.halb` / `.mk.nein` als Ausfüllgrad, `.num` für Ziffernschrift |
 | `.zitat` | eine Äußerung, groß gesetzt; `.zitat-quelle` als Beleg darin |
 | `.trans` | Transkript: `.nr`, `.wer`, `.txt`, `.kode`; `<mark>` hebt Stellen hervor |
 | `.herleit` | Herleitung; jede Zeile `.lhs` · `.rel` · Formel · `.grund`, alle am Relationszeichen bündig |
 | `.tex` + `data-tex` | Formel: LaTeX im Attribut, MathML darin — von `formeln.py` gesetzt |
-| `#kiSvg` | Balken mit 95-%-Konfidenzintervall — Werte im Skript, `buildKI` |
+| `#kiSvg` | Säulen mit 95-%-Konfidenzintervall — Werte im Skript, `buildKI` |
+| `#balkenSvg` | Balken waagerecht, Nennungen absteigend — sortiert im Skript, `buildBalken` |
 | `#hakeSvg` | Zugewinn: Nachtest gegen Vortest mit Linien gleichen *g* — `buildHake` |
 
 ### Formelsatz
@@ -289,6 +291,10 @@ dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es
   allem anderen — die Tastatur war dort tot, monatelang, ohne dass es auffiel.
   `pruefen.py` misst Geometrie, nicht Funktion. **Zum Abschluss den Foliensatz einmal
   durchblättern und auf JavaScript-Fehler horchen.**
+- **Tabellenpolsterung und `border-collapse`.** Im Collapse-Modus ignoriert der
+  Browser `padding` am Tabellenelement — die Kartenregel griff nicht, der Text klebte
+  an der abgerundeten Kante. `table.vgl` steht deshalb auf `separate` mit
+  `border-spacing:0`; die Linien kommen ohnehin von den Zellen.
 - **Register, Übersicht und Fensterhöhe.** Beide hängen am Fenster, nicht an der
   skalierten Bühne, und beide rechnen ihre Größe aus Fensterhöhe und Folienzahl:
   `passeRegister()` und `passeUebersicht()`, bei jeder Größenänderung neu. Feste Werte

@@ -15,7 +15,7 @@ dieses Dokument geht ins Einzelne.
 
 | Datei | Zweck |
 |---|---|
-| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 22 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
+| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 23 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
 | `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Regeln, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. `python3 pruefen.py` |
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
@@ -196,7 +196,7 @@ nach der Zahl der Folien.
 | `.chip` | Pille für Schlagworte — vorhanden, in der Vorlage derzeit ungenutzt |
 | `.slide.anhang` | Folie für die Fragerunde, nur über die Übersicht erreichbar |
 | `.tiles` / `.tile` | Kachelreihe für Bilder oder Skizzen |
-| `.zeit` | Zeitleiste: Phasen und Messzeitpunkte auf einem Raster mit `--spalten`, `--von`, `--dauer`, `--bei` |
+| `.zeit` | Zeitleiste: Phasen und Messzeitpunkte auf einem Raster mit `--spalten`, `--von`, `--dauer`, `--bei`. `.zeit-ebene` legt eine zweite Ebene darüber, `.zeit-marke.klein` setzt deren Anfang und Ende als kleine Punkte — Karte und Punkt in derselben Farbe |
 | `table.vgl` | Vergleichstabelle; `.mk.ja` / `.mk.halb` / `.mk.nein` als Ausfüllgrad, `.num` für Ziffernschrift |
 | `.zitat` | eine Äußerung, groß gesetzt, mit `.zitat-quelle` als Beleg |
 | `.trans` | Transkript aus Zeilennummer, Sprecher, Text und Kodierung; `<mark>` hebt Stellen hervor |
@@ -291,12 +291,13 @@ ist die Zahl darauf nicht mehr präsent.
 
 ## Formensammlung
 
-Fünf Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
+Sechs Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
 Platzhalter — es geht um die Form.
 
 | Folie | Was sie hergibt |
 |---|---|
-| **Verteilungen** | Boxplots aus Rohdaten: Quartile, Antennen bis 1,5·IQA und Ausreißer werden im Skript gerechnet, nicht eingetragen. Vier Gruppen, in zwei Schritten aufgebaut. |
+| **Verteilungen** | Boxplots aus Rohdaten: Quartile, Antennen bis 1,5·IQA und Ausreißer werden im Skript gerechnet, nicht eingetragen. Vier Gruppen, in zwei Schritten eingeblendet. |
+| **Wünsche** | Zehn waagerechte Balken, absteigend nach Nennungen. Die Liste im Skript darf ungeordnet sein — sortiert wird beim Aufbau. Ein Schritt legt eine Bezugslinie („Hälfte der Befragten") hinein. |
 | **Rundlauf** | Kreisprozess mit vier Stationen. Positionen und Bogenpfeile entstehen aus Winkeln; der letzte Pfeil schließt den Kreis als eigener Schritt. |
 | **Von oben nach unten** | Trichter über vier Stufen mit Schwund daneben — für Stichprobenauswahl, Kodierschritte, jede Kette mit Ausfällen. |
 | **Aufploppen** | Vier Kacheln, die nacheinander aufspringen. Das `<svg>` in der Kachel lässt sich gegen ein `<img>` tauschen. |

@@ -121,7 +121,11 @@ def stilblock():
 }}
 math{{ font-family:'Fira Math', math }}
 .tex{{ display:inline-block }}
-.keys dd .tex math,
+/* Eine Formel im Fließtext einer Definitionsliste (A3) laeuft
+   im Grad des Textes mit; nur wo die Formel allein steht
+   (.formeln, Folie Formelsatz), gilt der Grundgrad. Reihenfolge
+   zaehlt: .formeln ist auch .keys, die spaetere Regel gewinnt. */
+.keys dd math{{ font-size:19px }}
 .formeln dd math{{ font-size:{GRAD}; line-height:1.5 }}
 .herleit math{{ font-size:23px }}
 /* In der Begründungsspalte gilt deren eigener Grad, nicht der der
