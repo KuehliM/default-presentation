@@ -35,7 +35,7 @@ unangetastet als Ausgangspunkt.
 | `←` `↑` `Bild auf` | zurück — die Folie bleibt dabei fertig aufgebaut |
 | `1` … `9` | direkt zur Folie |
 | `0` oder `O` | Übersicht aller Folien — `Esc` schließt sie wieder |
-| `Pos1` / `Ende` | erste / letzte Folie **des Vortrags** (der Anhang bleibt außen vor) |
+| `Pos1` / `Ende` | erste / letzte Folie |
 | `F` oder `F5` | Vollbild |
 | `P` | Vortragendenansicht im zweiten Fenster |
 | `B` oder `.` | Schwarzbild — jede Taste holt zurück |
@@ -275,16 +275,12 @@ gefragt wird. Sie tragen eine Klasse, alles Weitere folgt daraus.
 
 | | Verhalten |
 |---|---|
-| **Fortschrittsbalken** | zählt sie nicht mit. Auf der letzten Folie des Vortrags steht er voll. |
-| **Register** | zeigt sie nicht — es bliebe sonst für den Vortrag weniger Platz. |
-| **Übersicht** (`0`) | zeigt sie, abgesetzt unter einer Trennzeile. **Der einzige Weg hinein.** |
+| **Pfeile** | blättern ganz normal hindurch. Der Anhang ist eingereiht wie jede andere Folie. |
+| **Fortschrittsbalken** | zählt sie **nicht** mit. Auf der letzten Folie des Vortrags steht er voll und bleibt es. |
+| **Register** | zeigt sie **nicht** — es bliebe sonst für den Vortrag weniger Platz. |
+| **Übersicht** (`0`) | zeigt sie, abgesetzt unter der Zeile „Anhang". Von dort springt man gezielt hin. |
 | **Fußzeile** | `A1`, `A2`, `A3` statt weiterzuzählen. |
-| **Pfeil vor** | baut Einblendungen auf der Folie auf, verlässt sie aber nie. |
-| **Pfeil zurück** | führt zurück auf die letzte Folie des Vortrags, fertig aufgebaut. |
-| **`Ende`** | springt auf die letzte Folie des **Vortrags**, nicht der Datei. |
-
-Am Ende des Vortrags bleibt `→` stehen. Ein Druck zu viel wirft also nicht versehentlich
-eine Anhangsfolie an die Wand — das ist der eigentliche Grund für die Sackgasse.
+| **Auftritt** | keiner. `data-anim` und `data-step` werden entfernt: in der Fragerunde soll die Antwort sofort ganz dastehen. |
 
 **Beschrifte sie nach der Frage, nicht nach dem Inhalt.** Also `data-title="Wie gut
 trennen die Items?"` statt `data-title="Itemkennwerte"`. In der Fragerunde suchst du in

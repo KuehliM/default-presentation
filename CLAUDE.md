@@ -139,14 +139,18 @@ Schatten.
 
 `<section class="slide anhang">`. Eine Klasse trägt alles Weitere:
 
-* **Fortschrittsbalken** zählt sie nicht (`total` lässt sie aus, `scaleX` ist auf 1 begrenzt).
-* **Register** zeigt sie nicht — es bliebe sonst für den Vortrag weniger Platz.
-* **Übersicht** zeigt sie unter einer Trennzeile. Der einzige Weg hinein.
-* **Fußzeile** zeigt `A1`, `A2`, … über `nummer(i)`.
-* **`→`** baut Einblendungen auf, verlässt die Folie aber nie. Am Ende des Vortrags
-  bleibt `→` ebenfalls stehen — ein Druck zu viel darf den Anhang nicht an die Wand werfen.
-* **`←`** führt aus dem Anhang zurück auf `vortragEnde`, fertig aufgebaut.
-* **`Ende`** springt auf `vortragEnde`, nicht auf die letzte Folie der Datei.
+Geblättert wird **ganz normal**: die Pfeile gehen durch den Anhang hindurch wie durch
+jede andere Folie. Eigen sind ihm nur drei Dinge:
+
+* **Fortschrittsbalken** zählt ihn nicht (`total` lässt ihn aus, `scaleX` ist auf 1
+  begrenzt). Auf der letzten Vortragsfolie steht der Balken voll und bleibt es.
+* **Register** zeigt ihn nicht — es bliebe sonst für den Vortrag weniger Platz. Die
+  **Übersicht** zeigt ihn, abgesetzt unter einer Trennzeile.
+* **Kein Aufbau.** Eine Schleife entfernt `data-anim` und `data-step` von allen
+  Anhangsfolien; sie muss **nach** den Diagramm-Bauern stehen, die `data-step` selbst
+  setzen. In der Fragerunde soll die Antwort sofort ganz dastehen.
+
+Die Fußzeile zeigt `A1`, `A2`, … über `nummer(i)`.
 
 Weil Register und Übersicht ihre Karten nicht mehr über die Position zuordnen können,
 trägt jede Karte ihre Folienzahl in `dataset.nr`; `paint()` vergleicht damit. Wer am
@@ -228,7 +232,7 @@ und Zifferntasten richten sich selbst nach der Zahl der Folien.
 
 ## Steuerung
 
-`→ ↓ Leertaste Bild-ab` weiter · `← ↑ Bild-auf` zurück · `1…9` Folie · `Pos1/Ende` (Ende = letzte Folie des **Vortrags**)
+`→ ↓ Leertaste Bild-ab` weiter · `← ↑ Bild-auf` zurück · `1…9` Folie · `Pos1/Ende`
 · `0`/`O` Übersicht (`Esc` schließt) · `F`/`F5` Vollbild · `P` Vortragendenansicht · `B`/`.`
 Schwarzbild · `K` Tastenanzeige. Bild-ab und Bild-auf sind absichtlich belegt: USB-
 Presenter senden genau die.

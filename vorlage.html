@@ -1427,31 +1427,35 @@ ul.points li math{ font-size:20px }
          Nur über die Übersicht (Taste 0) erreichbar. Zählt nicht
          in den Fortschrittsbalken, steht nicht im Register.
          Pfeil zurück führt in den Vortrag, Pfeil vor nirgendwohin.
+         Ohne Aufbau: kein data-anim, kein data-step — in der
+         Fragerunde soll die Antwort sofort ganz dastehen. Das Skript
+         entfernt beides ohnehin, hier steht es der Ehrlichkeit halber
+         auch nicht.
          Beschriftet nach der FRAGE, nicht nach dem Inhalt — in der
          Fragerunde sucht man die Frage, nicht das Kapitel.
          ====================================================== -->
 
     <section class="slide anhang" data-title="Wie gut trennen die Items?">
-      <p class="eyebrow" data-anim>Anhang</p>
-      <h2 data-anim>Kennwerte der 24 Items</h2>
-      <div class="cols wide-left" data-anim>
+      <p class="eyebrow">Anhang</p>
+      <h2>Kennwerte der 24 Items</h2>
+      <div class="cols wide-left">
         <figure>
           <svg id="itemSvg" viewBox="0 0 620 360" role="img" aria-label="Streudiagramm der Itemkennwerte: waagerecht die Schwierigkeit, senkrecht die Trennschärfe. Ein hinterlegter Bereich markiert die brauchbaren Werte; drei Items liegen außerhalb."></svg>
           <figcaption>Ein Punkt je Item. Schwierigkeit waagerecht, Trennschärfe senkrecht — beide aus denselben Rohdaten gerechnet.</figcaption>
         </figure>
         <ul class="points">
           <li>Brauchbar ist ein Item, wenn es weder fast alle noch fast niemand löst und wenn es mit der Gesamtskala zusammenhängt.</li>
-          <li data-step="1">Der hinterlegte Bereich zeigt beide Schranken: Schwierigkeit zwischen 0,20 und 0,80, Trennschärfe mindestens 0,30.</li>
-          <li data-step="2">Drei Items fallen heraus. I7 und I16 trennen zu schwach, I19 ist zusätzlich zu schwer — alle drei sind aus der Auswertung genommen.</li>
+          <li>Der hinterlegte Bereich zeigt beide Schranken: Schwierigkeit zwischen 0,20 und 0,80, Trennschärfe mindestens 0,30.</li>
+          <li>Drei Items fallen heraus. I7 und I16 trennen zu schwach, I19 ist zusätzlich zu schwer — alle drei sind aus der Auswertung genommen.</li>
         </ul>
       </div>
       <aside class="notes">Kommt fast immer als Frage nach der Qualität des Instruments. Kurz halten: Schranken nennen, die drei ausgeschlossenen Items zeigen, fertig.</aside>
     </section>
 
     <section class="slide anhang" data-title="Was genau gerechnet wurde">
-      <p class="eyebrow" data-anim>Anhang</p>
-      <h2 data-anim>Varianzanalyse mit Messwiederholung</h2>
-      <table class="vgl" data-anim>
+      <p class="eyebrow">Anhang</p>
+      <h2>Varianzanalyse mit Messwiederholung</h2>
+      <table class="vgl">
         <thead>
           <tr><th>Quelle</th><th>df</th><th>MQ</th><th>F</th><th>p</th>
             <th>Effektstärke</th></tr>
@@ -1463,14 +1467,14 @@ ul.points li math{ font-size:20px }
           <tr><th>Fehler (innerhalb)</th><td class="num">210</td><td class="num">5,76</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
         </tbody>
       </table>
-      <p class="source-note" data-anim>Zweifaktorielle Varianzanalyse, Messwiederholung auf dem Faktor Zeit. Die letzte Spalte gibt das partielle Eta-Quadrat an. Alle Zahlen sind Platzhalter.</p>
+      <p class="source-note">Zweifaktorielle Varianzanalyse, Messwiederholung auf dem Faktor Zeit. Die letzte Spalte gibt das partielle Eta-Quadrat an. Alle Zahlen sind Platzhalter.</p>
       <aside class="notes">Nur aufrufen, wenn nach dem Verfahren gefragt wird. Der Befund steht in der Zeile „Zeit × Gruppe" — die anderen sind Beiwerk.</aside>
     </section>
 
     <section class="slide anhang" data-title="Voraussetzungen erfüllt?">
-      <p class="eyebrow" data-anim>Anhang</p>
-      <h2 data-anim>Geprüfte Voraussetzungen</h2>
-      <dl class="keys" data-anim>
+      <p class="eyebrow">Anhang</p>
+      <h2>Geprüfte Voraussetzungen</h2>
+      <dl class="keys">
         <dt>Normalverteilung</dt>
         <dd>Schiefe zwischen −0,42 und 0,38, Wölbung durchweg unter 1. Bei dieser Stichprobengröße ist das Verfahren gegen Abweichungen dieser Größe unempfindlich.</dd>
         <dt>Varianzhomogenität</dt>
@@ -1480,7 +1484,7 @@ ul.points li math{ font-size:20px }
         <dt>Ausreißer</dt>
         <dd>Vier Fälle über drei Standardabweichungen. Die Analyse wurde mit und ohne sie gerechnet — die Befunde ändern sich nicht.</dd>
       </dl>
-      <p class="source-note" data-anim>Alle Zahlen auf dieser Folie sind Platzhalter.</p>
+      <p class="source-note">Alle Zahlen auf dieser Folie sind Platzhalter.</p>
       <aside class="notes">Die Folie, die den Einwand vorwegnimmt. Wenn sie nicht gebraucht wird, umso besser.</aside>
     </section>
 
@@ -1557,13 +1561,12 @@ ul.points li math{ font-size:20px }
   const pad = n => String(n).padStart(2, '0');
 
   /* --- Vortrag und Anhang ---------------------------------
-     Anhangsfolien stehen fuer sich. Sie sind nur ueber die
-     Uebersicht erreichbar, Pfeil zurueck fuehrt wieder in den
-     Vortrag, Pfeil vor fuehrt nirgendwohin. Sie zaehlen nicht in
-     den Fortschrittsbalken und stehen nicht im Register — dort
-     wuerden sie die Miniaturen des ganzen Vortrags schrumpfen. */
+     Anhangsfolien sind ganz normal eingereiht: die Pfeile blättern
+     durch sie hindurch wie durch jede andere Folie. Eigen sind ihnen
+     nur drei Dinge — sie zaehlen nicht in den Fortschrittsbalken,
+     sie stehen nicht im Register (dort wuerden sie die Miniaturen
+     des ganzen Vortrags schrumpfen), und sie treten ohne Aufbau auf. */
   const istAnhang    = sl => sl.classList.contains('anhang');
-  const vortragEnde  = slides.reduce((letzte, sl, i) => istAnhang(sl) ? letzte : i, 0);
   const ersterAnhang = slides.findIndex(istAnhang);
   const nummer       = i => istAnhang(slides[i]) ? 'A' + (i - ersterAnhang + 1) : pad(i + 1);
 
@@ -1851,8 +1854,8 @@ ul.points li math{ font-size:20px }
     const de = x => String(x).replace('.', ',');
     const f1 = x => x.toFixed(1);
 
-    let g = '<g data-step="1"><rect class="it-band" x="' + f1(X(P_MIN)) + '" y="' + f1(Y(.7)) +
-            '" width="' + f1(X(P_MAX) - X(P_MIN)) + '" height="' + f1(Y(R_MIN) - Y(.7)) + '" rx="6"/></g>';
+    let g = '<rect class="it-band" x="' + f1(X(P_MIN)) + '" y="' + f1(Y(.7)) +
+            '" width="' + f1(X(P_MAX) - X(P_MIN)) + '" height="' + f1(Y(R_MIN) - Y(.7)) + '" rx="6"/>';
 
     [0, .2, .4, .6, .8, 1].forEach(v => {
       g += '<line class="it-grid" x1="' + f1(X(v)) + '" y1="' + mt + '" x2="' + f1(X(v)) + '" y2="' + (h - mb) + '"/>' +
@@ -1864,10 +1867,10 @@ ul.points li math{ font-size:20px }
            '<text class="it-tick" x="' + (ml - 10) + '" y="' + f1(Y(v) + 4) + '" text-anchor="end">' +
            (v === 0 ? '0' : de(v.toFixed(1))) + '</text>';
     });
-    g += '<g data-step="1"><line class="it-line" x1="' + ml + '" y1="' + f1(Y(R_MIN)) +
+    g += '<line class="it-line" x1="' + ml + '" y1="' + f1(Y(R_MIN)) +
          '" x2="' + (w - mr) + '" y2="' + f1(Y(R_MIN)) + '"/>' +
          '<text class="it-lab" x="' + (w - mr) + '" y="' + f1(Y(R_MIN) - 8) + '" text-anchor="end">' +
-         'r' + 'ᵢ' + 'ₜ' + ' = 0,30</text></g>';
+         'r' + 'ᵢ' + 'ₜ' + ' = 0,30</text>';
     g += '<line class="it-ax" x1="' + ml + '" y1="' + mt + '" x2="' + ml + '" y2="' + (h - mb) + '"/>' +
          '<line class="it-ax" x1="' + ml + '" y1="' + (h - mb) + '" x2="' + (w - mr) + '" y2="' + (h - mb) + '"/>';
     const mx = (ml + w - mr) / 2, my = (mt + h - mb) / 2;
@@ -1880,12 +1883,26 @@ ul.points li math{ font-size:20px }
       g += '<circle class="it-pt" cx="' + f1(X(pv)) + '" cy="' + f1(Y(r)) + '" r="5"/>';
     });
     const raus = ITEMS.filter(([, pv, r]) => r < R_MIN || pv < P_MIN || pv > P_MAX);
-    g += '<g data-step="2">' + raus.map(([nm, pv, r]) =>
+    g += raus.map(([nm, pv, r]) =>
         '<circle class="it-pt raus" cx="' + f1(X(pv)) + '" cy="' + f1(Y(r)) + '" r="5"/>' +
         '<text class="it-lab" x="' + f1(X(pv)) + '" y="' + f1(Y(r) - 11) + '" text-anchor="middle">' + nm + '</text>'
-      ).join('') + '</g>';
+      ).join('');
     svg.innerHTML = g;
   })();
+
+  /* --- Anhangsfolien treten ohne Aufbau auf ---------------
+     In der Fragerunde will man die Antwort sofort ganz sehen,
+     nicht erst aufbauen. Die Auszeichnungen werden hier entfernt
+     statt in der Folie weggelassen: so gilt die Regel auch fuer
+     jede Anhangsfolie, die spaeter dazukommt. Muss nach den
+     Diagramm-Bauern stehen, die setzen data-step selbst. */
+  slides.filter(istAnhang).forEach(sl => {
+    sl.querySelectorAll('[data-anim], [data-step]').forEach(el => {
+      el.removeAttribute('data-anim');
+      el.removeAttribute('data-step');
+      el.removeAttribute('data-step-until');
+    });
+  });
 
   /* --- Elemente für den gestaffelten Auftritt nummerieren -- */
   slides.forEach(s => {
@@ -1982,7 +1999,7 @@ ul.points li math{ font-size:20px }
     if (i === ersterAnhang) {
       const trenner = document.createElement('p');
       trenner.className = 'ov-trenner';
-      trenner.textContent = 'Anhang — für die Fragerunde';
+      trenner.textContent = 'Anhang';
       ovGrid.appendChild(trenner);
     }
 
@@ -2058,19 +2075,15 @@ ul.points li math{ font-size:20px }
     paint();
   }
 
+  /* Der Anhang ist ganz normal eingereiht: die Pfeile blättern
+     durch ihn hindurch wie durch jede andere Folie. Eigen sind ihm
+     nur das Register (zeigt ihn nicht) und der Fortschrittsbalken
+     (zaehlt ihn nicht). */
   const next = () => {
-    /* Einblendungen laufen auch im Anhang. Die Folie verlassen tut
-       der Pfeil dort aber nicht — und am Ende des Vortrags bleibt er
-       ebenfalls stehen, damit nicht ein Druck zu viel den Anhang an
-       die Wand wirft. */
-    if (step < stepsOf(slides[index])) { step++; showSteps(slides[index], step); paint(); return; }
-    if (istAnhang(slides[index])) return;
-    if (index < vortragEnde) go(index + 1, 0);
+    if (step < stepsOf(slides[index])) { step++; showSteps(slides[index], step); paint(); }
+    else if (index < slides.length - 1) go(index + 1, 0);
   };
   const prev = () => {
-    /* Aus dem Anhang führt der Pfeil zurück dorthin, wo der Vortrag
-       stehengeblieben ist — fertig aufgebaut. */
-    if (istAnhang(slides[index])) { go(vortragEnde, stepsOf(slides[vortragEnde])); return; }
     if (step > 0) { step--; showSteps(slides[index], step); paint(); }
     else if (index > 0) go(index - 1, stepsOf(slides[index - 1]));   // rückwärts: fertig aufgebaut
   };
@@ -2107,7 +2120,7 @@ ul.points li math{ font-size:20px }
       case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': nav('next'); break;
       case 'ArrowLeft':  case 'ArrowUp':   case 'PageUp':            nav('prev'); break;
       case 'Home': nav('go', 0); break;
-      case 'End':  nav('go', vortragEnde); break;   /* letzte Folie des Vortrags, nicht der Datei */
+      case 'End':  nav('go', slides.length - 1); break;
       case 'p': case 'P': if (!isPresenter) openPresenter(); break;
       /* 0 liegt neben den Zifferntasten der Folien und ist das, wonach
          man greift. Esc schliesst nur — im Vollbild beendet Chrome damit
@@ -2215,17 +2228,14 @@ ul.points li math{ font-size:20px }
     function draw() {
       const i = shown.index;
       preview(elNow, slides[i], shown.step, false);
-      /* Nach der letzten Folie des Vortrags kommt nichts mehr — der
-         Anhang wird nur ueber die Uebersicht angesteuert. Das sagt
-         die Vorschau lieber, als leer zu bleiben. */
-      const weiter = !istAnhang(slides[i]) && i < vortragEnde;
-      if (weiter) { preview(elNext, slides[i + 1], 0, true); elNext.classList.remove('leer'); }
-      else {
+      if (i + 1 < slides.length) {
+        preview(elNext, slides[i + 1], 0, true);
+        elNext.classList.remove('leer');
+      } else {
+        /* Auf der letzten Folie lieber sagen, warum dort nichts steht. */
         elNext.replaceChildren();
         elNext.classList.add('leer');
-        elNext.dataset.text = istAnhang(slides[i])
-          ? 'Anhangsfolie — Pfeil zurück führt in den Vortrag'
-          : 'Ende des Vortrags — Anhang über die Übersicht';
+        elNext.dataset.text = 'Letzte Folie';
       }
     }
 
