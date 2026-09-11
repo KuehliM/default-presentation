@@ -21,6 +21,7 @@ dieses Dokument geht ins Einzelne.
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
 | `Darstellungsformen.md` | Vorrat an Darstellungsformen: was gebaut ist, was noch kommen könnte, in welcher Reihenfolge. |
 | `formeln.py` | Setzt alle Formeln: LaTeX aus `data-tex` wird zu MathML. Holt Temml und Fira Math selbst. |
+| `schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein: Latein, Griechisch, Pfeile, Rechenzeichen. Nur nötig, wenn der Zeichenvorrat sich ändern soll. |
 
 Für einen neuen Vortrag: `vorlage.html` kopieren und umbenennen. Das Original bleibt
 unangetastet als Ausgangspunkt.
@@ -200,32 +201,31 @@ nach der Zahl der Folien.
 | `.zitat` | eine Äußerung, groß gesetzt, mit `.zitat-quelle` als Beleg |
 | `.trans` | Transkript aus Zeilennummer, Sprecher, Text und Kodierung; `<mark>` hebt Stellen hervor |
 | `.herleit` | schrittweise Herleitung, alle Zeilen am Relationszeichen bündig |
-| `.m` | Formel im Fließtext; `<i>` setzt das Formelzeichen kursiv, `.ein` hält Einheiten aufrecht |
-| `.frac` / `.wurzel` / `.vec` | Bruch, gezeichnete Wurzel, Pfeil über dem Zeichen |
-| `.gr` | griechische Buchstaben und mathematische Zeichen — siehe Hinweis unten |
-| `.hl` | hebt den Term hervor, um den es gerade geht |
+| `.tex` + `data-tex` | Formel: LaTeX im Attribut, MathML darin — siehe „Formeln" |
 | `.pops` | Element ploppt beim Erscheinen auf, statt einzublenden |
 | `data-keep` | Element ist von Anfang an sichtbar; `data-step` löst nur seine eigene Bewegung aus (etwa den Deckel) |
 
-### Was der eingebettete Zeichensatz nicht kann
+### Zeichenvorrat
 
-Eingebettet ist nur der lateinische Zeichenvorrat. Vorhanden sind `· × − ½ ¼ ¾ ² ³ ° ± µ`,
-**nicht** vorhanden sind `Δ π σ α β θ ω √ ≈ ≤ ≥ ≠ → ←`. Deshalb:
+Die eingebettete Fira Sans und Fira Mono tragen **Latein mit allen Akzenten,
+Griechisch, Pfeile und Rechenzeichen**: `Δ π σ α β θ ω φ`, `√ ≈ ≤ ≥ ≠ ∞ ∑ ∫ ∂`,
+`← → ↑ ↓`, `₀ ₁ ₂ ⁿ ½ ‰ €`, dazu `Č Ł ő ş ğ`. Solche Zeichen stehen im Fließtext
+einfach so — keine Klasse, kein Ersatz.
 
-* Die Wurzel ist **gezeichnet** (`.wurzel`) und wächst mit ihrem Inhalt — sie braucht kein Zeichen.
-* Alles Übrige holt `.gr` aus der Systemschrift (Lucida Grande, dann Helvetica Neue).
-  Nachgemessen: von den verfügbaren Schriften passt Lucida Grande am besten zu Fira Sans.
-* In Tabellen stehen Ausfüllgrade (`.mk`) statt Häkchen.
+Was Fira Sans nicht hat (etwa `↔ ⇒ ∇ ℏ ■ ●`), gehört in eine Formel: `data-tex`,
+dort setzt Fira Math alles. `python3 schriften.py --pruefen` sagt, ob im Foliensatz
+ein Zeichen steht, das aus der Schrift fällt.
 
-Diese Bausteine sind der **Notbehelf** und stammen aus der Zeit vor dem echten
-Formelsatz. Für richtige Mathematik siehe den nächsten Abschnitt.
+Den Teilsatz schneidet `schriften.py` aus der vollständigen Fira (Google-Fonts-Ausgabe
+4.203, dieselbe wie zuvor — die Maße sind unverändert). Kyrillisch ist bewusst nicht
+dabei. Wer den Vorrat ändern will, ändert die Liste `BEREICHE` im Skript und lässt es
+laufen; das Netz braucht nur dieser Schritt, die fertige Datei nicht.
 
 ## Formeln
 
-Der handgebaute Satz oben (`.frac`, `.wurzel`, `.vec`) reicht für eine Formel im
-Fließtext, aber nicht für echte Mathematik: In der Datei steckt **kein kursiver
+Für eine Formel reicht der Zeichenvorrat nicht: In der Datei steckt **kein kursiver
 Schnitt**, jedes `<i>` wird vom Browser künstlich geneigt, und es gibt weder
-Wurzelzeichen noch mitwachsende Klammern noch die Abstandsregeln des Formelsatzes.
+mitwachsende Wurzeln noch mitwachsende Klammern noch die Abstandsregeln des Formelsatzes.
 
 Deshalb setzt der Foliensatz Formeln als **MathML in Fira Math** — der Mathe-Schwester
 der Hausschrift. Den Satz erledigt der Browser, ohne JavaScript und ohne Bibliothek.
@@ -244,8 +244,8 @@ Die Kursive ist dabei **echt**: Fira Math bringt eigene Glyphen für Formelzeich
 der Browser tauscht die Buchstaben dorthin. Ein `<i>` hätte die aufrechte Form nur
 schräg gestellt — kursive Schnitte enthält die Datei keine.
 
-Hervorheben geht mit `\colorbox{#e8f1fa}{$…$}`, griechische Einzelzeichen **außerhalb**
-einer Formel mit `<span class="gr">Δ</span>`.
+Hervorheben geht mit `\colorbox{#e8f1fa}{$…$}`. Griechische Einzelzeichen **außerhalb**
+einer Formel brauchen nichts — die Textschrift hat sie (siehe „Zeichenvorrat").
 
 Alles ist **eingebettet**: die Schrift als base64, keine URL bleibt übrig. Die Datei
 stellt keine einzige Anfrage nach außen und läuft auf einem fremden Rechner ohne Netz —

@@ -17,6 +17,7 @@ sie ohne Rückfrage befolgt werden können. **Zuerst lesen, dann anfassen.**
 | `vorlage.html` | **Der Foliensatz.** 22 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
 | `formeln.py` | Setzt alle Formeln: liest LaTeX aus `data-tex`, schreibt MathML hinein, bettet Fira Math ein. Nach jeder Formeländerung laufen lassen. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. |
+| `schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein (Latein, Griechisch, Pfeile, Rechenzeichen). `--pruefen` meldet Zeichen, die aus der Schrift fallen. Nur bei Änderung des Vorrats laufen lassen. |
 | `README.md` | Die Dokumentation für Menschen: Bedienung, Bausteine, Formeln. **Einzige Stelle neben dem Skript, an der die Tastenbelegung steht.** |
 | `Darstellungsformen.md` | Vorrat: was gebaut ist und was noch kommen könnte. Vor neuen Formen dort nachsehen. |
 | `Sessions/<datum>.md` | Protokolle. Bei nennenswerten Änderungen ein neues anlegen. |
@@ -168,7 +169,6 @@ Titel nach der **Frage** benennen, nicht nach dem Inhalt.
 | `.trans` | Transkript: `.nr`, `.wer`, `.txt`, `.kode`; `<mark>` hebt Stellen hervor |
 | `.herleit` | Herleitung; jede Zeile `.lhs` · `.rel` · Formel · `.grund`, alle am Relationszeichen bündig |
 | `.tex` + `data-tex` | Formel: LaTeX im Attribut, MathML darin — von `formeln.py` gesetzt |
-| `.gr` | einzelne griechische und mathematische Zeichen **außerhalb** einer Formel |
 | `#kiSvg` | Balken mit 95-%-Konfidenzintervall — Werte im Skript, `buildKI` |
 | `#hakeSvg` | Zugewinn: Nachtest gegen Vortest mit Linien gleichen *g* — `buildHake` |
 
@@ -199,17 +199,20 @@ Das Attribut ist die Quelle, das MathML das Erzeugnis. **Formel ändern heißt: 
 * **Voraussetzung beim Vortragen:** MathML Core — Chrome/Edge ab 109, Safari ab 16.4,
   Firefox seit je. Bewusst in Kauf genommen zugunsten der Schrifteinheit.
 * Der frühere handgebaute Satz (`.m`, `.frac`, `.wurzel`, `.vec`, `.hl`) ist
-  **entfernt**. Geblieben ist `.gr` für einzelne Zeichen außerhalb einer Formel.
+  **entfernt**, seit dem 11.09. auch `.gr` — die Textschrift trägt die Zeichen selbst.
 
 **Bedingung, die über allem steht:** Die fertige Datei stellt **keine** Anfrage nach
 außen. Auf Tagungen steht selten der eigene Rechner auf dem Pult. `formeln.py` prüft
 das nach jedem Lauf und bricht ab, wenn auch nur ein `url(http…)` übrig bleibt.
 
-**Zeichenvorrat.** Eingebettet ist nur Latein. Vorhanden: `· × − ½ ¼ ¾ ² ³ ° ± µ`.
-**Fehlt:** `Δ π σ α β θ ω √ ≈ ≤ ≥ ≠ → ←`. Die Wurzel ist deshalb gezeichnet, alles
-Übrige holt `.gr` aus der Systemschrift. Erweitern ginge nur mit der vollständigen
-Fira Sans und `brotli` — beides lag hier nicht vor. Keine fehlenden Zeichen direkt
-in den Text setzen, immer `.gr` verwenden.
+**Zeichenvorrat.** Seit dem 11.09. schneidet `schriften.py` den Teilsatz selbst aus
+der vollständigen Fira (Ausgabe 4.203, Maße unverändert): Latein mit Extended-A,
+Griechisch, Satzzeichen, Hoch-/Tiefgestelltes, Pfeile `← → ↑ ↓`, Rechenzeichen
+`√ ≈ ≤ ≥ ≠ ∞ ∑ ∫ ∂ ± ×`. Diese Zeichen im Fließtext **direkt setzen**, ohne Klasse.
+**Fehlt weiterhin,** weil Fira Sans es nicht hat: `↔ ⇒ ∇ ℏ ℃ ᵢ ■ ● ▲`. Solche Zeichen
+in eine Formel (`data-tex`) setzen — Fira Math kennt sie. Prüfen:
+`python3 schriften.py --pruefen`. Datei je Schnitt 38 KB (Sans) / 21 KB (Mono),
+Kyrillisch bewusst weggelassen (+11 KB je Schnitt).
 
 ### Eine Folie anlegen
 
@@ -300,6 +303,7 @@ dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es
 ```bash
 python3 pruefen.py            # muss 0 zurückgeben
 python3 formeln.py            # wenn eine Formel geändert wurde
+python3 schriften.py --pruefen  # kein Zeichen außerhalb der Schrift
 ```
 
 Dazu einmal durchblättern und auf JavaScript-Fehler horchen — `pruefen.py` misst

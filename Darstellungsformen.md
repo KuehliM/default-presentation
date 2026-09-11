@@ -4,7 +4,7 @@ Arbeitspapier, kein Protokoll. Hier steht, **was gebaut ist** und **was noch kom
 könnte** — damit Vorschläge nicht im Gesprächsverlauf verloren gehen und beim nächsten
 Mal nicht neu erfunden werden müssen.
 
-Stand: 10. September 2026. Entscheidungen und Begründungen zum Gebauten stehen im
+Stand: 11. September 2026. Entscheidungen und Begründungen zum Gebauten stehen im
 Protokoll unter `Sessions/`.
 
 ---
@@ -129,5 +129,6 @@ ist die aufwendigste und inhaltlich die stärkste.
 * Eine Folie je Form. Keine Sammelfolien.
 * Keine neuen Farben ohne ausdrückliche Bitte. Blau-Staffel und Grau reichen für zwei
   bis fünf Gruppen; Rot und Grün sind mit „gescheitert" und „trägt" belegt.
-* Formeln immer als `data-tex`, dann `python3 formeln.py`. Einzelne fehlende Zeichen
-  **außerhalb** einer Formel (`Δ π ≈ ≤ → ←`) nie direkt setzen, sondern mit `.gr`.
+* Formeln immer als `data-tex`, dann `python3 formeln.py`. Einzelne Zeichen
+  **außerhalb** einer Formel (`Δ π ≈ ≤ → ←`) stehen direkt im Text — die Schrift hat
+  sie. Was sie nicht hat (`↔ ⇒ ∇`), gehört in eine Formel.
