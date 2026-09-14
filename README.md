@@ -15,12 +15,13 @@ dieses Dokument geht ins Einzelne.
 
 | Datei | Zweck |
 |---|---|
-| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 28 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
+| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 34 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
 | `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Regeln, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. `python3 pruefen.py` |
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
 | `Darstellungsformen.md` | Vorrat an Darstellungsformen: was gebaut ist, was noch kommen könnte, in welcher Reihenfolge. |
 | `formeln.py` | Setzt alle Formeln: LaTeX aus `data-tex` wird zu MathML. Holt Temml und Fira Math selbst. |
+| `pdf.py` | Schreibt das PDF: eine Seite je Folie, alle Schritte aufgebaut, Fußzeile je Seite. Braucht nur Chrome. |
 | `schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein: Latein, Griechisch, Pfeile, Rechenzeichen. Nur nötig, wenn der Zeichenvorrat sich ändern soll. |
 
 Für einen neuen Vortrag: `vorlage.html` kopieren und umbenennen. Das Original bleibt
@@ -200,6 +201,7 @@ nach der Zahl der Folien.
 | `.kette` / `.glied` / `.kette-kopf` | Chevron-Kette: Pfeilköpfe als Phasen, darunter je eine Spalte Stichpunkte. Glieder lassen sich mit `data-step` nacheinander aufbauen |
 | `.karten` / `.karte` | Karten mit Titelschild: `h3` als blaue Pille auf der Oberkante, darunter Stichpunkte — für Kategorien |
 | `.slide.trenner` | Abschnittstrenner: blaue Karte, großer Abschnittstitel, Agenda als Chips mit `.aktiv` für den laufenden. Jeder Trenner eröffnet in der Übersicht automatisch eine eigene Gruppe mit Trennzeile |
+| `.bahnen` | Schwimmbahnen: `.bahn-koepfe` mit den Phasen, dann je Rolle eine `.bahn` aus `.bahn-rolle` und `.bahn-zelle`n; Spaltenzahl in `--phasen`, `.leer` für eine bewusst leere Zelle |
 | `.zeit` | Zeitleiste: Phasen und Messzeitpunkte auf einem Raster mit `--spalten`, `--von`, `--dauer`, `--bei`. `.zeit-ebene` legt eine zweite Ebene darüber, `.zeit-marke.klein` setzt deren Anfang und Ende als kleine Punkte — Karte und Punkt in derselben Farbe |
 | `table.vgl` | Vergleichstabelle; `.mk.ja` / `.mk.halb` / `.mk.nein` als Ausfüllgrad, `.num` für Ziffernschrift |
 | `.zitat` | eine Äußerung, groß gesetzt, mit `.zitat-quelle` als Beleg |
@@ -295,11 +297,16 @@ ist die Zahl darauf nicht mehr präsent.
 
 ## Formensammlung
 
-Sieben Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
+Zwölf Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
 Platzhalter — es geht um die Form.
 
 | Folie | Was sie hergibt |
 |---|---|
+| **Einordnung** | Zwei kleine Formen auf einer Folie: Schnittmenge aus drei Kreisen (Mitte als Schritt) und Vier-Felder-Matrix, jeder Baustein mittig in seinem Feld. |
+| **Übergänge** | Übergangsmatrix als Sankey: 3 × 3 Zahlen im Skript, Bandbreite nach Anzahl, Farbe nach Ausgangskategorie; ein Schritt zeichnet die Rückwege nach. |
+| **Kategoriensystem** | Baum aus einer verschachtelten Liste: Wurzel, Kategorien, Unterkategorien — jeder Ast klappt als eigener Schritt auf. |
+| **Spirale** | Der offene Kreis: drei Windungen, je vier Stationen, jede Windung ein Schritt. Für alles, was sich wiederholt und dabei vorankommt. |
+| **Ausschluss** | Ja/Nein-Weichen in einer Reihe: „ja" führt weiter, „nein" zweigt mit Anzahl und Grund ab; die Restzahlen rechnet das Skript. |
 | **Einschätzung** | Likert-Stapelbalken: fünf Anteile je Aussage, Ablehnung grau nach links, Zustimmung blau nach rechts, die Mitte halb auf jeder Seite. Skala aus den Daten, sortiert nach Zustimmung. Ein Schritt zeigt die Summen. |
 | **Verteilungen** | Boxplots aus Rohdaten: Quartile, Antennen bis 1,5·IQA und Ausreißer werden im Skript gerechnet, nicht eingetragen. Vier Gruppen, in zwei Schritten eingeblendet. |
 | **Wünsche** | Zehn waagerechte Balken, absteigend nach Nennungen. Die Liste im Skript darf ungeordnet sein — sortiert wird beim Aufbau. Ein Schritt legt eine Bezugslinie („Hälfte der Befragten") hinein. |
@@ -349,13 +356,30 @@ begrenzt — das verkleinert die Zeichnung, verzerrt sie nicht.
 
 ---
 
-## Drucken
+## PDF und Drucken
 
-Im Browser drucken ergibt ein PDF mit einer Folie je Seite (Ränder auf „keine" stellen).
-Einblendungen erscheinen dabei vollständig.
+```bash
+python3 pdf.py                # schreibt vorlage.pdf neben die Datei
+python3 pdf.py Vortrag.pdf    # anderer Name
+```
 
-**Bekannte Einschränkung:** Die Fußzeile fehlt im PDF, weil sie einmalig in der Bühne
-liegt und nicht je Seite wiederholt wird.
+Ergebnis: **eine Seite je Folie, Anhang eingeschlossen, jede Folie fertig aufgebaut** —
+alle Einblendungen sichtbar, der Morph auf der Parabel, der Deckel offen, die
+hervorgehobene Kachel blau. Jede Seite trägt die Fußzeile mit ihrer Nummer (`09`, `A1`);
+nur Titel- und Dankfolie bleiben ohne, wie im Vortrag. Seitenformat 16:9 (1280 × 720 px
+aus `@page`). Das Skript zählt am Ende Seiten gegen Folien und bricht ab, wenn es nicht
+aufgeht. Es braucht nur Google Chrome oder Chromium.
+
+**Von Hand geht es genauso:** Im Browser Cmd/Strg+P, Ränder „keine", Hintergrundgrafiken
+an, als PDF sichern — von jeder Folie aus, in jedem Aufbauzustand. Der Foliensatz merkt
+das Drucken (`beforeprint`), stellt jede Folie auf ihren letzten Schritt und gibt jeder
+Folie eine Kopie der Fußzeile mit ihrer Nummer (die echte liegt einmal in der Bühne und
+käme im Druck sonst auf keine Seite); nach dem Drucken steht der Vortrag wieder, wo er
+war. Das Druck-Stylesheet (`@media print`) legt jede Folie als eigene Seite an und blendet
+Register, Balken und Übersicht aus. `pdf.py` macht dasselbe in einem unsichtbaren Chrome.
+
+`vorlage.html?druck=1` schaltet diesen Zustand dauerhaft ein — zum Ansehen im Browser,
+was gedruckt würde.
 
 ---
 

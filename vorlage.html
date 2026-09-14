@@ -119,7 +119,7 @@
 
    Bausteine: .cols  ul.points  ul.refs  .stats  .keys  .tiles
      figure  table.vgl  .zeit  .zitat  .trans  .herleit  .chip
-     .kacheln  .kette  .karten  .slide.trenner
+     .kacheln  .kette  .karten  .slide.trenner  .bahnen
      Vollstaendig beschrieben in der README.
    ============================================================ */
 
@@ -746,6 +746,81 @@ table.vgl .num{ font-family:var(--mono); font-variant-numeric:tabular-nums }
 .trenner-agenda .chip{ background:rgba(255,255,255,.14); color:rgba(255,255,255,.74); font-size:16px }
 .trenner-agenda .chip.aktiv{ background:#fff; color:var(--blau) }
 
+/* Schwimmbahnen — wer macht was wann. Zeilen sind Rollen, Spalten
+   Phasen. Kopfzeile und jede Bahn sind eigene Raster mit derselben
+   Spaltenvorlage (--phasen), darum stehen sie buendig, ohne dass
+   eine Zelle eine Koordinate braucht. Jede Bahn ist eine weisse
+   Karte, die Zellen darin hellblaue Kaestchen; jede Phase kann per
+   data-step an Kopf und Zellen einzeln auftreten. */
+.bahnen{ display:flex; flex-direction:column; gap:8px }
+.bahn-koepfe, .bahn{
+  display:grid; grid-template-columns:128px repeat(var(--phasen), 1fr);
+  gap:12px; align-items:center;
+}
+.bahn-koepfe::before{ content:"" }              /* leere Ecke ueber der Rollenspalte */
+.bahn-kopf{
+  text-align:center; padding:9px 10px; border-radius:999px;
+  background:var(--blau); color:#fff; font-size:15px; font-weight:500; line-height:1.2; white-space:nowrap;
+}
+.bahn{
+  background:#fff; border-radius:var(--r-md); padding:12px 12px 12px 0;
+  box-shadow:0 2px 12px rgba(0,42,80,.07); align-items:stretch;
+}
+.bahn-rolle{ align-self:center; padding-left:18px; font-size:15px; font-weight:700; color:var(--blau); line-height:1.25 }
+.bahn-zelle{
+  padding:11px 14px; border-radius:var(--r-sm);
+  background:var(--blau-10); font-size:15px; line-height:1.35; color:var(--ink);
+}
+.bahn-zelle.leer{ background:none; box-shadow:inset 0 0 0 1.5px var(--line) }
+
+/* Schnittmenge (Venn) */
+.vn-kreis{ fill:var(--blau); fill-opacity:.15; stroke:var(--blau-75); stroke-width:1.6 }
+.vn-t{ font-size:14px; font-weight:700; fill:var(--blau) }
+.vn-s{ font-size:11.5px; font-weight:700; fill:var(--blau-75) }
+.vn-mitte{ fill:var(--blau) }
+.vn-mt{ font-size:13px; font-weight:700; fill:#fff }
+/* Vier-Felder-Matrix */
+.vf-feld{ fill:#fff; stroke:var(--line); stroke-width:1 }
+.vf-feld.stark{ fill:var(--blau-10) }
+.vf-q{ font-size:11.5px; font-weight:700; letter-spacing:.1em; fill:var(--blau-50) }
+.vf-ax{ font-size:12.5px; fill:var(--muted) }
+.vf-chip{ fill:var(--blau) }
+.vf-ct{ font-size:13px; font-weight:500; fill:#fff }
+/* Spirale */
+.sp-bahn{ fill:none; stroke:var(--blau-50); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round }
+.sp-knoten{ fill:#fff; stroke:var(--blau); stroke-width:2.2 }
+.sp-t{ font-size:14px; font-weight:700; fill:var(--ink) }
+.sp-z{ font-family:var(--mono); font-size:10.5px; font-weight:700; fill:var(--blau-75) }
+/* Verzweigung (Weiche) */
+.wz-frage{ fill:var(--blau) }
+.wz-ft{ font-size:15px; font-weight:500; fill:#fff }
+.wz-aus{ fill:#fff; stroke:var(--sw-25); stroke-width:1.2 }
+.wz-at{ font-size:13px; fill:var(--ink) }
+.wz-an{ font-family:var(--mono); font-size:14px; font-weight:700; fill:var(--sw-75); font-variant-numeric:tabular-nums }
+.wz-ziel{ fill:var(--blau-10); stroke:var(--blau); stroke-width:1.6 }
+.wz-zt{ font-size:15px; font-weight:700; fill:var(--blau) }
+.wz-pfeil{ fill:none; stroke:var(--sw-50); stroke-width:1.6 }
+.wz-lbl{ font-size:12.5px; fill:var(--muted) }
+/* Baum (Kategoriensystem) */
+.bm-wurzel{ fill:var(--blau) }
+.bm-wt{ font-size:15px; font-weight:700; fill:#fff }
+.bm-ast{ fill:#fff; stroke:var(--blau-50); stroke-width:1.6 }
+.bm-at{ font-size:14px; font-weight:700; fill:var(--ink) }
+.bm-blatt{ fill:var(--blau-10) }
+.bm-bt{ font-size:13px; fill:var(--ink) }
+.bm-kante{ fill:none; stroke:var(--sw-25); stroke-width:1.5 }
+/* Uebergangsmatrix als Sankey */
+.ub-knoten{ fill:var(--sw-75) }
+.ub-band{ fill-opacity:.55 }
+.ub-band.k0{ fill:var(--sw-50) }
+.ub-band.k1{ fill:var(--blau-50) }
+.ub-band.k2{ fill:var(--blau) }
+.ub-t{ font-size:14px; font-weight:700; fill:var(--ink) }
+.ub-n{ font-size:12.5px; fill:var(--muted) }
+.ub-kopf{ font-size:12.5px; font-weight:700; letter-spacing:.14em; fill:var(--blau) }
+.ub-rueck{ fill:none; stroke:var(--sw-75); stroke-width:1.6; stroke-dasharray:5 4 }
+.ub-note{ font-size:13px; font-weight:700; fill:var(--sw-75) }
+
 /* Zitat */
 .zitat{ margin:0; font-size:33px; line-height:1.36; font-weight:300; letter-spacing:-.012em }
 .zitat::before{
@@ -845,10 +920,13 @@ table.vgl .num{ font-family:var(--mono); font-variant-numeric:tabular-nums }
 /* Sie liegt in der Buehne, nicht in der Folie — dadurch steht sie
    auf jeder Folie an derselben Stelle und wird nicht in die
    Miniaturen kopiert. Die Titelfolie blendet sie aus. */
-.foot{
+.foot, .foot-druck{
   position:absolute; left:var(--pad-x); right:var(--pad-x); bottom:26px; z-index:2;
   display:flex; align-items:center; gap:22px;
 }
+/* .foot-druck: Kopie der Fusszeile in jeder Folie, nur im Druck
+   sichtbar. Legt der Druckmodus (?druck=1) an, siehe Skript. */
+.foot-druck{ display:none }
 .foot-meta{ margin:0; font-size:12.5px; color:var(--muted) }
 .foot-no{
   margin:0 0 0 auto; font-family:var(--mono); font-size:13px; font-weight:700;
@@ -1098,6 +1176,14 @@ body.presenter #pres{
     opacity:1 !important; visibility:visible !important; transform:none !important; box-shadow:none;
   }
   .slide [data-anim]{ opacity:1 !important; animation:none !important }
+  /* Druckmodus ?druck=1: jede Folie auf dem letzten Schritt, Fusszeile
+     je Seite. Aufploppendes steht ohne Animation in seiner Endlage. */
+  .foot-druck{ display:flex !important }
+  [data-step].shown.pops{ animation:none !important }
+  /* Was sonst per Animation waechst oder aufploppt, steht im Druck in
+     seiner Endlage: Stiel ganz gezeichnet, Blaetter da. */
+  .plant.shown .stem{ animation:none !important; stroke-dashoffset:0 !important }
+  .plant.shown .leaf{ animation:none !important; opacity:1 !important }
 }
 </style>
 <!-- FORMELSATZ: Anfang -->
@@ -1201,6 +1287,24 @@ ul.points li math{ font-size:20px }
         <figcaption data-step="5">Die Kette allein wäre nur eine Reihenfolge. Erkenntnis entsteht durch die beiden Rückwege: Eine Auswertung, die der Hypothese widerspricht, wirft auf Schritt&nbsp;02 zurück — ein Modell, das trägt, erzeugt eine Vorhersage, die in Schritt&nbsp;03 erneut geprüft wird.</figcaption>
       </figure>
       <aside class="notes">Schritt für Schritt aufbauen. Beim letzten Schritt betonen: Erst die beiden Rückwege machen aus einer Reihenfolge einen Erkenntnisprozess.</aside>
+    </section>
+
+    <!-- Schnittmenge und Vier-Felder-Matrix — zwei Strukturbilder .. -->
+    <section class="slide" data-title="Einordnung">
+      <p class="eyebrow" data-anim>Hintergrund</p>
+      <h2 data-anim>Was zusammengehört — und was sich lohnt</h2>
+      <div class="cols" data-anim>
+        <figure>
+          <svg id="vennSvg" viewBox="0 0 420 236" role="img" aria-label="Drei sich überlappende Kreise: Technologie, Pädagogik, Fachwissen; in der Mitte TPACK."></svg>
+          <figcaption>Schnittmenge: Das Interessante liegt in der Überlappung. Drei Kreise, die Mitte als eigener Schritt.</figcaption>
+        </figure>
+        <figure>
+          <svg id="felderSvg" viewBox="0 0 420 236" role="img" aria-label="Vier-Felder-Matrix: Aufwand gegen Lernwirkung, vier Bausteine darin eingeordnet."></svg>
+          <figcaption>Vier Felder: Zwei Achsen spannen vier Typen auf. Jeder Baustein nennt im Skript sein Feld und steht dort mittig.</figcaption>
+        </figure>
+      </div>
+      <p class="source-note" data-anim>Zwei kleine Formen auf einer Folie, weil eine allein die Fläche nicht füllt. Alle Inhalte sind Platzhalter.</p>
+      <aside class="notes">Links das Modell, rechts die Konsequenz. Zuerst die Mitte des Venn einblenden, dann die Bausteine in der Matrix.</aside>
     </section>
 
     <!-- Formelsatz — LaTeX im Quelltext, MathML in der Folie ... -->
@@ -1390,6 +1494,44 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Nicht vorlesen — die vier Wörter stehen da. Beim Schritt sagen, warum die Auswertung der Kern ist.</aside>
     </section>
 
+    <!-- Schwimmbahnen — Rollen als Zeilen, Phasen als Spalten ....... -->
+    <section class="slide" data-title="Unterrichtsverlauf">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Wer macht was wann</h2>
+      <!-- Eine Kopfzeile, dann je Rolle eine Bahn; Spaltenzahl in --phasen. -->
+      <div class="bahnen" style="--phasen:4" data-anim>
+        <div class="bahn-koepfe">
+          <div class="bahn-kopf">Einstieg · 10 min</div>
+          <div class="bahn-kopf" data-step="1">Messung · 30 min</div>
+          <div class="bahn-kopf" data-step="2">Auswertung · 40 min</div>
+          <div class="bahn-kopf" data-step="3">Sicherung · 10 min</div>
+        </div>
+        <div class="bahn">
+          <div class="bahn-rolle">Lehrkraft</div>
+          <div class="bahn-zelle">Ziel und Ablauf, Sicherheitshinweis</div>
+          <div class="bahn-zelle" data-step="1">Geht herum, hilft bei der App</div>
+          <div class="bahn-zelle" data-step="2">Beantwortet Fragen zum Notebook</div>
+          <div class="bahn-zelle" data-step="3">Sammelt Ergebnisse, vergleicht</div>
+        </div>
+        <div class="bahn">
+          <div class="bahn-rolle">Lernende</div>
+          <div class="bahn-zelle">Hören zu, öffnen das Notebook</div>
+          <div class="bahn-zelle" data-step="1">Messen zu zweit, exportieren die Daten</div>
+          <div class="bahn-zelle" data-step="2">Werten aus, Zelle für Zelle</div>
+          <div class="bahn-zelle" data-step="3">Stellen ein Diagramm vor</div>
+        </div>
+        <div class="bahn">
+          <div class="bahn-rolle">Material</div>
+          <div class="bahn-zelle">Einführungs-Notebook</div>
+          <div class="bahn-zelle" data-step="1">Smartphone mit App, Federpendel</div>
+          <div class="bahn-zelle" data-step="2">Auswertungs-Notebook, Beispieldaten</div>
+          <div class="bahn-zelle leer" data-step="3"></div>
+        </div>
+      </div>
+      <p class="source-note" data-anim>Eine leere Zelle bleibt als Rahmen sichtbar — die Lücke ist eine Aussage. Alle Inhalte sind Platzhalter.</p>
+      <aside class="notes">Phase für Phase. Bei der Sicherung darauf hinweisen, dass kein Material mehr nötig ist — das ist gewollt.</aside>
+    </section>
+
     <!-- Karten mit Titelschild — Kategorien mit Stichpunkten ........ -->
     <section class="slide" data-title="Erhebung">
       <p class="eyebrow" data-anim>Methode</p>
@@ -1509,6 +1651,17 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Der wichtigste Satz: Ein Zuwachs von zehn Punkten wiegt bei hohem Vorwissen schwerer. Genau das leistet der normierte Zugewinn.</aside>
     </section>
 
+    <!-- Uebergangsmatrix als Sankey — Prä nach Post ................ -->
+    <section class="slide" data-title="Übergänge">
+      <p class="eyebrow" data-anim>Ergebnisse</p>
+      <h2 data-anim>Wer wechselt — und wer zurück</h2>
+      <figure data-anim>
+        <svg id="sankeySvg" viewBox="0 0 1112 330" role="img" aria-label="Übergänge von Vortest zu Nachtest zwischen Fehlvorstellung, Mischform und Fachkonzept als Bänder, Breite nach Anzahl."></svg>
+        <figcaption>Jedes Band ist eine Gruppe von Lernenden, die Breite ihre Zahl. Die Übergangsmatrix steht als 3 × 3 Zahlen im Skript. Ein Schritt hebt die Rückwege hervor. Alle Werte sind Platzhalter.</figcaption>
+      </figure>
+      <aside class="notes">Das Bild, das jeder Mittelwert verschluckt: Wer kommt an — und wer fällt zurück. Beim Schritt die 18 nennen.</aside>
+    </section>
+
     <!-- Zitat — eine Äußerung, gross gesetzt ................... -->
     <section class="slide" data-title="Stimmen">
       <p class="eyebrow" data-anim>Ergebnisse</p>
@@ -1545,6 +1698,17 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Zeile für Zeile aufdecken, die Kodierung rechts erst nach der Äußerung nennen. Das macht den Schluss nachvollziehbar.</aside>
     </section>
 
+    <!-- Baum — Kategoriensystem, Ebenen einzeln aufklappbar ....... -->
+    <section class="slide" data-title="Kategoriensystem">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Wie die Kategorien zusammenhängen</h2>
+      <figure data-anim>
+        <svg id="baumSvg" viewBox="0 0 1112 300" role="img" aria-label="Baum: Systemisches Denken zerfällt in drei Kategorien mit je zwei bis drei Unterkategorien."></svg>
+        <figcaption>Ein Baum, im Skript als verschachtelte Liste. Erst die Kategorien, dann Ast für Ast die Unterkategorien. Alle Inhalte sind Platzhalter.</figcaption>
+      </figure>
+      <aside class="notes">Beim Aufklappen je Ast ein Satz. Nicht jede Unterkategorie erklären — dafür ist der Anhang da.</aside>
+    </section>
+
     <!-- Rundlauf — Kreisprozess .................................. -->
     <section class="slide" data-title="Rundlauf">
       <p class="eyebrow" data-anim>Methode</p>
@@ -1563,6 +1727,24 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Station für Station aufbauen. Beim Schließen des Kreises betonen, dass die Bilanz wieder in die Analyse mündet.</aside>
     </section>
 
+    <!-- Spirale — offener Kreis: es wiederholt sich, es kommt voran -->
+    <section class="slide" data-title="Spirale">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Es wiederholt sich — und kommt voran</h2>
+      <div class="cols wide-left" data-anim>
+        <ul class="points">
+          <li>Der Kreis von eben, aber offen: Jede Runde liegt weiter außen, weil sie auf der vorigen aufbaut.</li>
+          <li>Vier Stationen je Zyklus, drei Zyklen. Jeder Zyklus tritt einzeln auf.</li>
+          <li>Für Entwicklungsforschung, iterative Materialentwicklung, jede Folge von Erproben und Nachbessern.</li>
+          <li>Windungen, Stationen und Namen stehen im Skript.</li>
+        </ul>
+        <figure>
+          <svg id="spiraleSvg" viewBox="0 0 400 380" role="img" aria-label="Spirale mit drei Windungen und je vier Stationen: Analyse, Entwurf, Erprobung, Bilanz."></svg>
+        </figure>
+      </div>
+      <aside class="notes">Der Unterschied zum Kreis ist die Pointe: Bilanz mündet nicht in dieselbe Analyse, sondern in eine bessere.</aside>
+    </section>
+
     <!-- Ablauf von oben nach unten — Trichter .................... -->
     <section class="slide" data-title="Von oben nach unten">
       <p class="eyebrow" data-anim>Methode</p>
@@ -1579,6 +1761,17 @@ ul.points li math{ font-size:20px }
         </ul>
       </div>
       <aside class="notes">Stufe für Stufe aufbauen und die Verluste benennen. Das nimmt die Frage nach der Ausschöpfungsquote vorweg.</aside>
+    </section>
+
+    <!-- Verzweigung — Ja/Nein-Weichen als Ausschlusskaskade ....... -->
+    <section class="slide" data-title="Ausschluss">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Wer in die Auswertung kommt</h2>
+      <figure data-anim>
+        <svg id="weicheSvg" viewBox="0 0 1112 250" role="img" aria-label="Vier Ja-Nein-Weichen von 612 Angeschriebenen zu 214 Datensätzen in der Auswertung; jede Nein-Abzweigung mit Anzahl."></svg>
+        <figcaption>Jede Weiche ist eine Frage: „ja" führt weiter, „nein" zweigt ab. Die Zahlen sind dieselben wie im Trichter — hier mit dem Grund je Abzweig. Alle Werte sind Platzhalter.</figcaption>
+      </figure>
+      <aside class="notes">Weiche für Weiche. Der Trichter zeigt das Wieviel, die Weichen das Warum.</aside>
     </section>
 
     <!-- Kacheln, die nacheinander aufploppen ..................... -->
@@ -1940,7 +2133,8 @@ ul.points li math{ font-size:20px }
     fallTo = target => {
       if (target === u) return;
       cancelAnimationFrame(raf);
-      if (calm) { u = target; draw(u); return; }
+      /* Ohne Bewegung: bei reduced-motion und im Druck (kein Frame laeuft). */
+      if (calm || root.classList.contains('druck')) { u = target; draw(u); return; }
       const from = u, t0 = performance.now(), dur = 900;
       const ease = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
       const tick = nowMs => {
@@ -2138,6 +2332,259 @@ ul.points li math{ font-size:20px }
       lx += 20 + t.length * 6.6 + 26;
     });
     g += '<g data-step="1">' + summen + '</g>';
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Schnittmenge (Venn): drei Kreise, die Mitte als Schritt
+     ======================================================== */
+  (function buildVenn(){
+    const svg = document.getElementById('vennSvg');
+    if (!svg) return;
+    const K = [ { t:'Technologie', cx:170, cy:96,  tx:112, ty:66 },     /* Platzhalter */
+                { t:'Pädagogik',   cx:250, cy:96,  tx:308, ty:66 },
+                { t:'Fachwissen',  cx:210, cy:160, tx:210, ty:210 } ];
+    const r = 68, f1 = x => x.toFixed(1);
+    let g = '';
+    K.forEach(k => { g += '<circle class="vn-kreis" cx="' + k.cx + '" cy="' + k.cy + '" r="' + r + '"/>'; });
+    K.forEach(k => { g += '<text class="vn-t" x="' + k.tx + '" y="' + k.ty + '" text-anchor="middle">' + k.t + '</text>'; });
+    /* paarweise Schnittmengen, beschriftet zwischen den Mittelpunkten */
+    [[0,1,'TPK', 0, -10], [0,2,'TCK', -16, 10], [1,2,'PCK', 16, 10]].forEach(([a, b, t, dx, dy]) => {
+      g += '<text class="vn-s" x="' + f1((K[a].cx + K[b].cx) / 2 + dx) + '" y="' + f1((K[a].cy + K[b].cy) / 2 + dy + 4) +
+           '" text-anchor="middle">' + t + '</text>';
+    });
+    const mx = (K[0].cx + K[1].cx + K[2].cx) / 3, my = (K[0].cy + K[1].cy + K[2].cy) / 3;
+    g += '<g data-step="1" class="pops"><circle class="vn-mitte" cx="' + f1(mx) + '" cy="' + f1(my) + '" r="24"/>' +
+         '<text class="vn-mt" x="' + f1(mx) + '" y="' + f1(my + 4.5) + '" text-anchor="middle">TPACK</text></g>';
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Vier-Felder-Matrix: zwei Achsen, vier Typen. Jeder Baustein
+     nennt sein Feld (0 oben links, 1 oben rechts, 2 unten links,
+     3 unten rechts) und steht dort mittig; mehrere je Feld stapeln
+     sich zentriert. Die Chipbreite wird am gesetzten Text gemessen,
+     nicht geschaetzt — so sitzt die Schrift genau in der Mitte.
+     ======================================================== */
+  (function buildFelder(){
+    const svg = document.getElementById('felderSvg');
+    if (!svg) return;
+    const XACHSE = 'Aufwand', YACHSE = 'Lernwirkung';
+    const FELDER = ['Mitnehmen', 'Ausbauen', 'Weglassen', 'Prüfen'];  /* oben links, oben rechts, unten links, unten rechts */
+    const B = [ { t:'Notebooks',         feld:1 },                     /* Platzhalter */
+                { t:'Videoanleitung',    feld:0 },
+                { t:'Präsenzbetreuung',  feld:3 },
+                { t:'Handout',           feld:2 } ];
+    const w = 420, h = 236, ml = 44, mr = 8, mt = 8, mb = 36, ch = 26, luft = 8, kopf = 22;
+    const f1 = x => x.toFixed(1);
+    const xm = (ml + w - mr) / 2, ym = (mt + h - mb) / 2, fb = xm - ml, fh = ym - mt;
+    const ecke = [[ml, mt], [xm, mt], [ml, ym], [xm, ym]];
+    let g = '';
+    ecke.forEach(([x, y], i) => {
+      g += '<rect class="vf-feld' + (i === 1 ? ' stark' : '') + '" x="' + f1(x) + '" y="' + f1(y) + '" width="' + f1(fb) +
+           '" height="' + f1(fh) + '"/>' +
+           '<text class="vf-q" x="' + f1(x + 10) + '" y="' + f1(y + 18) + '">' + FELDER[i].toUpperCase() + '</text>';
+    });
+    g += '<text class="vf-ax" x="' + f1((ml + w - mr) / 2) + '" y="' + (h - 8) + '" text-anchor="middle">' + XACHSE + ' →</text>' +
+         '<text class="vf-ax" x="' + f1(ml - 12) + '" y="' + f1(ym) + '" text-anchor="middle" transform="rotate(-90 ' +
+         f1(ml - 12) + ' ' + f1(ym) + ')">' + YACHSE + ' →</text>';
+    /* je Feld: Stapel aus Chips, mittig in der Flaeche unter der Feldbezeichnung */
+    let chips = '';
+    ecke.forEach(([x, y], i) => {
+      const hier = B.filter(b => b.feld === i);
+      const stapel = hier.length * ch + (hier.length - 1) * luft;
+      const cx = x + fb / 2, y0 = y + kopf + (fh - kopf - stapel) / 2;
+      hier.forEach((b, j) => {
+        const cy = y0 + j * (ch + luft) + ch / 2;
+        chips += '<g class="vf-chip-g"><rect class="vf-chip" x="' + f1(cx) + '" y="' + f1(cy - ch / 2) + '" width="0" height="' + ch +
+                 '" rx="' + (ch / 2) + '"/><text class="vf-ct" x="' + f1(cx) + '" y="' + f1(cy + 4.5) + '" text-anchor="middle">' + b.t + '</text></g>';
+      });
+    });
+    g += '<g data-step="2">' + chips + '</g>';
+    svg.innerHTML = g;
+    /* Breite am gesetzten Text messen, dann die Pille darum legen */
+    svg.querySelectorAll('.vf-chip-g').forEach(el => {
+      const t = el.querySelector('text'), r = el.querySelector('rect');
+      const bw = t.getComputedTextLength() + 24;
+      r.setAttribute('width', f1(bw)); r.setAttribute('x', f1(+t.getAttribute('x') - bw / 2));
+    });
+  })();
+
+  /* ========================================================
+     Spirale: der offene Kreis. Radius waechst mit dem Winkel,
+     je Windung vier Stationen; jede Windung ein Schritt.
+     ======================================================== */
+  (function buildSpirale(){
+    const svg = document.getElementById('spiraleSvg');
+    if (!svg) return;
+    const STATIONEN = ['Analyse', 'Entwurf', 'Erprobung', 'Bilanz'];
+    const WINDUNGEN = 3, cx = 200, cy = 198, r0 = 34, r1 = 144, ENDE = 0.28;   /* ENDE: Bogenmass vor der Oberkante */
+    const R = th => r0 + (r1 - r0) * th / (2 * Math.PI * WINDUNGEN);
+    const P = th => [cx + R(th) * Math.sin(th), cy - R(th) * Math.cos(th)];   /* 0 = oben, im Uhrzeigersinn */
+    const f1 = x => x.toFixed(1);
+    let g = '<defs><marker id="spA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">' +
+            '<path d="M0 0 L10 5 L0 10 z" fill="#8ebae5"/></marker></defs>';
+    for (let wdg = 0; wdg < WINDUNGEN; wdg++) {
+      const letzte = wdg === WINDUNGEN - 1;
+      let d = '';
+      for (let i = 0; i <= 72; i++) {
+        const th = Math.min((wdg + i / 72) * 2 * Math.PI, letzte ? WINDUNGEN * 2 * Math.PI - ENDE : Infinity), [x, y] = P(th);
+        d += (i ? ' L' : 'M') + f1(x) + ' ' + f1(y);
+      }
+      let k = '<path class="sp-bahn" d="' + d + '"' + (letzte ? ' marker-end="url(#spA)"' : '') + '/>';
+      STATIONEN.forEach((t, j) => {
+        const th = wdg * 2 * Math.PI + j * Math.PI / 2, [x, y] = P(th);
+        k += '<circle class="sp-knoten" cx="' + f1(x) + '" cy="' + f1(y) + '" r="' + (letzte ? 9 : 6.5) + '"/>';
+        if (letzte) {                                /* Namen nur aussen, einmal, auf festem Radius */
+          const s_ = Math.sin(th), c_ = Math.cos(th), ra = r1 + 22;
+          const anker = s_ > .5 ? 'start' : s_ < -.5 ? 'end' : 'middle';
+          k += '<text class="sp-t" x="' + f1(cx + ra * s_) + '" y="' + f1(cy - ra * c_ + 5) + '" text-anchor="' + anker + '">' + t + '</text>';
+        }
+      });
+      const th = wdg * 2 * Math.PI + Math.PI / 4, [zx, zy] = [cx + (R(th) - 14) * Math.sin(th), cy - (R(th) - 14) * Math.cos(th)];
+      k += '<text class="sp-z" x="' + f1(zx) + '" y="' + f1(zy + 4) + '" text-anchor="middle">' + (wdg + 1) + '</text>';
+      g += wdg ? '<g data-step="' + wdg + '">' + k + '</g>' : k;
+    }
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Verzweigung: Ja/Nein-Weichen in einer Reihe. „ja“ fuehrt
+     nach rechts weiter, „nein“ zweigt nach unten ab. Die Zahl
+     der Angeschriebenen und je Weiche die Zahl der Ausgeschiedenen
+     stehen hier; der Rest wird gerechnet.
+     ======================================================== */
+  (function buildWeiche(){
+    const svg = document.getElementById('weicheSvg');
+    if (!svg) return;
+    const START = 612;                               /* Platzhalter */
+    const W = [ { f:'Einwilligung liegt vor?', nein:'ohne Einwilligung', n:318 },
+                { f:'Vortest bearbeitet?',     nein:'kein Vortest',      n:41 },
+                { f:'Nachtest bearbeitet?',    nein:'kein Nachtest',     n:27 },
+                { f:'Beide vollständig?',      nein:'lückenhaft',        n:12 } ];
+    const ZIEL = 'In die Auswertung';
+    const w = 1112, h = 250, x0 = 8, yq = 26, hq = 44, ya = 150, ha = 58, bz = 168;
+    const f1 = x => x.toFixed(1);
+    const feld = w - x0 - bz - 8, bq = 166, luft = (feld - W.length * bq) / W.length;
+    let g = '<defs><marker id="wzA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">' +
+            '<path d="M0 0 L10 5 L0 10 z" fill="#9c9e9f"/></marker></defs>';
+    let rest = START;
+    g += '<text class="wz-an" x="' + x0 + '" y="' + (yq - 8) + '">n = ' + START + '</text>';
+    W.forEach((q, i) => {
+      const x = x0 + i * (bq + luft), xm = x + bq / 2;
+      rest -= q.n;
+      let k = '<rect class="wz-frage" x="' + f1(x) + '" y="' + yq + '" width="' + bq + '" height="' + hq + '" rx="22"/>' +
+              '<text class="wz-ft" x="' + f1(xm) + '" y="' + (yq + hq / 2 + 5) + '" text-anchor="middle">' + q.f + '</text>';
+      /* nein: nach unten */
+      k += '<path class="wz-pfeil" d="M' + f1(xm) + ' ' + (yq + hq) + ' V' + (ya - 4) + '" marker-end="url(#wzA)"/>' +
+           '<text class="wz-lbl" x="' + f1(xm + 8) + '" y="' + (yq + hq + 26) + '">nein</text>' +
+           '<rect class="wz-aus" x="' + f1(x + 14) + '" y="' + ya + '" width="' + (bq - 28) + '" height="' + ha + '" rx="12"/>' +
+           '<text class="wz-an" x="' + f1(xm) + '" y="' + (ya + 25) + '" text-anchor="middle">' + q.n + '</text>' +
+           '<text class="wz-at" x="' + f1(xm) + '" y="' + (ya + 45) + '" text-anchor="middle">' + q.nein + '</text>';
+      /* ja: nach rechts */
+      const xe = i < W.length - 1 ? x + bq + luft - 4 : w - bz - 4;
+      k += '<path class="wz-pfeil" d="M' + f1(x + bq) + ' ' + (yq + hq / 2) + ' H' + f1(xe) + '" marker-end="url(#wzA)"/>' +
+           '<text class="wz-lbl" x="' + f1((x + bq + xe) / 2) + '" y="' + (yq + hq / 2 - 8) + '" text-anchor="middle">ja · ' + rest + '</text>';
+      g += i ? '<g data-step="' + i + '">' + k + '</g>' : k;
+    });
+    g += '<g data-step="' + W.length + '" class="pops">' +
+         '<rect class="wz-ziel" x="' + (w - bz) + '" y="' + (yq - 4) + '" width="' + bz + '" height="' + (hq + 8) + '" rx="14"/>' +
+         '<text class="wz-zt" x="' + (w - bz / 2) + '" y="' + (yq + hq / 2 - 3) + '" text-anchor="middle">' + ZIEL + '</text>' +
+         '<text class="wz-an" x="' + (w - bz / 2) + '" y="' + (yq + hq / 2 + 15) + '" text-anchor="middle">n = ' + rest + '</text></g>';
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Baum: Kategoriensystem als verschachtelte Liste. Wurzel oben,
+     Kategorien in der Mitte, Unterkategorien unten; jeder Ast
+     klappt als eigener Schritt auf.
+     ======================================================== */
+  (function buildBaum(){
+    const svg = document.getElementById('baumSvg');
+    if (!svg) return;
+    const BAUM = { t:'Systemisches Denken', k:[                /* Platzhalter */
+      { t:'Struktur erkennen',  k:['Elemente', 'Beziehungen', 'Systemgrenze'] },
+      { t:'Dynamik verstehen',  k:['Rückkopplung', 'Verzögerung', 'Nichtlinearität'] },
+      { t:'Eingreifen',         k:['Hebel wählen', 'Folgen abschätzen'] },
+    ] };
+    const w = 1112, h = 300, y0 = 14, y1 = 128, y2 = 236, hw = 44, ha = 40, hb = 36, bb = 128, luftB = 12;
+    const f1 = x => x.toFixed(1);
+    const blaetter = BAUM.k.reduce((n, a) => n + a.k.length, 0);
+    const proAst = BAUM.k.map(a => a.k.length * bb + (a.k.length - 1) * luftB);
+    const luftA = (w - proAst.reduce((a, b) => a + b, 0)) / (BAUM.k.length + 1);
+    const kante = (x1, y1_, x2, y2_) => {
+      const ym = (y1_ + y2_) / 2;
+      return '<path class="bm-kante" d="M' + f1(x1) + ' ' + f1(y1_) + ' V' + f1(ym) + ' H' + f1(x2) + ' V' + f1(y2_) + '"/>';
+    };
+    const knoten = (kl, tk, x, y, b, hh, t) =>
+      '<rect class="' + kl + '" x="' + f1(x - b / 2) + '" y="' + y + '" width="' + b + '" height="' + hh + '" rx="' + (hh / 2) + '"/>' +
+      '<text class="' + tk + '" x="' + f1(x) + '" y="' + f1(y + hh / 2 + 5) + '" text-anchor="middle">' + t + '</text>';
+    let g = '', kantenAeste = '', aeste = '', x = luftA;
+    const mitten = [];
+    BAUM.k.forEach((a, i) => {
+      const xa = x + proAst[i] / 2; mitten.push(xa);
+      let k = '';
+      a.k.forEach((b, j) => {
+        const xb = x + j * (bb + luftB) + bb / 2;
+        k += kante(xa, y1 + ha, xb, y2) + knoten('bm-blatt', 'bm-bt', xb, y2, bb, hb, b);
+      });
+      g += '<g data-step="' + (i + 2) + '">' + k + '</g>';
+      aeste += knoten('bm-ast', 'bm-at', xa, y1, 200, ha, a.t);
+      x += proAst[i] + luftA;
+    });
+    const xw = (mitten[0] + mitten[mitten.length - 1]) / 2;
+    mitten.forEach(xa => { kantenAeste += kante(xw, y0 + hw, xa, y1); });
+    g = knoten('bm-wurzel', 'bm-wt', xw, y0, 240, hw, BAUM.t) +
+        '<g data-step="1">' + kantenAeste + aeste + '</g>' + g;
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Uebergangsmatrix als Sankey: Zeilen sind die Kategorie im
+     Vortest, Spalten die im Nachtest. Knotenhoehe und Bandbreite
+     folgen den Zahlen. Schritt 1 zeichnet die Rueckwege nach.
+     ======================================================== */
+  (function buildSankey(){
+    const svg = document.getElementById('sankeySvg');
+    if (!svg) return;
+    const KAT = ['Fehlvorstellung', 'Mischform', 'Fachkonzept'];
+    const M = [ [38, 41, 27],                        /* Platzhalter: von Zeile nach Spalte */
+                [ 9, 33, 34],
+                [ 3,  6, 23] ];
+    const w = 1112, h = 330, xl = 300, xr = 812, kb = 16, mt = 30, mb = 8, luft = 16;
+    const f1 = x => x.toFixed(1);
+    const n = M.flat().reduce((a, b) => a + b, 0);
+    const prae = M.map(z => z.reduce((a, b) => a + b, 0));
+    const post = KAT.map((_, j) => M.reduce((a, z) => a + z[j], 0));
+    const k = (h - mt - mb - luft * (KAT.length - 1)) / n;      /* px je Person */
+    const lage = summen => { let y = mt; return summen.map(s => { const a = y; y += s * k + luft; return a; }); };
+    const yl = lage(prae), yr = lage(post);
+    let g = '<text class="ub-kopf" x="' + (xl - 12) + '" y="16" text-anchor="end">VORTEST</text>' +
+            '<text class="ub-kopf" x="' + (xr + kb + 12) + '" y="16">NACHTEST</text>';
+    const laufL = yl.slice(), laufR = yr.slice(), rueck = [];
+    let baender = '';
+    M.forEach((z, i) => z.forEach((v, j) => {
+      if (!v) return;
+      const a0 = laufL[i], a1 = a0 + v * k, b0 = laufR[j], b1 = b0 + v * k;
+      laufL[i] = a1; laufR[j] = b1;
+      const xm = (xl + kb + xr) / 2;
+      const d = 'M' + (xl + kb) + ' ' + f1(a0) + ' C' + f1(xm) + ' ' + f1(a0) + ', ' + f1(xm) + ' ' + f1(b0) + ', ' + xr + ' ' + f1(b0) +
+                ' V' + f1(b1) + ' C' + f1(xm) + ' ' + f1(b1) + ', ' + f1(xm) + ' ' + f1(a1) + ', ' + (xl + kb) + ' ' + f1(a1) + ' Z';
+      baender += '<path class="ub-band k' + i + '" d="' + d + '"/>';
+      if (j < i) rueck.push({ d, v });
+    }));
+    g += baender;
+    KAT.forEach((t, i) => {
+      g += '<rect class="ub-knoten" x="' + xl + '" y="' + f1(yl[i]) + '" width="' + kb + '" height="' + f1(prae[i] * k) + '" rx="3"/>' +
+           '<rect class="ub-knoten" x="' + xr + '" y="' + f1(yr[i]) + '" width="' + kb + '" height="' + f1(post[i] * k) + '" rx="3"/>' +
+           '<text class="ub-t" x="' + (xl - 12) + '" y="' + f1(yl[i] + prae[i] * k / 2 + 1) + '" text-anchor="end">' + t + '</text>' +
+           '<text class="ub-n" x="' + (xl - 12) + '" y="' + f1(yl[i] + prae[i] * k / 2 + 17) + '" text-anchor="end">n = ' + prae[i] + '</text>' +
+           '<text class="ub-t" x="' + (xr + kb + 12) + '" y="' + f1(yr[i] + post[i] * k / 2 + 1) + '">' + t + '</text>' +
+           '<text class="ub-n" x="' + (xr + kb + 12) + '" y="' + f1(yr[i] + post[i] * k / 2 + 17) + '">n = ' + post[i] + '</text>';
+    });
+    const zurueck = rueck.reduce((a, r) => a + r.v, 0);
+    g += '<g data-step="1">' + rueck.map(r => '<path class="ub-rueck" d="' + r.d + '"/>').join('') +
+         '<text class="ub-note" x="' + f1((xl + kb + xr) / 2) + '" y="16" text-anchor="middle">Rückwege: ' + zurueck + ' von ' + n + '</text></g>';
     svg.innerHTML = g;
   })();
 
@@ -2555,6 +3002,40 @@ ul.points li math{ font-size:20px }
       else if (d.type === 'nav') nav(d.what, d.n);
     });
   }
+
+  /* --- Druck ---------------------------------------------- */
+  /* Vor dem Drucken (Cmd/Strg+P, `pdf.py`) stellt druckAn() jede
+     Folie auf ihren letzten Schritt (Einblendungen, Morph, Deckel,
+     Hervorhebungen) und gibt jeder Folie ausser Titel- und Dankfolie
+     eine Kopie der Fusszeile mit ihrer Nummer — die echte liegt
+     einmal in der Buehne und kaeme im Druck sonst auf keine Seite.
+     Der Browser meldet das Drucken als `beforeprint`; danach nimmt
+     druckAus() alles zurueck, der Vortrag steht wieder, wo er war.
+     `?druck=1` schaltet den Zustand dauerhaft ein, etwa zum Ansehen. */
+  const druckFest = /[?&]druck=1/.test(location.search);
+  const druckAn = () => {
+    if (root.classList.contains('druck')) return;
+    root.classList.add('druck');
+    const foot = document.querySelector('.foot');
+    slides.forEach((sl, i) => {
+      showSteps(sl, stepsOf(sl));
+      if (sl.classList.contains('hero')) return;
+      const f = foot.cloneNode(true);
+      f.className = 'foot-druck';
+      const no = f.querySelector('.foot-no');
+      no.removeAttribute('id'); no.textContent = nummer(i);
+      sl.appendChild(f);
+    });
+  };
+  const druckAus = () => {
+    if (druckFest || !root.classList.contains('druck')) return;
+    root.classList.remove('druck');
+    document.querySelectorAll('.foot-druck').forEach(f => f.remove());
+    slides.forEach((sl, i) => showSteps(sl, i === index ? step : 0));
+  };
+  if (druckFest) druckAn();
+  addEventListener('beforeprint', druckAn);
+  addEventListener('afterprint', druckAus);
 
   /* --- Die Vortragendenansicht ---------------------------- */
   if (isPresenter) (function presenter() {

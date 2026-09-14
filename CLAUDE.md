@@ -14,9 +14,10 @@ sie ohne Rückfrage befolgt werden können. **Zuerst lesen, dann anfassen.**
 
 | Datei | Rolle |
 |---|---|
-| `vorlage.html` | **Der Foliensatz.** 28 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
+| `vorlage.html` | **Der Foliensatz.** 34 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
 | `formeln.py` | Setzt alle Formeln: liest LaTeX aus `data-tex`, schreibt MathML hinein, bettet Fira Math ein. Nach jeder Formeländerung laufen lassen. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. |
+| `pdf.py` | Schreibt `vorlage.pdf`: eine Seite je Folie samt Anhang, jede Folie auf dem letzten Schritt, Fußzeile je Seite. Nutzt den Druckmodus `?druck=1` der Datei und Chrome headless. |
 | `schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein (Latein, Griechisch, Pfeile, Rechenzeichen). `--pruefen` meldet Zeichen, die aus der Schrift fallen. Nur bei Änderung des Vorrats laufen lassen. |
 | `README.md` | Die Dokumentation für Menschen: Bedienung, Bausteine, Formeln. **Einzige Stelle neben dem Skript, an der die Tastenbelegung steht.** |
 | `Darstellungsformen.md` | Vorrat: was gebaut ist und was noch kommen könnte. Vor neuen Formen dort nachsehen. |
@@ -81,6 +82,9 @@ Erfahrungswerte aus dem gemessenen Bestand (`python3 pruefen.py`):
 | Kopf + Chevron-Kette, 3 Spalten à 2–3 Punkte | 442 px | 67 % |
 | Kopf + 4 große Kacheln | 494 px | 76 % |
 | Kopf + 2 Karten mit Titelschild à 2 Punkte | 474 px | 72 % |
+| Kopf + Schwimmbahnen, 4 Phasen × 3 Rollen | 584 px | 91 % |
+| Kopf + zwei kleine Grafiken nebeneinander (420 × 236) + Fußnote | 563 px | 87 % |
+| Kopf + Sankey / Baum / Weichen (1112 × 250–330) mit Unterschrift | 467–565 px | 71–88 % |
 | Kopf + Transkript, 6 Zeilen | 442 px | 67 % |
 
 Ab **92 % Füllstand** meldet `pruefen.py` „eng". Darüber wird es auf einem Beamer
@@ -144,6 +148,7 @@ Schatten.
 | `.kacheln` / `.kachel` | große Kacheln: `.nr`, Schlagwort in `b`, eine Zeile in `span`; `data-step` + `data-keep` färbt eine Kachel beim Schritt blau |
 | `.kette` / `.glied` / `.kette-kopf` | Chevron-Kette: Pfeilkopf (clip-path) über einer Spalte `ul.points`; das erste Glied ohne Kerbe, links gerundet |
 | `.karten` / `.karte` | Karten mit Titelschild: `h3` sitzt als blaue Pille halb auf der Oberkante, darunter `ul.points` |
+| `.bahnen` / `.bahn-koepfe` / `.bahn` | Schwimmbahnen: Kopfzeile und jede Bahn sind eigene Raster mit derselben Spaltenvorlage (`--phasen`); `.bahn-rolle` links, `.bahn-zelle` je Phase, `.leer` als Rahmen |
 
 ### Anhangsfolien
 
@@ -156,6 +161,18 @@ jede andere Folie. Eigen sind ihm nur drei Dinge:
   begrenzt). Auf der letzten Vortragsfolie steht der Balken voll und bleibt es.
 * **Register** zeigt ihn nicht — es bliebe sonst für den Vortrag weniger Platz. Die
   **Übersicht** zeigt ihn, abgesetzt unter einer Trennzeile — als letzte Gruppe.
+
+### Druckmodus und PDF
+
+Vor jedem Drucken (`beforeprint`, also Cmd+P wie `pdf.py`) stellt `druckAn()` jede
+Folie auf ihren letzten Schritt (`showSteps(sl, stepsOf(sl))`) und hängt jeder Folie
+außer `.hero` eine Kopie der Fußzeile als `.foot-druck` mit ihrer Nummer an;
+`afterprint` nimmt es zurück. `@media print` zeigt die Kopie und setzt Wachsendes und
+Aufploppendes in die Endlage. `?druck=1` hält den Zustand dauerhaft. `python3 pdf.py`
+druckt kopflos (`--print-to-pdf`, `@page` 1280 × 720 px) und prüft Seiten gegen Folien. **Wer eine
+Animation baut, die per JavaScript oder Keyframes zu einer Endlage läuft, muss ihr im
+Druck die Endlage geben** — der Morph prüft `root.classList.contains('druck')`, Stiel und
+Blätter haben eine Print-Regel. `vorlage.pdf` ist Erzeugnis, nicht Quelle (`.gitignore`).
 
 ### Gruppen in der Übersicht
 
@@ -191,6 +208,11 @@ Titel nach der **Frage** benennen, nicht nach dem Inhalt.
 | `#kiSvg` | Säulen mit 95-%-Konfidenzintervall — Werte im Skript, `buildKI` |
 | `#balkenSvg` | Balken waagerecht, Nennungen absteigend — sortiert im Skript, `buildBalken` |
 | `#likertSvg` | Likert: divergierende Stapelbalken, Ablehnung grau nach links, Zustimmung blau nach rechts; Skala aus den Daten — `buildLikert` |
+| `#sankeySvg` | Übergangsmatrix als Sankey: 3 × 3 Zahlen, Bandbreite nach Anzahl, Rückwege als Schritt — `buildSankey`, Klassen `.ub-*` |
+| `#vennSvg` / `#felderSvg` | Schnittmenge (drei Kreise, Mitte als Schritt) und Vier-Felder-Matrix (jeder Baustein nennt sein Feld 0–3 und steht dort mittig, Chipbreite am Text gemessen) — `buildVenn`, `buildFelder`; teilen sich eine Folie |
+| `#spiraleSvg` | Spirale: Radius wächst mit dem Winkel, je Windung vier Stationen, jede Windung ein Schritt — `buildSpirale` |
+| `#weicheSvg` | Verzweigung: Ja/Nein-Weichen in einer Reihe, „nein" zweigt nach unten ab; Startzahl und Abgänge im Skript, Rest gerechnet — `buildWeiche` |
+| `#baumSvg` | Baum: verschachtelte Liste, Wurzel oben, jeder Ast klappt als eigener Schritt auf — `buildBaum` |
 | `#hakeSvg` | Zugewinn: Nachtest gegen Vortest mit Linien gleichen *g* — `buildHake` |
 
 ### Formelsatz
@@ -310,6 +332,22 @@ dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es
   allem anderen — die Tastatur war dort tot, monatelang, ohne dass es auffiel.
   `pruefen.py` misst Geometrie, nicht Funktion. **Zum Abschluss den Foliensatz einmal
   durchblättern und auf JavaScript-Fehler horchen.**
+- **Klassenpräfixe im SVG.** `.sk-*` war schon vergeben (Skizzen der Kacheln: `.sk`,
+  `.sk-f`, `.sk-t` gestrichelt) — ein neues `.sk-t` für Sankey-Beschriftungen hat die
+  Skizzenregel überschrieben, und die Beschriftung stand plötzlich gestrichelt da. Vor
+  einem neuen Präfix `grep "^\.xx-"` — und beim Umbenennen nur die eigenen Vorkommen
+  anfassen, nicht per Muster über die ganze Datei.
+- **Kopflose Schnappschüsse bei Maßstab ≠ 1.** Chrome headless zieht bei
+  `--window-size=1280,720` 87 px ab (innerHeight 633), die Bühne läuft auf 0,88 — und
+  SVG-Texte werden mit dem alten Maßstab gerastert: Beschriftungen verschoben, gekappt,
+  „8" statt „0,8". Das DOM ist dabei richtig, im echten Browser passiert es nicht. **Für
+  Bilder `--window-size=1280,807` nehmen** (Maßstab 1, unten 43 px abschneiden), dann
+  sind vier von vier Läufen byteweise gleich. Das erklärt rückwirkend die „Zeitartefakte"
+  der Titelfolie und des Fortschrittsbalkens im Protokoll.
+- **Grid-Zeile voll, Zellen ohne Spalte.** Ein Element mit `grid-column:1/-1` in einer
+  Zeile lässt der automatischen Platzierung dort keinen Platz — weitere Zellen derselben
+  Zeile wandern in unsichtbare Zusatzspalten rechts hinaus. Entweder jede Zelle mit
+  Koordinate, oder (so die Schwimmbahnen) je Zeile ein eigenes Raster.
 - **Tabellenpolsterung und `border-collapse`.** Im Collapse-Modus ignoriert der
   Browser `padding` am Tabellenelement — die Kartenregel griff nicht, der Text klebte
   an der abgerundeten Kante. `table.vgl` steht deshalb auf `separate` mit
