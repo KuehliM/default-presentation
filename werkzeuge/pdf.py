@@ -2,8 +2,9 @@
 """PDF aus dem Foliensatz: eine Seite je Folie, Anhang eingeschlossen,
 jede Folie fertig aufgebaut.
 
-    python3 pdf.py                 # schreibt vorlage.pdf daneben
-    python3 pdf.py Vortrag.pdf     # anderer Zielname
+    python3 pdf.py                          # vorlage.html → vorlage.pdf daneben
+    python3 pdf.py Vortraege/x/x.html       # anderer Vortrag → x.pdf daneben
+    python3 pdf.py Vortraege/x/x.html Abgabe.pdf   # anderer Zielname
 
 Wie es geht: Der Foliensatz kennt den Druckmodus `?druck=1`. Damit
 stellt sein eigenes Skript jede Folie auf den letzten Schritt
@@ -24,8 +25,19 @@ import shutil
 import subprocess
 import sys
 
-HIER  = pathlib.Path(__file__).parent
-DATEI = HIER / "vorlage.html"
+HIER  = pathlib.Path(__file__).parent          # werkzeuge/
+WURZEL = HIER.parent                        # der Ordner mit der Vorlage bzw. dem Vortrag
+def datei_aus(args, standard="vorlage.html"):
+    """Pfad aus dem Aufruf: erst wie angegeben (relativ zum Arbeitsverzeichnis),
+    sonst im Ordner über den Werkzeugen. Ohne Angabe die Vorlage."""
+    name = args[0] if args else standard
+    p = pathlib.Path(name)
+    if not p.exists() and not p.is_absolute() and (WURZEL / name).exists():
+        p = WURZEL / name
+    if not p.exists():
+        sys.exit("Abbruch: %s gibt es nicht." % p)
+    return p.resolve()          # absolut: Chrome braucht eine file-URI
+
 
 CHROME_ORTE = [
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
@@ -43,7 +55,11 @@ def chrome():
 
 
 def main():
-    ziel = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else DATEI.with_suffix(".pdf")
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    html = [a for a in args if a.lower().endswith(".html")]
+    pdfs = [a for a in args if a.lower().endswith(".pdf")]
+    DATEI = datei_aus(html)
+    ziel = (pathlib.Path(pdfs[0]) if pdfs else DATEI.with_suffix(".pdf")).resolve()
     quelle = DATEI.read_text(encoding="utf-8")
     # Nur die Folien im Rumpf zaehlen — der Kopfkommentar zeigt eine als Beispiel.
     folien = len(re.findall(r'<section class="slide', quelle[quelle.index("<main"):]))

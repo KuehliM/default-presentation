@@ -1,3 +1,4 @@
 .DS_Store
-werkzeug/
-vorlage.pdf
+.claude/
+*.pdf
+werkzeuge/geholt/

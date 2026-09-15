@@ -7,25 +7,139 @@ herausfahren. Keine externen Anfragen, keine Abhängigkeiten, Schriften eingebet
 **Warum eine Datei:** Auf einer Tagung steht selten der eigene Rechner auf dem Pult.
 `vorlage.html` läuft überall per Doppelklick — offline, ohne Installation, ohne Konto.
 
-Kopieren, Text ersetzen, vortragen. Der Kopfkommentar der Datei sagt, wo was steht;
-dieses Dokument geht ins Einzelne.
+Ein neuer Vortrag ist ein eigener Ordner, den `werkzeuge/neu.py` anlegt — mit demselben
+Unterbau, dem Musterbogen zum Kopieren und den Werkzeugen. Der Ablauf steht gleich unten,
+auch als Rezept für Claude in einem frischen Ordner. Der Kopfkommentar der Datei sagt, wo
+was steht; dieses Dokument geht ins Einzelne.
 
 
 ## Dateien
 
-| Datei | Zweck |
-|---|---|
-| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 54 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
-| `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Regeln, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
-| `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. `python3 pruefen.py` |
-| `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
-| `Darstellungsformen.md` | Vorrat an Darstellungsformen: was gebaut ist, was noch kommen könnte, in welcher Reihenfolge. |
-| `formeln.py` | Setzt alle Formeln: LaTeX aus `data-tex` wird zu MathML. Holt Temml und Fira Math selbst. |
-| `pdf.py` | Schreibt das PDF: eine Seite je Folie, alle Schritte aufgebaut, Fußzeile je Seite. Braucht nur Chrome. |
-| `schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein: Latein, Griechisch, Pfeile, Rechenzeichen. Nur nötig, wenn der Zeichenvorrat sich ändern soll. |
+```
+default-presentation/
+├── README.md               dieses Dokument
+├── CLAUDE.md               Arbeitsanweisung für KI-Sitzungen an der Vorlage
+├── vorlage.html            die Vorlage, zugleich Musterbogen — 67 + 3 Folien, jede Form einmal
+├── Darstellungsformen.md   Katalog: was gebaut ist (mit Foliennummern), was noch kommen könnte
+├── Sessions/               datierte Protokolle mit Entscheidungen und Begründungen
+├── werkzeuge/
+│   ├── neu.py              legt einen Vortragsordner an
+│   ├── pruefen.py          misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift
+│   ├── formeln.py          setzt Formeln: LaTeX aus data-tex wird MathML, Fira Math eingebettet
+│   ├── pdf.py              schreibt das PDF, eine Seite je Folie, alles aufgebaut
+│   ├── schriften.py        bettet Fira Sans/Mono als Teilsatz ein; --pruefen meldet fremde Zeichen
+│   ├── vortrag-CLAUDE.md   Vorlage der Arbeitsanweisung, die jeder Vortragsordner bekommt
+│   └── geholt/             (nicht im Repo) Temml und Schriften, bei Bedarf geholt
+└── quellen/                Klimabox.png, RWTH_Logo_3.svg — Quellen der eingebetteten Bilder
+```
 
-Für einen neuen Vortrag: `vorlage.html` kopieren und umbenennen. Das Original bleibt
-unangetastet als Ausgangspunkt.
+Alle Werkzeuge nehmen einen Dateipfad, relativ zum Arbeitsverzeichnis oder zum Ordner über
+`werkzeuge/`; ohne Angabe die Vorlage: `python3 werkzeuge/pruefen.py`, `… formeln.py`,
+`… pdf.py [datei.html] [ziel.pdf]`, `… schriften.py [datei.html] --pruefen`. Sie brauchen
+Python 3 und Google Chrome; `formeln.py` und `schriften.py` einmalig Netz und `npm`.
+
+---
+
+## Einen neuen Vortrag anlegen
+
+Die Vorlage ist der Musterbogen: jede Darstellungsform genau einmal, mit Platzhaltern.
+Ein Vortrag beginnt **leer**, in einem eigenen Ordner, und holt sich aus dem Musterbogen,
+was er braucht. Der Ordner ist danach unabhängig vom Repo.
+
+### Für Claude: in einem neuen Ordner
+
+Im Vortragsordner genügt der Satz *„Erstelle mir eine Blanko-Präsentation aus
+github.com/KuehliM/default-presentation."* Das Rezept dahinter:
+
+```bash
+git clone --depth 1 https://github.com/KuehliM/default-presentation.git /tmp/registerdeck
+python3 /tmp/registerdeck/werkzeuge/neu.py . "Titel des Vortrags"
+```
+
+Danach `CLAUDE.md` im Ordner lesen — sie ist die Arbeitsanweisung für genau diesen Vortrag.
+Das Repo in `/tmp` wird nicht mehr gebraucht.
+
+### Was `neu.py` anlegt
+
+```
+<ordner>/
+├── <name>.html            der Vortrag — Titel, erste Folie, Dank, alles Platzhalter;
+│                          mit dem kompletten Unterbau der Vorlage (0,6 MB)
+├── vorlage.html           der Musterbogen zum Nachschlagen und Kopieren — nicht vortragen
+├── Darstellungsformen.md  Katalog der Formen mit ihren Foliennummern
+├── CLAUDE.md              Arbeitsanweisung für diesen Vortrag
+├── werkzeuge/             pruefen.py, formeln.py, pdf.py, schriften.py
+├── bilder/                für Bildquellen
+└── .gitignore             PDFs, geholte Werkzeuge
+```
+
+Der Dateiname kommt aus dem Ordnernamen (`DPG Frühjahr 2027` → `dpg-fruehjahr-2027.html`),
+`--datei name.html` setzt ihn ausdrücklich. Vorhandene Dateien werden nicht überschrieben.
+
+### Von Hand, Schritt für Schritt
+
+**1. Anlegen** — aus dem Repo heraus, Zielordner beliebig:
+
+```bash
+python3 werkzeuge/neu.py ~/Vortraege/dpg-2027 "Wie Lernende Wärme verstehen"
+cd ~/Vortraege/dpg-2027
+```
+
+**2. Kopf ausfüllen** — alles ist als Platzhalter beschriftet:
+
+| Was | Wo |
+|---|---|
+| Tagung, Titel, Untertitel, Autor:innen, Einrichtung | Titelfolie: `.eyebrow`, `h1`, `.lead`, `.byline` |
+| Kontakt | Dankfolie, `.affil` |
+| Name und Tagung in der Fußzeile | `<p class="foot-meta">` unter den Folien |
+| Fenstertitel | `<title>` im Kopf |
+| Logo | Symbol `logo-rwth` am Anfang des Rumpfs: Pfade und `viewBox` ersetzen, sonst nichts |
+
+**3. Folien anlegen** — zwei Wege, beliebig gemischt:
+
+* **Leer:** den Block „Erste Folie" kopieren (`eyebrow`, `h2`, `ul.points`, `notes`).
+  `data-title` beschriftet die Registerkarte, `data-step` staffelt Punkte.
+* **Aus der Vorlage:** die Form in `Darstellungsformen.md` (Tabelle mit Foliennummern)
+  oder in `vorlage.html` mit Taste `0` suchen, die ganze `<section … </section>` samt
+  Kommentar davor kopieren, zwischen die eigenen Folien setzen, Text ersetzen. Sie
+  funktioniert sofort — der Unterbau ist derselbe.
+* **Diagramme:** Die Zahlen stehen nicht in der Folie, sondern im Skript des Vortrags,
+  im Block `buildXyz` — die Folie trägt `id="xyzSvg"`, der Block liest genau diese id.
+  Dort die Arrays ändern; Achsen, Skalen und Beschriftungen entstehen daraus. **Jede
+  Form einmal je Datei**, weil die id eindeutig sein muss. Dieselbe Form zweimal: Block im
+  Skript kopieren, id in Folie und Block umbenennen (`slopeSvg2`).
+* **Bilder:** Quelle nach `bilder/`, in die Folie als Daten-URI (Muster: Klimabox, Bildpaar,
+  Zeiger). Vorher beschneiden, auf etwa 1200 px Breite bringen, bei Zeichnungen die Farbzahl
+  reduzieren — steht in `Darstellungsformen.md`.
+* **Gliederung:** `.slide.trenner` als Abschnittstrenner gruppiert Register und Übersicht
+  von selbst; `.slide.anhang` für die Fragerunde ans Ende (Muster in der Vorlage unten).
+
+**4. Formeln setzen** — LaTeX in `data-tex`, dann:
+
+```bash
+python3 werkzeuge/formeln.py dpg-2027.html
+```
+
+**5. Messen** — Überlauf ist der Fehler, „Luft" ein Hinweis:
+
+```bash
+python3 werkzeuge/pruefen.py   dpg-2027.html
+python3 werkzeuge/schriften.py dpg-2027.html --pruefen
+```
+
+**6. PDF** — landet als `dpg-2027.pdf` daneben:
+
+```bash
+python3 werkzeuge/pdf.py dpg-2027.html
+```
+
+**7. Vortragen:** Datei doppelklicken, `F` für Vollbild, `P` für die Vortragendenansicht
+im zweiten Fenster. Die ganze Steuerung steht im nächsten Abschnitt.
+
+**Was der Vortrag nicht mitbekommt:** spätere Änderungen an der Vorlage. Er ist ein
+Schnappschuss des Unterbaus vom Tag seiner Erzeugung. Wer eine Verbesserung nachziehen
+will, kopiert den betroffenen Block (Stilabschnitt, Skriptblock) von Hand hinüber — oder
+legt den Vortrag neu an und setzt die Folien wieder ein.
 
 ---
 
@@ -198,9 +312,15 @@ nach der Zahl der Folien.
 | `.gegen` | Gegenüberstellung: Raster aus `.gegen-kopf`, dann je Zeile `.gegen-l`, `.gegen-pfeil`, `.gegen-r` |
 | `.bilanz` / `.hyp` | Hypothesen-Bilanz: `.hyp-nr`, `.hyp-txt`, `.hyp-mark.ja/.nein/.offen` |
 | `.botschaften` / `.botschaft` | drei Karten mit `.nr` und einem `p` |
+| `.kern` / `.erl` | Kernsatz mit Erläuterung: der Satz als `p.kern` (33 px, blau) statt eines `h2`, darunter `.erl` als Karte mit einem `p` je Zeile, `b` als Stichwort in Blau |
+| `.gleichung` | Merkform A + B → C: `.term` als Kachel mit `b` und `span`, `.term.ergebnis` blau, dazwischen `.op` mit dem Zeichen; Zeichen und Term tragen dasselbe `data-step` |
+| `.design` | Studiendesign: Raster `190px var(--spalten)`; erste Zeile leer + `p.design-kopf` (mit `span` für die Woche), dann je Gruppe `p.design-gruppe` und Zellen `p.design-mess` (Pille, `.offen` gestrichelt) oder `p.design-block` (blau, `.kontrolle` als Rahmen) |
+| `.stat .von` / `.stat .delta` | Kennzahl mit Veränderung: `span.von` („48 % →") über dem `b`, `i.delta` als Pille oben rechts in der Kachel (`.null` grau) |
+| `.gantt` | Zeitplan: `--spalten` Quartale, `.gantt-kopf` mit `p.gantt-q`, je Paket eine `.gantt-zeile` aus `p.gantt-aufgabe` und `p.gantt-balken` (`--von`, `--dauer`, `.fertig` blau); `.gantt-heute` mit `--anteil` 0–1 als Linie |
+| `.konv` | Konvergenz: `.konv-quellen` mit drei `p.konv-befund`, `.konv-mitte` mit dem Pfeil-SVG, `p.konv-ziel` als blaue Karte; die Mitten der drei Karten liegen bei 1/6, 1/2 und 5/6 der Höhe — dort setzen die Pfeile an |
 | `ol.fragen` | nummerierte Fragen, groß; die Ziffer kommt aus dem Zähler |
 | `.aufgabe` | Aufgabenfolie: `.aufgabe-nr`, `.aufgabe-stamm`, `ol.optionen` mit `li.option` (`--p` als Anteil), darin `.buchst`, `.txt`, `.antwort` (Balken und Wert) |
-| `figure` + `figcaption` | Grafik oder Diagramm mit Bildunterschrift. Auch für ein Rasterbild: `<img>` als Daten-URI hinein, es steht unverzerrt und mittig, höchstens 360 px hoch — mit einzeiliger Unterschrift bleibt die Folie bei 90 % |
+| `figure` + `figcaption` | Grafik oder Diagramm mit Bildunterschrift. Auch für ein Rasterbild: `<img>` als Daten-URI hinein, es steht unverzerrt und mittig, höchstens 410 px hoch (seit dem 15.09.; die Karte endet dann bei 650) |
 | `pre` | Codeblock, blau getönt |
 | `.chip` | Pille für Schlagworte — vorhanden, in der Vorlage derzeit ungenutzt |
 | `.slide.anhang` | Folie für die Fragerunde, nur über die Übersicht erreichbar |
@@ -227,7 +347,7 @@ Griechisch, Pfeile und Rechenzeichen**: `Δ π σ α β θ ω φ`, `√ ≈ ≤ 
 einfach so — keine Klasse, kein Ersatz.
 
 Was Fira Sans nicht hat (etwa `↔ ⇒ ∇ ℏ ■ ●`), gehört in eine Formel: `data-tex`,
-dort setzt Fira Math alles. `python3 schriften.py --pruefen` sagt, ob im Foliensatz
+dort setzt Fira Math alles. `python3 werkzeuge/schriften.py --pruefen` sagt, ob im Foliensatz
 ein Zeichen steht, das aus der Schrift fällt.
 
 Den Teilsatz schneidet `schriften.py` aus der vollständigen Fira (Google-Fonts-Ausgabe
@@ -250,7 +370,7 @@ Im Quelltext steht LaTeX:
 <span class="tex" data-tex="T = 2\pi\sqrt{\dfrac{l}{g}}"></span>
 ```
 
-Danach `python3 formeln.py` — das Skript füllt jeden solchen Kasten mit MathML und
+Danach `python3 werkzeuge/formeln.py` — das Skript füllt jeden solchen Kasten mit MathML und
 bettet die Schrift ein. Das Attribut bleibt die Quelle, das MathML ist das Erzeugnis.
 Formel ändern heißt: Attribut ändern, Skript laufen lassen.
 
@@ -266,7 +386,7 @@ stellt keine einzige Anfrage nach außen und läuft auf einem fremden Rechner oh
 `formeln.py` prüft das nach jedem Lauf. Vorausgesetzt wird MathML Core: Chrome und Edge
 ab 109, Safari ab 16.4, Firefox seit je.
 
-Temml und Fira Math holt das Skript beim ersten Mal selbst nach `werkzeug/` (nicht im
+Temml und Fira Math holt das Skript beim ersten Mal selbst nach `werkzeuge/geholt/` (nicht im
 Repository).
 | `.cite` / `.source-note` | Beleg im Fließtext, Fußnote unter dem Inhalt |
 | `.byline` | Autor:innen und Einrichtung |
@@ -305,7 +425,7 @@ ist die Zahl darauf nicht mehr präsent.
 
 ## Formensammlung
 
-Zweiunddreißig Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
+Fünfundvierzig Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
 Platzhalter — es geht um die Form.
 
 | Folie | Was sie hergibt |
@@ -328,6 +448,19 @@ Platzhalter — es geht um die Form.
 | **Hypothesen** | Hypothesen-Bilanz (`.bilanz`): Nummer, Erwartung, Befund als Pille im Schritt — `.ja` blau, `.nein` umrandet, `.offen` hellblau. |
 | **Drei Botschaften** | Drei Karten (`.botschaften`), große Ziffer und ein Satz; die zweite und dritte als Schritte. |
 | **Fragen an Sie** | `ol.fragen`: nummerierte Fragen groß gesetzt, als Schritte — die letzte Folie, bleibt in der Diskussion stehen. |
+| **Kernsatz** | Eine Aussage groß in Blau (`.kern`, 33 px), darunter das Kleingedruckte Zeile für Zeile als Schritte (`.erl`). Kein `h2` — der Satz ist der Titel. |
+| **Konvergenz** | Drei Befunde laufen auf einen Schluss zu (`.konv`): Karten links, Pfeile in der Mitte, die Folgerung als blaue Karte rechts. Befunde einzeln, Pfeile und Schluss zusammen im letzten Schritt. Gegenstück zur Verzweigung. |
+| **Gleichung** | A + B → C als Merkform (`.gleichung`): drei Terme als Kacheln, das Ergebnis blau, Plus und Pfeil groß dazwischen; Term und Zeichen erscheinen zusammen. |
+| **Dreieck und Zwiebel** | Triade (drei Ecken als Pillen, Breite am Text gemessen, Kanten mit Doppelpfeil als Schritt) und Zwiebel (Kern und drei Schichten, je Schicht ein Schritt, Beschriftung im Band) auf einer Folie. |
+| **Stufen** | Pyramide: Stufen als Trapeze von unten nach oben, rechts je eine Erläuterung mit punktierter Linie; Liste im Skript, jede Stufe ein Schritt. |
+| **Zuordnung** | Zwei Spalten mit Kästen, Linien dazwischen aus Indexpaaren im Skript; die Linien eines Konzepts erscheinen zusammen als Schritt — mehrere Vorstellungen treffen dasselbe Konzept. |
+| **Freikörperbild** | Körper auf schiefer Ebene, alles aus dem Winkel gerechnet: Gewichtskraft, Normalkraft, Haftreibung als Schritte 1–3, Zerlegung in Hangabtrieb und Anpresskraft als Schritt 4. Pfeilspitzen als Polygone, keine Marker. |
+| **Studiendesign** | Gruppen × Zeitpunkte als Raster (`.design`): Messung als Pille, Intervention als blauer Kasten, Kontrollbedingung als Rahmen, ausstehendes Follow-up gestrichelt. Nur CSS. |
+| **Histogramm** | Klassen zu 10 Punkten, gezählt aus den Rohwerten im Skript; Schritt 1 die Referenzlinie, Schritt 2 die Säulen darüber hervorgehoben samt Anteil — gerechnet. |
+| **Heatmap** | Items × Gruppen, Zelle blau mit Deckkraft nach Wert (Potenz 1,5 gespreizt), Schrift hell auf dunkler Zelle; Nachtest als Schritt 1, Zuwachs als Schritt 2. |
+| **Veränderung** | Kennzahlenkacheln mit vorher → nachher und Differenz als Pille (`.stat .von`, `.stat .delta`); grau, wo sich nichts bewegt hat. |
+| **Zeitplan** | Gantt (`.gantt`): Pakete über Quartalen, jeder Balken nennt `--von` und `--dauer`, die Heute-Linie `--anteil` als Schritt. Nur CSS. |
+| **Slopegraph** | Eine Linie je Person vom Vortest zum Nachtest, steigend blau, fallend grau; Schritt 1 legt das Gruppenmittel als dicke Linie darüber, Schritt 2 hebt die Fallenden hervor und zählt sie — beides gerechnet aus den Paaren im Skript. |
 | **Einflüsse** | Stern: ein Kern, Satelliten auf einer Ellipse, Lage aus der Zahl der Satelliten; Beschriftung, Unterzeile und Schritt als Liste im Skript, Pillenbreite am Text gemessen. |
 | **Pfadmodell** | Kästen und Pfeile aus einer Liste (Knoten mit Lage, Kanten mit Koeffizient); die Pfeile enden am Kastenrand. Schritt 1 die Koeffizienten, Schritt 2 der indirekte Weg, hervorgehoben und ausgerechnet. |
 | **Behauptung** | Assertion-Evidence: `.slide.these` — der Titel ein ganzer Satz (38 px, zwei Zeilen erlaubt), darunter genau ein Beleg. Hier divergierende Säulen um eine Nulllinie (positiv blau, negativ grau, sortiert), das Mittel als Schritt. |
@@ -362,6 +495,8 @@ Innerhalb der Folie treten Elemente gestaffelt auf.
 **Register.** Die Karte schiebt sich um ihre *eigene* Breite nach rechts aus dem Bild,
 abzüglich des sichtbar bleibenden Teils — `translateX(calc(100% - var(--peek)))`. Weil
 sich `100%` auf die Elementbreite bezieht, gilt dieselbe Regel für jede Titellänge.
+In Ruhe bleiben 12 px sichtbar (Streifen 8 px, `--stripe`, plus 4 px Papier, `--peek`), der
+ganze Block ist auf 70 % gedeckt; unter der Maus oder mit Tastaturfokus tritt er voll hervor.
 
 **Miniaturen.** Keine Bilder, sondern echte Kopien der Folien (`cloneNode`), per
 `scale()` verkleinert. Ändert man eine Folie, ändert sich die Miniatur mit.
@@ -379,17 +514,24 @@ Streifen frei: im Fenster in der Farbe des Folienhintergrunds, also unsichtbar, 
 in aller Regel 16:9, dort entfallen die Streifen ganz; sichtbar werden sie vor allem
 auf Laptopbildschirmen im Format 16:10.
 
-**Satzspiegel.** Der untere Streifen ist für die Fußzeile reserviert (`--pad-b`), damit
-Karten und Text nie darüber liegen. Abbildungen sind zusätzlich auf 400 px Höhe
-begrenzt — das verkleinert die Zeichnung, verzerrt sie nicht.
+**Satzspiegel.** Der untere Streifen ist für die Fußzeile reserviert (`--pad-b`, 70 px:
+Inhalt bis 650, das Logo beginnt bei 662), damit Karten und Text nie darüber liegen.
+Abbildungen sind zusätzlich auf 430 px Höhe begrenzt — das verkleinert die Zeichnung,
+verzerrt sie nicht.
+
+**Fläche nutzen.** Karten sind so hoch wie ihr Inhalt; Spalten müssen nicht gleich hoch
+sein. Dafür ist jede Grafik so hoch gebaut, dass ihre Karte bei 650 endet — die Höhe der
+`viewBox` ist deshalb je Folie anders. `pruefen.py` meldet „Luft", wenn eine Folie unter
+85 % bleibt: bei einer Grafik heißt das „höher bauen", bei Text ist es in Ordnung.
 
 ---
 
 ## PDF und Drucken
 
 ```bash
-python3 pdf.py                # schreibt vorlage.pdf neben die Datei
-python3 pdf.py Vortrag.pdf    # anderer Name
+python3 werkzeuge/pdf.py                          # vorlage.html → vorlage.pdf daneben
+python3 werkzeuge/pdf.py dpg-2027.html            # ein Vortrag → dpg-2027.pdf daneben
+python3 werkzeuge/pdf.py dpg-2027.html Abgabe.pdf # anderer Name
 ```
 
 Ergebnis: **eine Seite je Folie, Anhang eingeschlossen, jede Folie fertig aufgebaut** —

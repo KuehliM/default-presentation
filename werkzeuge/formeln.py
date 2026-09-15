@@ -18,8 +18,9 @@ Anfrage nach außen. Auf Tagungen steht selten der eigene Rechner auf
 dem Pult. Schrift als base64, keine URL bleibt übrig; das Skript
 prüft es nach jedem Lauf.
 
-    python3 formeln.py            # setzt alle Formeln neu
-    python3 formeln.py --pruefen  # nur zeigen, was zu tun wäre
+    python3 formeln.py                       # vorlage.html
+    python3 formeln.py Vortraege/x/x.html    # jeder andere Vortrag, auch mehrere
+    python3 formeln.py --pruefen             # nur zählen, nichts schreiben
 
 Warum Fira Math: Es ist die Mathe-Schwester von Fira Sans, also
 dieselbe Handschrift. Und sie bringt die echten kursiven Glyphen aus
@@ -39,13 +40,25 @@ import shutil
 import subprocess
 import sys
 
-HIER     = pathlib.Path(__file__).parent
-DATEIEN  = ["vorlage.html"]
-WERKZEUG = HIER / "werkzeug"          # nicht im Repository, wird bei Bedarf geholt
+HIER     = pathlib.Path(__file__).parent          # werkzeuge/
+WURZEL = HIER.parent                        # der Ordner mit der Vorlage bzw. dem Vortrag
+WERKZEUG = HIER / "geholt"            # nicht im Repository, wird bei Bedarf geholt
 FIRA_MATH_URL = ("https://github.com/firamath/firamath/releases/download/"
                  "v0.3.4/FiraMath-Regular.otf")
 GRAD = "26px"     # Grundgrad. Nicht kleiner: doppelt Tiefgestelltes ist die
                   # Hälfte davon und fiele sonst unter die 15-px-Lesegrenze.
+
+
+def datei_aus(args, standard="vorlage.html"):
+    """Pfad aus dem Aufruf: erst wie angegeben (relativ zum Arbeitsverzeichnis),
+    sonst im Ordner über den Werkzeugen. Ohne Angabe die Vorlage."""
+    name = args[0] if args else standard
+    p = pathlib.Path(name)
+    if not p.exists() and not p.is_absolute() and (WURZEL / name).exists():
+        p = WURZEL / name
+    if not p.exists():
+        sys.exit("Abbruch: %s gibt es nicht." % p)
+    return p.resolve()          # absolut: Chrome braucht eine file-URI
 
 
 # ── Werkzeug ───────────────────────────────────────────────────────
@@ -156,8 +169,10 @@ def main():
     werkzeug_holen()
     gesamt = 0
 
-    for name in DATEIEN:
-        p = HIER / name
+    args = [a for a in sys.argv[1:] if not a.startswith("--")] or ["vorlage.html"]
+    for name in args:
+        p = datei_aus([name])
+        name = p.name
         s = p.read_text(encoding="utf-8")
         kaesten = KASTEN.findall(s)
         if not kaesten:

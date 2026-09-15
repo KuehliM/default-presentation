@@ -13,6 +13,7 @@ Latein, Griechisch, Pfeilen und Rechenzeichen. Was die Schrift nicht
 hat, gehört in eine Formel (`data-tex`) — Fira Math kennt alles.
 
     python3 schriften.py            # bettet alle sechs Schnitte neu ein
+    python3 schriften.py Vortraege/x/x.html --pruefen   # anderer Vortrag
     python3 schriften.py --pruefen  # welche Zeichen des Foliensatzes
                                     # fallen noch aus der Schrift?
 
@@ -32,9 +33,9 @@ import re
 import subprocess
 import sys
 
-HIER     = pathlib.Path(__file__).parent
-DATEI    = HIER / "vorlage.html"
-WERKZEUG = HIER / "werkzeug"          # nicht im Repository, wird bei Bedarf geholt
+HIER     = pathlib.Path(__file__).parent          # werkzeuge/
+WURZEL = HIER.parent                        # der Ordner mit der Vorlage bzw. dem Vortrag
+WERKZEUG = HIER / "geholt"            # nicht im Repository, wird bei Bedarf geholt
 QUELLE   = "https://github.com/google/fonts/raw/main/ofl/%s/%s.ttf"
 VERSION  = {"Fira Sans": "Version 4.203", "Fira Mono": "Version 3.206"}
 
@@ -158,10 +159,23 @@ def fehlende_zeichen(text):
     return fehlt
 
 
+def datei_aus(args, standard="vorlage.html"):
+    """Pfad aus dem Aufruf: erst wie angegeben (relativ zum Arbeitsverzeichnis),
+    sonst im Ordner über den Werkzeugen. Ohne Angabe die Vorlage."""
+    name = args[0] if args else standard
+    p = pathlib.Path(name)
+    if not p.exists() and not p.is_absolute() and (WURZEL / name).exists():
+        p = WURZEL / name
+    if not p.exists():
+        sys.exit("Abbruch: %s gibt es nicht." % p)
+    return p.resolve()          # absolut: Chrome braucht eine file-URI
+
+
 # ── Hauptlauf ──────────────────────────────────────────────────────
 
 def main():
     nur_pruefen = "--pruefen" in sys.argv
+    DATEI = datei_aus([a for a in sys.argv[1:] if not a.startswith("--")])
     text = DATEI.read_text(encoding="utf-8")
     bloecke = BLOCK.findall(text)
     if len(bloecke) != len(SCHNITTE):

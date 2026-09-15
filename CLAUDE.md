@@ -8,28 +8,50 @@ sie ohne Rückfrage befolgt werden können. **Zuerst lesen, dann anfassen.**
 1. Diese Datei.
 2. Das neueste Protokoll in `Sessions/` — dort stehen Begründungen und bereits
    zugeschnappte Fallen.
-3. Bei Layoutfragen **nicht schätzen, sondern messen:** `python3 pruefen.py`.
+3. Bei Layoutfragen **nicht schätzen, sondern messen:** `python3 werkzeuge/pruefen.py`.
 
 ## Was wo liegt
 
+```
+default-presentation/
+├── CLAUDE.md               diese Datei
+├── README.md               Doku für Menschen — einzige Stelle neben dem Skript mit der Tastenbelegung
+├── vorlage.html            die Vorlage, zugleich Musterbogen
+├── Darstellungsformen.md   Vorrat: was gebaut ist (mit Foliennummern), was noch kommen könnte
+├── Sessions/<datum>.md     Protokolle; bei nennenswerten Änderungen ein neues anlegen
+├── werkzeuge/              alle Skripte; geholt/ (ignoriert) für Temml und Schriften
+└── quellen/                Klimabox.png, RWTH_Logo_3.svg
+```
+
 | Datei | Rolle |
 |---|---|
-| `vorlage.html` | **Der Foliensatz.** 54 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
-| `formeln.py` | Setzt alle Formeln: liest LaTeX aus `data-tex`, schreibt MathML hinein, bettet Fira Math ein. Nach jeder Formeländerung laufen lassen. |
-| `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. |
-| `pdf.py` | Schreibt `vorlage.pdf`: eine Seite je Folie samt Anhang, jede Folie auf dem letzten Schritt, Fußzeile je Seite. Nutzt den Druckmodus `?druck=1` der Datei und Chrome headless. |
-| `schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein (Latein, Griechisch, Pfeile, Rechenzeichen). `--pruefen` meldet Zeichen, die aus der Schrift fallen. Nur bei Änderung des Vorrats laufen lassen. |
-| `Klimabox.png` | Quelle des einen Rasterbilds (Folie „Klimabox"). In `vorlage.html` steckt es beschnitten, auf 1200 px gebracht, 64 Farben, als Daten-URI — die Datei lädt nichts nach. |
-| `RWTH_Logo_3.svg` | Quelle des Logos. In `vorlage.html` steht es als Symbol `logo-rwth` am Anfang von TEIL B, eingebettet — die Datei wird nicht geladen. Logo tauschen: Pfade und `viewBox` im Symbol ersetzen, sonst nichts. |
-| `README.md` | Die Dokumentation für Menschen: Bedienung, Bausteine, Formeln. **Einzige Stelle neben dem Skript, an der die Tastenbelegung steht.** |
-| `Darstellungsformen.md` | Vorrat: was gebaut ist und was noch kommen könnte. Vor neuen Formen dort nachsehen. |
-| `Sessions/<datum>.md` | Protokolle. Bei nennenswerten Änderungen ein neues anlegen. |
+| `vorlage.html` | **Die Vorlage, zugleich Musterbogen.** 67 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Wird nicht vorgetragen, sondern folienweise in Vorträge kopiert. Der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
+| `werkzeuge/neu.py` | **Legt einen Vortragsordner an:** `python3 werkzeuge/neu.py <ordner> "Titel"` — Vortragsdatei mit dem Unterbau der Vorlage (drei Folien, Platzhalter), dazu Kopien von `vorlage.html`, `Darstellungsformen.md`, den vier Werkzeugen, eine eigene `CLAUDE.md` aus `vortrag-CLAUDE.md`, `bilder/`, `.gitignore`. Dateiname aus dem Ordnernamen. |
+| `werkzeuge/vortrag-CLAUDE.md` | Vorlage der Arbeitsanweisung für einen Vortragsordner — Kurzfassung der Regeln hier, Ablauf, was dort nicht passiert. **Wer hier Regeln ändert, zieht sie dort nach.** Platzhalter `{datei}`, `{datum}`. |
+| `werkzeuge/formeln.py` | Setzt alle Formeln: liest LaTeX aus `data-tex`, schreibt MathML hinein, bettet Fira Math ein. Nach jeder Formeländerung laufen lassen. |
+| `werkzeuge/pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift; „Luft" unter 85 %. |
+| `werkzeuge/pdf.py` | Schreibt das PDF: eine Seite je Folie samt Anhang, jede Folie auf dem letzten Schritt, Fußzeile je Seite. Nutzt den Druckmodus `?druck=1` und Chrome headless; `[datei.html] [ziel.pdf]`. |
+| `werkzeuge/schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein (Latein, Griechisch, Pfeile, Rechenzeichen). `--pruefen` meldet Zeichen, die aus der Schrift fallen. Nur bei Änderung des Vorrats laufen lassen. |
+| `quellen/Klimabox.png` | Quelle des einen Rasterbilds (Folie „Klimabox"). In `vorlage.html` steckt es beschnitten, auf 1200 px gebracht, 64 Farben, als Daten-URI — die Datei lädt nichts nach. |
+| `quellen/RWTH_Logo_3.svg` | Quelle des Logos. In `vorlage.html` steht es als Symbol `logo-rwth` am Anfang von TEIL B, eingebettet. Logo tauschen: Pfade und `viewBox` im Symbol ersetzen, sonst nichts. |
 
-**Regel:** Es gibt nur noch **einen** Foliensatz. Die frühere `anleitung.html` war eine
-zweite Datei mit demselben Unterbau und einem eigenen Übertragungsskript; beides ist am
-11.09. entfallen — der Aufwand stand in keinem Verhältnis, und die Anleitung war
-monatelang unbemerkt kaputt. Was sie erklärte, steht in der `README.md`; was sie vorführte,
-führt die Vorlage auf ihren eigenen Folien vor.
+Alle Werkzeuge nehmen einen Dateipfad (relativ zum Arbeitsverzeichnis oder zum Ordner über
+`werkzeuge/`), ohne Angabe die Vorlage. Sie liegen in `werkzeuge/`, damit das Repo an der
+Wurzel nur zeigt, was man liest oder kopiert — und damit `neu.py` sie als Ordner mitnehmen kann.
+
+**Regel:** Es gibt **eine** Vorlage; Vorträge sind eigene Dateien, die `neu.py` daraus
+anlegt (seit dem 15.09.). Ein Vortrag ist ein Schnappschuss des Unterbaus vom Tag seiner
+Erzeugung und bekommt spätere Änderungen der Vorlage nicht mit — es gibt bewusst **kein**
+Übertragungsskript: Die frühere `anleitung.html` war eine zweite Datei mit demselben
+Unterbau und einem eigenen Übertragungsskript; beides ist am 11.09. entfallen, der Aufwand
+stand in keinem Verhältnis, und die Anleitung war monatelang unbemerkt kaputt. Wer eine
+Verbesserung des Unterbaus in einen Vortrag holen will, kopiert den Block von Hand oder
+erzeugt den Vortrag neu. **Am Unterbau wird nur in `vorlage.html` gearbeitet;** in einem
+Vortrag nur an seinen Folien und seinen Zahlen im Skript — dort gilt die `CLAUDE.md` des
+Vortragsordners, nicht diese. Der Arbeitsablauf steht in der `README.md` („Einen neuen Vortrag
+anlegen"), samt Rezept für Claude in einem frischen Ordner: Repo nach `/tmp` klonen,
+`neu.py .` aufrufen. Vorträge liegen **nicht** in diesem Repo. PDFs, `.claude/` und
+`werkzeuge/geholt/` sind per `.gitignore` ausgenommen.
 
 ---
 
@@ -46,7 +68,7 @@ Ganzes skaliert. Alle Maße unten sind Bühnenpixel, unabhängig vom Bildschirm.
         │  │  Abschnitt (eyebrow)                              │  │
         │  │  Titel                                            │  │
         │  │  … Inhalt …                                       │  │
-   640  │  └───────────────────────────────────────────────────┘  │  ← Inhalt endet
+   650  │  └───────────────────────────────────────────────────┘  │  ← Inhalt endet
         │      Fußzeile: Logo · Name · Nummer                     │
    720  └─────────────────────────────────────────────────────────┘
           68                                                  1212
@@ -56,19 +78,28 @@ Ganzes skaliert. Alle Maße unten sind Bühnenpixel, unabhängig vom Bildschirm.
 |---|---|---|
 | Satzspiegel links/rechts | 68 px | `--pad-x` |
 | Inhalt beginnt bei | 40 px | `.slide` padding-top |
-| **Inhalt endet spätestens bei** | **640 px** | `720 − --pad-b (80)` |
-| Nutzbare Höhe | **600 px** | |
+| **Inhalt endet bei** | **650 px** | `720 − --pad-b (70)` — seit dem 15.09. (vorher 640 / 80) |
+| Nutzbare Höhe | **610 px** | |
 | Nutzbare Breite | **1144 px** | |
-| Abbildungen höchstens | 400 px hoch | `.slide figure svg` |
-| Rasterbilder höchstens | 360 px hoch | `.slide figure img` — 40 px weniger, damit die Unterschrift Platz hat |
+| Abbildungen höchstens | 430 px hoch | `.slide figure svg` — das ist 650 − Kartenoberkante 144 − Polsterung 48 − Lücke 10 − einzeilige Unterschrift 20; bei zweizeiliger Unterschrift passen nur 409 |
+| Rasterbilder höchstens | 410 px hoch | `.slide figure img` |
 
-**Unverhandelbar:** Text und Karten dürfen nie unter 640 px reichen. Der Streifen
-darunter gehört der Fußzeile. Für `.slide.hero` (Titel- und Dankfolie) gilt 664 px,
+**Unverhandelbar:** Text und Karten dürfen nie unter 650 px reichen. Der Streifen
+darunter gehört der Fußzeile (Logo ab 662). Für `.slide.hero` (Titel- und Dankfolie) gilt 664 px,
 weil dort die Fußzeile ausgeblendet ist.
+
+**Die Fläche wird genutzt (seit dem 15.09., Max):** Karten sind so hoch wie ihr Inhalt —
+**keine** gestreckten Karten, keine erzwungene Symmetrie zwischen Spalten. Aber der Inhalt
+wird so groß gebaut, wie die Fläche hergibt: **eine Grafik bekommt die Höhe, bei der ihre
+Karte bei 650 endet.** Die Bauer rechnen aus `h`; die `viewBox`-Höhe ist deshalb je Folie
+anders (620 × 430–450 in der breiten Spalte, 1112 × 386–436 auf voller Breite, je nach
+Unterschrift und Fußnote). Wer eine Grafik einbaut: `python3 werkzeuge/pruefen.py` sagt, wie viel
+Platz bleibt („frei") — den nimmt die Grafik. Textfolien bleiben, wie ihr Inhalt sie macht;
+dort ist Luft in Ordnung. Der Streifen zwischen 650 und der Fußzeile ist Absicht (12 px).
 
 ### Wie viel passt hinein
 
-Erfahrungswerte aus dem gemessenen Bestand (`python3 pruefen.py`):
+Erfahrungswerte aus dem gemessenen Bestand (`python3 werkzeuge/pruefen.py`):
 
 | Aufbau | belegte Höhe | Füllstand |
 |---|---|---|
@@ -79,13 +110,21 @@ Erfahrungswerte aus dem gemessenen Bestand (`python3 pruefen.py`):
 | Kopf + zwei Spalten: Bild (360 px) mit einzeiliger Unterschrift, 4 Stichpunkte | 582 px | 90 % — zweizeilige Unterschrift: 94 %, eng |
 | Kopf + Bildpaar (zwei Bilder à 360 px, je eine Unterschrift) | 582 px | 90 % |
 | Kopf + Foto mit Zeigern (SVG 2200 × 660, volle Breite) + Unterschrift | 549 px | 85 % |
-| Kopf + wide-left: Diagramm 620 × 340 mit Unterschrift + 3 Stichpunkte | 544–564 px | 84–87 % |
+| Kopf + wide-left: Diagramm 620 × 340 mit Unterschrift + 3–4 Stichpunkte (Hantel, Forest, Slopegraph, Histogramm, Heatmap, Freikörperbild) | 544–564 px | 84–87 % |
 | Kopf + Aufgabe (Stamm 2 Zeilen, 4 Optionen) + Fußnote | 531 px | 82 % |
 | Satztitel (2 Zeilen, 38 px) + Säulen 1112 × 300 + Fußnote | 565 px | 88 % |
 | Frage (2 Zeilen, 34 px) + Antwortkarte mit 2 Punkten + Fußnote | 421 px | 64 % |
 | Kopf + Gegenüberstellung, 3 Zeilen + Fußnote | 511 px | 79 % |
 | Kopf + Hypothesen-Bilanz, 4 Zeilen + Fußnote | 457 px | 70 % |
 | Kopf + drei Botschaften / drei Fragen | 404–413 px | 61–62 % |
+| Kernsatz (2 Zeilen, 33 px) + Erläuterung, 3 Zeilen + Fußnote | 436 px | 66 % |
+| Kopf + Gleichung (3 Terme à 190 px) + 2 Stichpunkte + Fußnote | 475 px | 73 % |
+| Kopf + Konvergenz, 3 Befunde + Fußnote | 499 px | 77 % |
+| Kopf + Studiendesign (Kopfzeile + 2 Gruppen) + 2 Stichpunkte + Fußnote | 529 px | 82 % |
+| Kopf + 4 Kennzahlen mit Veränderung + 2 Stichpunkte + Fußnote | 487 px | 75 % |
+| Kopf + Gantt, 6 Zeilen + Fußnote | 508 px | 78 % |
+| Kopf + Pyramide / Zuordnung (1112 × 300–320) mit Unterschrift | 535 px | 83 % |
+| Kopf + zwei Grafiken 520 × 280 nebeneinander, Unterschriften à 2 Zeilen + Fußnote | 552 px | 85 % — mit 300 hoch und 3 Zeilen: 92 % |
 | Kopf + Quellenverzeichnis, 5 Einträge | 423 px | 64 % |
 | Kopf + Herleitung, 6 Zeilen mit Brüchen und Wurzeln | 577 px | 90 % |
 | Kopf + Vergleichstabelle, 4 Spalten × 5 Zeilen | 525 px | 81 % |
@@ -100,8 +139,11 @@ Erfahrungswerte aus dem gemessenen Bestand (`python3 pruefen.py`):
 | Kopf + Sankey / Baum / Weichen (1112 × 250–330) mit Unterschrift | 467–565 px | 71–88 % |
 | Kopf + Transkript, 6 Zeilen | 442 px | 67 % |
 
-Ab **92 % Füllstand** meldet `pruefen.py` „eng". Darüber wird es auf einem Beamer
-gedrängt — dann Inhalt kürzen, nicht die Schrift verkleinern.
+Die Tabelle ist vor dem 15.09. gemessen (Grenze 640); Grafikfolien stehen seither bei
+96–100 %, weil ihre Grafik die Fläche nimmt. **Unter 85 % meldet `pruefen.py` „Luft"** —
+bei einer Grafikfolie heißt das: Grafik höher bauen; bei einer Textfolie ist es in Ordnung.
+Überlauf über 650 bleibt der Fehler. Wird es auf dem Beamer gedrängt: Inhalt kürzen, nicht
+die Schrift verkleinern.
 
 ---
 
@@ -125,6 +167,12 @@ dürfen kleiner sein.
 | Forschungsfrage | `.frage` | 34 px, Antwort `.antwort-kurz` 23 px |
 | Fragen an das Publikum | `ol.fragen li` | 28 px |
 | Botschaft | `.botschaft p` | 21 px, Ziffer 64 px |
+| Kernsatz | `.kern` | 33 px, blau; Erläuterung `.erl p` 19 px |
+| Gleichung | `.gleichung .term b` | 30 px, Unterzeile 16 px, Zeichen `.op` 64 px |
+| Konvergenz | `.konv-befund` / `.konv-ziel` | 19 px / 21 px |
+| Studiendesign | `.design-kopf` / `.design-gruppe` / Zellen | 15 px Versalien / 17 px / 15 px |
+| Kennzahl mit Veränderung | `.stat .von` / `.stat .delta` | 17 px / 14 px Mono-Pille |
+| Gantt | `.gantt-q` / `.gantt-aufgabe` / `.gantt-balken` | 15 px Versalien / 16 px / 14 px |
 | Herleitung | `.herleit` | 23 px |
 | Formel | `math` | 26 px, in der Herleitung 23 px |
 | Tabelle | `table.vgl` | 18 px |
@@ -165,7 +213,7 @@ Schatten.
 | `.kacheln` / `.kachel` | große Kacheln: `.nr`, Schlagwort in `b`, eine Zeile in `span`; `data-step` + `data-keep` färbt eine Kachel beim Schritt blau |
 | `.kette` / `.glied` / `.kette-kopf` | Chevron-Kette: Pfeilkopf (clip-path) über einer Spalte `ul.points`; das erste Glied ohne Kerbe, links gerundet |
 | `.karten` / `.karte` | Karten mit Titelschild: `h3` sitzt als blaue Pille halb auf der Oberkante, darunter `ul.points` |
-| `.bahnen` / `.bahn-koepfe` / `.bahn` | Schwimmbahnen: Kopfzeile und jede Bahn sind eigene Raster mit derselben Spaltenvorlage (`--phasen`); `.bahn-rolle` links, `.bahn-zelle` je Phase, `.leer` als Rahmen |
+| `.bahnen` / `.bahn-koepfe` / `.bahn` | Schwimmbahnen: Kopfzeile und jede Bahn sind eigene Raster mit derselben Spaltenvorlage (`--phasen`) **und derselben rechten Polsterung** — sonst stehen die Köpfe nicht über den Zellen; `.bahn-rolle` links, `.bahn-zelle` je Phase, `.leer` als Rahmen |
 
 ### Anhangsfolien
 
@@ -185,7 +233,7 @@ Vor jedem Drucken (`beforeprint`, also Cmd+P wie `pdf.py`) stellt `druckAn()` je
 Folie auf ihren letzten Schritt (`showSteps(sl, stepsOf(sl))`) und hängt jeder Folie
 außer `.hero` eine Kopie der Fußzeile als `.foot-druck` mit ihrer Nummer an;
 `afterprint` nimmt es zurück. `@media print` zeigt die Kopie und setzt Wachsendes und
-Aufploppendes in die Endlage. `?druck=1` hält den Zustand dauerhaft. `python3 pdf.py`
+Aufploppendes in die Endlage. `?druck=1` hält den Zustand dauerhaft. `python3 werkzeuge/pdf.py`
 druckt kopflos (`--print-to-pdf`, `@page` 1280 × 720 px) und prüft Seiten gegen Folien. **Wer eine
 Animation baut, die per JavaScript oder Keyframes zu einer Endlage läuft, muss ihr im
 Druck die Endlage geben** — der Morph prüft `root.classList.contains('druck')`, Stiel und
@@ -245,6 +293,19 @@ Titel nach der **Frage** benennen, nicht nach dem Inhalt.
 | `.gegen` | Gegenüberstellung: Raster 1fr · 48px · 1fr, Zeilenlinien über `border-top`, rechte Seite als Schritte |
 | `.bilanz` / `.hyp` | Hypothesen-Bilanz: Raster 52px · 1fr · auto, Befund als Pille (`.ja` / `.nein` / `.offen`) mit `data-step` |
 | `.botschaften` / `.botschaft` | drei Karten, Ziffer 64 px, Satz 21 px |
+| `.kern` / `.erl` | Kernsatz mit Erläuterung: `p.kern` statt `h2`, darunter `.erl` als Karte (steht in der Kartenliste von Abschnitt 8) mit einem `p` je Zeile, `b` in Blau |
+| `.gleichung` | A + B → C: `.term` als Kachel (`b`, `span`), `.term.ergebnis` blau, `.op` als Zeichen; Term und Zeichen tragen dasselbe `data-step` |
+| `.konv` | Konvergenz: Raster 1,05fr · 120px · 0,95fr. Links `.konv-quellen` mit drei `p.konv-befund` in gleich hohen Zeilen ohne Lücke (Luft als `margin` in der Karte), Mitten bei 1/6, 1/2, 5/6; `.konv-mitte` mit SVG `preserveAspectRatio="none"` und `vector-effect: non-scaling-stroke`; `p.konv-ziel` blau, mittig, Spitze als `::before` |
+| `.design` | Studiendesign: Raster `190px var(--spalten)` (Spaltenvorlage an der Folie), `.design-kopf` mit `span`, `.design-gruppe`, `.design-mess` (Pille, `.offen` gestrichelt), `.design-block` (blau, `.kontrolle` Rahmen); Karte über Abschnitt 8 |
+| `.stat .von` / `.stat .delta` | Kennzahl mit Veränderung: `.von` über dem `b`, `.delta` absolut oben rechts (`.stat` ist dafür `position:relative`), `.null` grau |
+| `.gantt` | Zeitplan: Kopf und Zeilen eigene Raster mit `--links` (230 px) + `--spalten`; Balken `--von`/`--dauer`; `.gantt-heute` absolut mit `--anteil`, rechnet die Kartenpolsterung `--kp` ein, weil der Bezug der Polsterkasten der Karte ist; Karte über Abschnitt 8 |
+| `#triadeSvg` / `#zwiebelSvg` | Triade (Pillenbreite gemessen, Doppelpfeile an den Kantenmitten) und Zwiebel (außen zuerst gezeichnet, innen zuerst eingeblendet) — `buildTriade`, `buildZwiebel`, `.tr-*`, `.zw-*` |
+| `#pyramideSvg` | Pyramide: Trapeze aus Stufenzahl, Erläuterung rechts — `buildPyramide`, `.py-*` |
+| `#zuordnungSvg` | Zuordnung: zwei Spalten, Linien aus Indexpaaren, je Ziel ein Schritt — `buildZuordnung`, `.zu-*` |
+| `#kraefteSvg` | Freikörperbild: alles aus dem Winkel gerechnet, Pfeilspitzen als Polygone (keine Marker — Marker hängen an IDs, die Miniaturen entfernen IDs) — `buildKraefte`, `.fk-*` |
+| `#histoSvg` | Histogramm: Klassen aus Rohwerten, `nmax` mit einer Stufe Luft für die Zahl über der Säule, Schwelle und Anteil gerechnet — `buildHisto`, `.hg-*` |
+| `#heatSvg` | Item-Heatmap: `fill-opacity` = 0,05 + 0,9 · (v/100)^1,5, Schrift hell ab 58 — `buildHeat`, `.hm-*` |
+| `#slopeSvg` | Slopegraph: Paare Prä/Post je Person, steigend blau, fallend grau; Mittel und Zahl der Fallenden gerechnet, Beschriftungen rechts mit 18 px Mindestabstand — `buildSlope`, `.sl-*` |
 | `ol.fragen` | nummerierte Fragen 28 px, Ziffer 44 px aus CSS-Zähler; als Karte |
 | `.slide.these` | Behauptung + Beleg: `h2` als Satz in 38 px, zwei Zeilen; darunter genau ein Beleg |
 | `.frage` / `.antwort-karte` | Frage groß, Antwort als blaue Karte (steht in der Kartenliste von Abschnitt 8, eigene Regel hält sie blau) |
@@ -263,7 +324,7 @@ Im Quelltext steht LaTeX, das Erzeugnis daneben:
 ```
 
 Das Attribut ist die Quelle, das MathML das Erzeugnis. **Formel ändern heißt: Attribut
-ändern, dann `python3 formeln.py`.** Das Skript geht über `vorlage.html`,
+ändern, dann `python3 werkzeuge/formeln.py`.** Das Skript geht über `vorlage.html`,
 übersetzt mit Temml und setzt den Stilblock mit der Schrift.
 
 * **Die Kursive ist echt.** Fira Math bringt die Glyphen aus dem Unicode-Block
@@ -290,7 +351,7 @@ Griechisch, Satzzeichen, Hoch-/Tiefgestelltes, Pfeile `← → ↑ ↓`, Rechenz
 `√ ≈ ≤ ≥ ≠ ∞ ∑ ∫ ∂ ± ×`. Diese Zeichen im Fließtext **direkt setzen**, ohne Klasse.
 **Fehlt weiterhin,** weil Fira Sans es nicht hat: `↔ ⇒ ∇ ℏ ℃ ᵢ ■ ● ▲`. Solche Zeichen
 in eine Formel (`data-tex`) setzen — Fira Math kennt sie. Prüfen:
-`python3 schriften.py --pruefen`. Datei je Schnitt 38 KB (Sans) / 21 KB (Mono),
+`python3 werkzeuge/schriften.py --pruefen`. Datei je Schnitt 38 KB (Sans) / 21 KB (Mono),
 Kyrillisch bewusst weggelassen (+11 KB je Schnitt).
 
 ### Eine Folie anlegen
@@ -363,6 +424,12 @@ dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es
   für Folie 1 einen um 18 px höheren Inhalt und 3 % kleinere Grade. Nachgeprüft: die
   gerenderten Bilder sind **byteweise identisch**. Es ist ein Zeitartefakt der
   kopflosen Messung, kein Unterschied im Bild — nicht daran herumbessern.
+- **Leere Gruppe mit `data-step` = Schritt ins Leere.** `stepsOf` zählt jedes `data-step`,
+  auch an einem `<g>` ohne Inhalt. `buildFluss` legte je Spalte eine Gruppe für die abgehenden
+  Bänder an — aus der letzten Spalte geht keins ab, die Gruppe war leer, und der Pfeil musste
+  am Ende zweimal gedrückt werden. Bauer, die Gruppen aus Listen erzeugen: **ohne Inhalt keine
+  Gruppe.** `pruefen.py` sieht das nicht (es zählt nur); die Sonde `leere_schritte.py` aus dem
+  Protokoll vom 15.09. findet es.
 - **Skript ohne sein Element.** Das Skript greift beim ersten Tastendruck auf
   `#schwarz` zu. In der früheren Anleitung fehlte das Element, die Ausnahme flog vor
   allem anderen — die Tastatur war dort tot, monatelang, ohne dass es auffiel.
@@ -410,6 +477,20 @@ dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es
   bei 813 px Fensterhöhe 97 %, bei 720 px 105 %. Der Musterbogen ist damit an der Grenze eines
   einspaltigen Registers. **Entschieden am 15.09.: so lassen** — die Vorlage zeigt Möglichkeiten,
   echte Vorträge haben 15–25 Folien. Kein zweispaltiges Register, keine Obergrenze.
+  **Seit dem 15.09. abends (Max: „sieht aus wie ein Zaun"):** Radius der Karten 4 px statt 14
+  (bei 14 px Kartenhöhe waren es Pillen), Streifen `--stripe` 8 px statt 14, in Ruhe `--peek`
+  12 px statt 21 sichtbar, der Block in Ruhe auf 70 % gedeckt (`.rail{opacity:.7}`), unter
+  Maus oder Fokus voll. Beschlossene Formensprache — nicht zurückdrehen.
+- **Flex zerreißt den Satz um eine Formel.** `display:flex` auf einem Absatz macht jedes
+  Kind zum eigenen Flex-Element — ein `.tex`-Span mitten im Satz stand plötzlich als dritte
+  Spalte zwischen zwei Textstücken (Konvergenz, erster Wurf). Zum senkrechten Zentrieren von
+  Fließtext `align-content:center` am Block nehmen (Chrome ab 123, Safari ab 17.4; fällt sonst
+  auf „oben“ zurück), nicht Flex oder Grid.
+- **`align-items:center` im Raster verschiebt die Zeilenlinien.** Die Gegenüberstellung
+  zentrierte ihre Zellen in der Zeile; eine einzeilige Zelle neben einer zweizeiligen wurde
+  dadurch kürzer und ihre `border-top` rutschte unter die des Nachbarn — die Linien standen
+  auf drei Höhen. Zellen mit Linien müssen die Zeile füllen (`stretch`), der Text darin
+  wird mit `align-content:center` mittig gesetzt.
 - **Flex-Spalte dehnt das Bild, `max-height` staucht es.** Ein `img` in `figure`
   (`display:flex; flex-direction:column`) wird auf Kartenbreite gestreckt; greift dann
   `max-height`, bleibt die Breite stehen — verzerrt, ohne Fehlermeldung. Nachgemessen
@@ -420,9 +501,9 @@ dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es
 ## Vor dem Abschluss
 
 ```bash
-python3 pruefen.py            # muss 0 zurückgeben
-python3 formeln.py            # wenn eine Formel geändert wurde
-python3 schriften.py --pruefen  # kein Zeichen außerhalb der Schrift
+python3 werkzeuge/pruefen.py            # muss 0 zurückgeben
+python3 werkzeuge/formeln.py            # wenn eine Formel geändert wurde
+python3 werkzeuge/schriften.py --pruefen  # kein Zeichen außerhalb der Schrift
 ```
 
 Dazu einmal durchblättern und auf JavaScript-Fehler horchen — `pruefen.py` misst

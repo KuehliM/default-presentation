@@ -7,14 +7,16 @@ Bericht sagt für jede Folie:
 
   unten       Unterkante des Inhalts in Bühnenkoordinaten (von 720)
   Überlauf    wie weit der Inhalt in den Fußzeilenstreifen ragt (soll 0 sein)
-  Füllstand   wie viel der nutzbaren Höhe belegt ist
+  Füllstand   wie viel der nutzbaren Höhe belegt ist — seit dem 15.09. soll
+              die Fläche genutzt werden: unter 85 % meldet der Bericht „Luft"
   kl. Schrift kleinster Schriftgrad im Fließtext und in Grafiken
 
 Gemessen wird der **vollständig aufgebaute** Zustand: Elemente mit
 data-step sind zwar unsichtbar, belegen ihren Platz aber weiterhin.
 
+
     python3 pruefen.py                 # vorlage.html
-    python3 pruefen.py andere.html     # jede andere Datei
+    python3 pruefen.py Vortraege/x/x.html   # jeder andere Vortrag
     python3 pruefen.py --json          # maschinenlesbar
 """
 
@@ -25,6 +27,9 @@ import shutil
 import subprocess
 import sys
 import tempfile
+
+HIER = pathlib.Path(__file__).parent          # werkzeuge/
+WURZEL = HIER.parent                        # der Ordner mit der Vorlage bzw. dem Vortrag
 
 CHROME_ORTE = [
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
@@ -103,6 +108,7 @@ window.addEventListener('load', () => setTimeout(() => {
       nr: i + 1,
       titel: s.dataset.title || '',
       hero: s.classList.contains('hero'),
+      trenner: s.classList.contains('trenner'),
       oben, unten, links, rechts,
       grenze: Math.round(grenze),
       randLinks: Math.round(pl), randRechts: Math.round(W - pr),
@@ -124,6 +130,18 @@ window.addEventListener('load', () => setTimeout(() => {
 }, 900));
 </script>
 """
+
+
+def datei_aus(args, standard="vorlage.html"):
+    """Pfad aus dem Aufruf: erst wie angegeben (relativ zum Arbeitsverzeichnis),
+    sonst im Ordner über den Werkzeugen. Ohne Angabe die Vorlage."""
+    name = args[0] if args else standard
+    p = pathlib.Path(name)
+    if not p.exists() and not p.is_absolute() and (WURZEL / name).exists():
+        p = WURZEL / name
+    if not p.exists():
+        sys.exit("Abbruch: %s gibt es nicht." % p)
+    return p.resolve()          # absolut: Chrome braucht eine file-URI
 
 
 def chrome():
@@ -167,7 +185,7 @@ def ausgeben(daten, datei):
               f"{'ja' if s['notizen'] else '—'}")
 
     probleme = [s for s in f if s["ueberlauf"] or s["randVerletzt"]]
-    knapp    = [s for s in f if not s["ueberlauf"] and s["fuellstand"] > 92]
+    luft     = [s for s in f if not s["ueberlauf"] and not s["hero"] and not s["trenner"] and s["fuellstand"] < 85]
     klein    = [s for s in f if s["minText"] and s["minText"] < 15]
     ohne     = [s for s in f if not s["notizen"] and not s["hero"]]
 
@@ -182,8 +200,8 @@ def ausgeben(daten, datei):
             print(f"  FEHLER  Folie {s['nr']} ({s['titel']}): {', '.join(grund)}")
     else:
         print("  Kein Überlauf, kein Folientext über der Fußzeile.")
-    if knapp:
-        print("  eng    " + ", ".join(f"Folie {s['nr']} ({s['fuellstand']}%)" for s in knapp))
+    if luft:
+        print("  Luft   " + ", ".join(f"Folie {s['nr']} ({s['fuellstand']}%)" for s in luft))
     if klein:
         print("  klein  " + ", ".join(f"Folie {s['nr']}: {s['minText']} px in .{s['minTextWo']}" for s in klein))
     if ohne:
@@ -193,10 +211,8 @@ def ausgeben(daten, datei):
 
 
 def main():
-    args = [a for a in sys.argv[1:] if a != "--json"]
-    datei = pathlib.Path(__file__).parent / (args[0] if args else "vorlage.html")
-    if not datei.exists():
-        sys.exit(f"Abbruch: {datei} gibt es nicht.")
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    datei = datei_aus(args)
     daten = messen(datei)
     if "--json" in sys.argv:
         print(json.dumps(daten, indent=2, ensure_ascii=False))
