@@ -14,11 +14,13 @@ sie ohne Rückfrage befolgt werden können. **Zuerst lesen, dann anfassen.**
 
 | Datei | Rolle |
 |---|---|
-| `vorlage.html` | **Der Foliensatz.** 34 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
+| `vorlage.html` | **Der Foliensatz.** 54 Folien Vortrag, 3 Anhang; jede Darstellungsform genau einmal. Steht allein: der Kopfkommentar erklärt Aufbau, Bedienung und Grenzen. |
 | `formeln.py` | Setzt alle Formeln: liest LaTeX aus `data-tex`, schreibt MathML hinein, bettet Fira Math ein. Nach jeder Formeländerung laufen lassen. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. |
 | `pdf.py` | Schreibt `vorlage.pdf`: eine Seite je Folie samt Anhang, jede Folie auf dem letzten Schritt, Fußzeile je Seite. Nutzt den Druckmodus `?druck=1` der Datei und Chrome headless. |
 | `schriften.py` | Bettet Fira Sans und Fira Mono als Teilsatz ein (Latein, Griechisch, Pfeile, Rechenzeichen). `--pruefen` meldet Zeichen, die aus der Schrift fallen. Nur bei Änderung des Vorrats laufen lassen. |
+| `Klimabox.png` | Quelle des einen Rasterbilds (Folie „Klimabox"). In `vorlage.html` steckt es beschnitten, auf 1200 px gebracht, 64 Farben, als Daten-URI — die Datei lädt nichts nach. |
+| `RWTH_Logo_3.svg` | Quelle des Logos. In `vorlage.html` steht es als Symbol `logo-rwth` am Anfang von TEIL B, eingebettet — die Datei wird nicht geladen. Logo tauschen: Pfade und `viewBox` im Symbol ersetzen, sonst nichts. |
 | `README.md` | Die Dokumentation für Menschen: Bedienung, Bausteine, Formeln. **Einzige Stelle neben dem Skript, an der die Tastenbelegung steht.** |
 | `Darstellungsformen.md` | Vorrat: was gebaut ist und was noch kommen könnte. Vor neuen Formen dort nachsehen. |
 | `Sessions/<datum>.md` | Protokolle. Bei nennenswerten Änderungen ein neues anlegen. |
@@ -58,6 +60,7 @@ Ganzes skaliert. Alle Maße unten sind Bühnenpixel, unabhängig vom Bildschirm.
 | Nutzbare Höhe | **600 px** | |
 | Nutzbare Breite | **1144 px** | |
 | Abbildungen höchstens | 400 px hoch | `.slide figure svg` |
+| Rasterbilder höchstens | 360 px hoch | `.slide figure img` — 40 px weniger, damit die Unterschrift Platz hat |
 
 **Unverhandelbar:** Text und Karten dürfen nie unter 640 px reichen. Der Streifen
 darunter gehört der Fußzeile. Für `.slide.hero` (Titel- und Dankfolie) gilt 664 px,
@@ -73,6 +76,16 @@ Erfahrungswerte aus dem gemessenen Bestand (`python3 pruefen.py`):
 | Kopf + Karte mit 4 langen Stichpunkten (je 2 Zeilen) | 496 px | 76 % |
 | Kopf + Kennzahlenreihe + 2 Stichpunkte | 458 px | 70 % |
 | Kopf + zwei Spalten mit Diagramm und Text | 583 px | 91 % |
+| Kopf + zwei Spalten: Bild (360 px) mit einzeiliger Unterschrift, 4 Stichpunkte | 582 px | 90 % — zweizeilige Unterschrift: 94 %, eng |
+| Kopf + Bildpaar (zwei Bilder à 360 px, je eine Unterschrift) | 582 px | 90 % |
+| Kopf + Foto mit Zeigern (SVG 2200 × 660, volle Breite) + Unterschrift | 549 px | 85 % |
+| Kopf + wide-left: Diagramm 620 × 340 mit Unterschrift + 3 Stichpunkte | 544–564 px | 84–87 % |
+| Kopf + Aufgabe (Stamm 2 Zeilen, 4 Optionen) + Fußnote | 531 px | 82 % |
+| Satztitel (2 Zeilen, 38 px) + Säulen 1112 × 300 + Fußnote | 565 px | 88 % |
+| Frage (2 Zeilen, 34 px) + Antwortkarte mit 2 Punkten + Fußnote | 421 px | 64 % |
+| Kopf + Gegenüberstellung, 3 Zeilen + Fußnote | 511 px | 79 % |
+| Kopf + Hypothesen-Bilanz, 4 Zeilen + Fußnote | 457 px | 70 % |
+| Kopf + drei Botschaften / drei Fragen | 404–413 px | 61–62 % |
 | Kopf + Quellenverzeichnis, 5 Einträge | 423 px | 64 % |
 | Kopf + Herleitung, 6 Zeilen mit Brüchen und Wurzeln | 577 px | 90 % |
 | Kopf + Vergleichstabelle, 4 Spalten × 5 Zeilen | 525 px | 81 % |
@@ -100,7 +113,7 @@ dürfen kleiner sein.
 | Rolle | Klasse | Grad |
 |---|---|---|
 | Titelfolie | `h1` | 84 px |
-| Folientitel | `h2` | 46 px |
+| Folientitel | `h2` | 46 px — als Satz (`.slide.these`) 38 px |
 | Untertitel, Vorspann | `.lead` | 26 px |
 | Aufzählung Ebene 1 | `ul.points li` | 19 px |
 | Aufzählung Ebene 2 | verschachteltes `ul` | 17 px |
@@ -109,6 +122,9 @@ dürfen kleiner sein.
 | Quellen | `ul.refs li` | 16 px |
 | Code | `pre` | 14,5 px |
 | Zitatfolie | `.zitat` | 33 px |
+| Forschungsfrage | `.frage` | 34 px, Antwort `.antwort-kurz` 23 px |
+| Fragen an das Publikum | `ol.fragen li` | 28 px |
+| Botschaft | `.botschaft p` | 21 px, Ziffer 64 px |
 | Herleitung | `.herleit` | 23 px |
 | Formel | `math` | 26 px, in der Herleitung 23 px |
 | Tabelle | `table.vgl` | 18 px |
@@ -135,6 +151,7 @@ Schatten.
 | `.stats` / `.stat` | Kennzahlenkacheln |
 | `.keys` | zweispaltige Definitionsliste |
 | `.tiles` / `.tile` | Kachelreihe für Bilder oder Skizzen |
+| `figure` + `img` | Rasterbild als Daten-URI in einer Abbildung: Kasten auf Kartenbreite, `object-fit: contain` hält das Bild unverzerrt und mittig |
 | `.chip` | Pille für Schlagworte — im Abschnittstrenner als Agenda-Chips genutzt |
 | `.cite` / `.source-note` | Beleg im Fließtext, Fußnote |
 | `.pops` | ploppt beim Erscheinen auf statt einzublenden |
@@ -214,6 +231,25 @@ Titel nach der **Frage** benennen, nicht nach dem Inhalt.
 | `#weicheSvg` | Verzweigung: Ja/Nein-Weichen in einer Reihe, „nein" zweigt nach unten ab; Startzahl und Abgänge im Skript, Rest gerechnet — `buildWeiche` |
 | `#baumSvg` | Baum: verschachtelte Liste, Wurzel oben, jeder Ast klappt als eigener Schritt auf — `buildBaum` |
 | `#hakeSvg` | Zugewinn: Nachtest gegen Vortest mit Linien gleichen *g* — `buildHake` |
+| `#kurveSvg` | Messkurve über der Zeit: Reihen als Arrays, Achsen daraus, Modellkurve aus Parametern — `buildKurve`, Klassen `.kv-*` |
+| `#hantelSvg` | Hantel: Prä/Post je Aufgabe, sortiert nach Zuwachs — `buildHantel`, `.ha-*` |
+| `#glockenSvg` | Zwei Normalverteilungen, Cohens *d* als Klammer, Φ(*d*) als Anteil — `buildGlocken`, `.gl-*` |
+| `#flussSvg` | Energiefluss: Sankey mit Knoten in Spalten, Liste `KNOTEN`/`FLUSS`, je Spalte ein Schritt; Beschriftung mit weißem Halo (`paint-order`) — `buildFluss`, `.ef-*` |
+| Zeiger (`.zg-*`) | Foto mit Zeigern: `image` und Zeiger-Gruppen in einem SVG (2200 breit), Grade auf 31 Einheiten = 15 px gerechnet — kein Skript, alles im Quelltext |
+| `#sternSvg` | Stern: Kern und Satelliten auf einer Ellipse, Pillenbreite am Text gemessen — `buildStern`, `.st-*` |
+| `#pfadSvg` | Pfadmodell: Knoten mit Lage, Kanten mit Koeffizient, Pfeile enden am Kastenrand; Koeffizienten seitlich der Linie versetzt — `buildPfad`, `.pf-*` |
+| `#abweichungSvg` | Divergierende Säulen um eine Nulllinie, sortiert, Mittel als Schritt — `buildAbweichung`, `.ab-*` |
+| `#punktfeldSvg` | Punktfeld: 100 Punkte, Anteile als Liste ganzer Zahlen, je Anteil ein Schritt — `buildPunktfeld`, `.pk-*` |
+| `#ircSvg` | Item-Antwortkurven: je Option eine Linie über Gruppenmitten, Endbeschriftungen mit 15 px Mindestabstand entzerrt, Marke gerechnet — `buildIRC`, `.ir-*` |
+| `#forestSvg` | Forest Plot: Punkt und Antenne je Zeile, Gesamt als Raute im Schritt — `buildForest`, `.fp-*` |
+| `.gegen` | Gegenüberstellung: Raster 1fr · 48px · 1fr, Zeilenlinien über `border-top`, rechte Seite als Schritte |
+| `.bilanz` / `.hyp` | Hypothesen-Bilanz: Raster 52px · 1fr · auto, Befund als Pille (`.ja` / `.nein` / `.offen`) mit `data-step` |
+| `.botschaften` / `.botschaft` | drei Karten, Ziffer 64 px, Satz 21 px |
+| `ol.fragen` | nummerierte Fragen 28 px, Ziffer 44 px aus CSS-Zähler; als Karte |
+| `.slide.these` | Behauptung + Beleg: `h2` als Satz in 38 px, zwei Zeilen; darunter genau ein Beleg |
+| `.frage` / `.antwort-karte` | Frage groß, Antwort als blaue Karte (steht in der Kartenliste von Abschnitt 8, eigene Regel hält sie blau) |
+| `.pm.plus` / `.pm.minus` | Plus / Minus: Zeichen statt Punkte über `ul.points li::before` |
+| `.aufgabe` | Aufgabenfolie, nur CSS: `--p` je Option, `.antwort` trägt den Schritt, die richtige Option `data-step` + `data-keep` |
 
 ### Formelsatz
 
@@ -358,6 +394,26 @@ dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es
   reichten ab etwa 15 Folien nicht mehr — das Register lief unten aus dem Bild, die
   Übersicht oben und unten. **Die Übersicht wird nie scrollbar; sie zeigt alle Folien
   auf einen Blick und macht die Kacheln dafür kleiner.**
+- **Chrome malt am Bühnenrand eine Spalte in Kartenfarbe.** Bei manchen Maßstäben (1,25 ·
+  1,37 · 1,49 nachgestellt, nicht bei 1,11 und 1,31) steht am rechten Bühnenrand eine halb
+  gedeckte Linie in `--blau`, von oben bis unter die große Karte — auf Titel-, Dank- und
+  Trennerfolie, obwohl die Karte 56 px vorher endet. Radius, `overflow`, `clip-path`,
+  `z-index` und Lage ändern nichts; `transform: translateZ(0)` an `::before` (eigene
+  Kompositionsebene) schon. Nachweis: Karte rot gefärbt, Linie rosa. Regel in Abschnitt 7.
+- **Der Zeilenkasten setzt der Karte den Boden.** `passeRegister()` schrumpfte nur die
+  Miniatur; die Beschriftung daneben (13,5 px mit Durchschuss = 17 px) hielt jede Karte
+  auf 27 px. Bei 34 Folien war der Stapel 1017 px hoch und ragte auf jedem Bildschirm
+  oben und unten hinaus, ohne dass es auffiel. Seit dem 14.09.: `line-height:1` an der
+  Beschriftung, der Stapel bekommt höchstens 95 % der Fensterhöhe (Max' Wunsch: nur oben
+  und unten ein Rand), und in vier Stufen weichen Polsterung, Abstand, Miniatur und zuletzt
+  der Grad (`--rail-font`, 13,5 → 9 px). 42 Karten passen so noch in 600 px — **54 nicht mehr:**
+  bei 813 px Fensterhöhe 97 %, bei 720 px 105 %. Der Musterbogen ist damit an der Grenze eines
+  einspaltigen Registers. **Entschieden am 15.09.: so lassen** — die Vorlage zeigt Möglichkeiten,
+  echte Vorträge haben 15–25 Folien. Kein zweispaltiges Register, keine Obergrenze.
+- **Flex-Spalte dehnt das Bild, `max-height` staucht es.** Ein `img` in `figure`
+  (`display:flex; flex-direction:column`) wird auf Kartenbreite gestreckt; greift dann
+  `max-height`, bleibt die Breite stehen — verzerrt, ohne Fehlermeldung. Nachgemessen
+  503 × 360 statt 437 × 360. `object-fit: contain` hält das Bild im Kasten unverzerrt.
 
 ---
 
@@ -377,5 +433,5 @@ Geometrie oder Formensprache **nur auf ausdrückliche Bitte** — diese Entschei
 sind gefallen und stehen begründet im Protokoll.
 
 Die Vorlage enthält Platzhalter (Autor:innen, Zahlen, Quellen), auf den Folien als
-solche gekennzeichnet. Einzige echte Angabe: Hestenes, Wells & Swackhamer (1992).
+solche gekennzeichnet. Das Logo ist seit dem 14.09. echt (RWTH, als Symbol eingebettet), das Bild der Klimabox ebenso. Einzige echte Angabe: Hestenes, Wells & Swackhamer (1992).
 Beim Befüllen mit echtem Inhalt keine Quellen erfinden.

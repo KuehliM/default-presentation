@@ -81,7 +81,7 @@ window.addEventListener('load', () => setTimeout(() => {
     /* Kleinste Schrift, getrennt nach Fliesstext und Grafik. Reine
        Auszeichnungen wie Augenbraue oder Bildunterschrift sind bewusst
        klein und zaehlen nicht als Fliesstext. */
-    const AUSZEICHNUNG = '.eyebrow, .caption, .source-note, .foot-meta, .demo-note,'
+    const AUSZEICHNUNG = '.eyebrow, .aufgabe-nr, .gegen-kopf, .caption, .source-note, .foot-meta, .demo-note,'
                       + ' .vlist-s';   /* Stuetze von KaTeX, kein Text */
     let minText = Infinity, woText = '', minSvg = Infinity;
     for (const el of s.querySelectorAll('*')) {

@@ -15,7 +15,7 @@ dieses Dokument geht ins Einzelne.
 
 | Datei | Zweck |
 |---|---|
-| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 34 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
+| `vorlage.html` | **Der Standard-Foliensatz.** Kopieren, Text ersetzen, fertig. 54 Folien für den Vortrag, drei im Anhang — jede Darstellungsform genau einmal. |
 | `CLAUDE.md` | Arbeitsanweisung für KI-Sitzungen: harte Maße, Schriftgrade, Regeln, bekannte Fallen. Claude Code liest sie beim Start automatisch. |
 | `pruefen.py` | Misst jede Folie im Browser: Überlauf, Füllstand, kleinste Schrift. `python3 pruefen.py` |
 | `Sessions/` | Datierte Protokolle der Arbeitssitzungen mit allen Entscheidungen und ihren Begründungen. |
@@ -136,7 +136,7 @@ Alles Änderbare liegt im `<body>`. Der Kopfkommentar in der Datei führt diesel
 | Beschriftung der Registerkarte | `data-title="…"` an der `<section>` |
 | Name und Tagung in der Fußzeile | `<p class="foot-meta">` — eine einzige Stelle |
 | Autor:innen und Einrichtung | `<div class="byline">` auf der Titelfolie |
-| Logo | `<div class="logo">` — zwei Stellen: Fußzeile und Titelfolie |
+| Logo | Symbol `logo-rwth` am Anfang des `<body>` — **eine** Stelle; Titel-, Dankfolie und Fußzeile setzen es per `<use>` ein. Quelle: `RWTH_Logo_3.svg` |
 | Folienformat | `--stage-w` / `--stage-h` im `<style>`, Abschnitt 1 |
 | Farben | `<style>`, Abschnitt 1 |
 
@@ -192,7 +192,15 @@ nach der Zahl der Folien.
 | `ul.refs` | Quellenverzeichnis mit hängendem Einzug |
 | `.stats` / `.stat` | Kennzahlenkacheln: große blaue Zahl über der Beschriftung |
 | `.keys` | zweispaltige Definitionsliste |
-| `figure` + `figcaption` | Grafik oder Diagramm mit Bildunterschrift |
+| `.slide.these` | Behauptung + Beleg: Titel als Satz in 38 px, zwei Zeilen erlaubt |
+| `.frage` / `.antwort-karte` | Frage groß, Antwort als blaue Karte mit `.antwort-kurz` und `ul.points` |
+| `.pm.plus` / `.pm.minus` | Karte mit `h3` und `ul.points`, Plus- oder Minuszeichen statt Punkte |
+| `.gegen` | Gegenüberstellung: Raster aus `.gegen-kopf`, dann je Zeile `.gegen-l`, `.gegen-pfeil`, `.gegen-r` |
+| `.bilanz` / `.hyp` | Hypothesen-Bilanz: `.hyp-nr`, `.hyp-txt`, `.hyp-mark.ja/.nein/.offen` |
+| `.botschaften` / `.botschaft` | drei Karten mit `.nr` und einem `p` |
+| `ol.fragen` | nummerierte Fragen, groß; die Ziffer kommt aus dem Zähler |
+| `.aufgabe` | Aufgabenfolie: `.aufgabe-nr`, `.aufgabe-stamm`, `ol.optionen` mit `li.option` (`--p` als Anteil), darin `.buchst`, `.txt`, `.antwort` (Balken und Wert) |
+| `figure` + `figcaption` | Grafik oder Diagramm mit Bildunterschrift. Auch für ein Rasterbild: `<img>` als Daten-URI hinein, es steht unverzerrt und mittig, höchstens 360 px hoch — mit einzeiliger Unterschrift bleibt die Folie bei 90 % |
 | `pre` | Codeblock, blau getönt |
 | `.chip` | Pille für Schlagworte — vorhanden, in der Vorlage derzeit ungenutzt |
 | `.slide.anhang` | Folie für die Fragerunde, nur über die Übersicht erreichbar |
@@ -297,7 +305,7 @@ ist die Zahl darauf nicht mehr präsent.
 
 ## Formensammlung
 
-Zwölf Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
+Zweiunddreißig Folien in der Vorlage zeigen wiederverwendbare Darstellungen. Der Inhalt ist
 Platzhalter — es geht um die Form.
 
 | Folie | Was sie hergibt |
@@ -314,9 +322,30 @@ Platzhalter — es geht um die Form.
 | **Von oben nach unten** | Trichter über vier Stufen mit Schwund daneben — für Stichprobenauswahl, Kodierschritte, jede Kette mit Ausfällen. |
 | **Aufploppen** | Vier Kacheln, die nacheinander aufspringen. Das `<svg>` in der Kachel lässt sich gegen ein `<img>` tauschen. |
 | **Deckel ab** | Eine Kiste, deren Deckel sich abhebt und in der eine Pflanze wächst. Das Wachstum ist ein Pfad, dessen Strichmuster von 100 auf 0 läuft. |
+| **Gegenüberstellung** | Vorstellung der Lernenden links, Fachkonzept rechts, Zeile für Zeile mit Pfeil dazwischen (`.gegen`); die rechte Seite erscheint zeilenweise. |
+| **Antwortkurven** | Item-Antwortkurven: je Antwortoption eine Linie über der Gesamtpunktzahl (Gruppenmitten und Anteile im Skript); die richtige Option blau, der Distraktor mit Vorstellung gestrichelt. Die Marke „ab hier führt B" wird aus den Daten gerechnet. |
+| **Forest Plot** | Effektstärke mit Intervall je Teilgruppe, Punkt und Antenne; der Gesamteffekt als Raute mit eigener Linie im Schritt. |
+| **Hypothesen** | Hypothesen-Bilanz (`.bilanz`): Nummer, Erwartung, Befund als Pille im Schritt — `.ja` blau, `.nein` umrandet, `.offen` hellblau. |
+| **Drei Botschaften** | Drei Karten (`.botschaften`), große Ziffer und ein Satz; die zweite und dritte als Schritte. |
+| **Fragen an Sie** | `ol.fragen`: nummerierte Fragen groß gesetzt, als Schritte — die letzte Folie, bleibt in der Diskussion stehen. |
+| **Einflüsse** | Stern: ein Kern, Satelliten auf einer Ellipse, Lage aus der Zahl der Satelliten; Beschriftung, Unterzeile und Schritt als Liste im Skript, Pillenbreite am Text gemessen. |
+| **Pfadmodell** | Kästen und Pfeile aus einer Liste (Knoten mit Lage, Kanten mit Koeffizient); die Pfeile enden am Kastenrand. Schritt 1 die Koeffizienten, Schritt 2 der indirekte Weg, hervorgehoben und ausgerechnet. |
+| **Behauptung** | Assertion-Evidence: `.slide.these` — der Titel ein ganzer Satz (38 px, zwei Zeilen erlaubt), darunter genau ein Beleg. Hier divergierende Säulen um eine Nulllinie (positiv blau, negativ grau, sortiert), das Mittel als Schritt. |
+| **Punktfeld** | Hundert Punkte, zeilenweise gefärbt nach einer Liste ganzer Zahlen, je Anteil ein Schritt, Legende daneben. „27 von 100" statt 27 %. |
+| **Frage und Antwort** | Forschungsfrage groß (`.frage`), die Antwort als blaue Karte (`.antwort-karte`) im ersten Schritt, Stützpunkte im zweiten. Als Schlussfolie: die Leitfrage wiederholen und in zwei Sätzen beantworten. |
+| **Stärken und Grenzen** | Plus / Minus: zwei Karten (`.pm.plus`, `.pm.minus`), Zeichen statt Punkte, die Grenzen als Schritt. |
+| **Zeiger** | Foto mit Zeigern: Bild (`<image>` mit Daten-URI) und Zeiger in einem SVG mit einem Koordinatensystem — Ziel, Linie und Beschriftung stehen als Zahlen im Quelltext, jeder Zeiger ein Schritt. Für ein eigenes Foto: `href` tauschen, `width`/`height` auf dessen Seitenverhältnis setzen, Zeiger neu setzen. |
+| **Bildpaar** | Zwei Bilder nebeneinander, je eine Unterschrift, das zweite als Schritt. Beide im selben Seitenverhältnis, sonst stehen die Unterschriften nicht auf einer Höhe. |
+| **Messkurve** | Liniendiagramm über der Zeit: Reihen als Arrays im Skript, Achsen daraus; jede Reihe ein Schritt, die Modellkurve (Sättigung mit Endtemperatur und Zeitkonstante) gestrichelt. Beschriftet am Linienende, ohne Legende. |
+| **Aufgabe** | Ein Testitem im Wortlaut, je Option ein Balken mit der Lösungshäufigkeit (`--p` an der Option). Schritt 1 zeigt die Balken, Schritt 2 hebt die richtige Option hervor (`data-step` + `data-keep`). Kein SVG, nur CSS. |
+| **Hantel** | Je Aufgabe zwei Punkte (Vortest grau, Nachtest blau) mit Strich dazwischen, nach Zuwachs sortiert — sortiert wird beim Aufbau. |
+| **Effektstärke** | Zwei Normalverteilungen gleicher Streuung, die Achse in Standardabweichungen; Cohens *d* als Klammer zwischen den Mitten, dazu der Anteil über dem Kontrollmittel (Φ(*d*)). |
+| **Energiefluss** | Sankey mit frei benannten Knoten in Spalten: Knoten nennen ihre Spalte, Flüsse ihren Anteil, Höhe und Lage werden gerechnet; jede weitere Spalte ein Schritt. Anders als „Übergänge" nicht an 3 × 3 gebunden. |
+| **Klimabox** | Bild mit Text: ein Rasterbild (PNG, als Daten-URI eingebettet, 21 KB) in der linken Karte, Stichpunkte rechts, die einzeln erscheinen. Vor dem Einbetten Weißrand beschneiden und auf etwa 1200 px Breite bringen — mehr braucht die Bühne nicht. |
 
-Alle Grafiken sind Inline-SVG in denselben Farben und derselben Schrift — kein Bild,
-keine Fremdbibliothek, nichts nachzuladen.
+Alle Grafiken sind Inline-SVG in denselben Farben und derselben Schrift; das eine
+Rasterbild (Klimabox) steckt als Daten-URI in der Datei. Keine Fremdbibliothek,
+nichts nachzuladen.
 
 ---
 
