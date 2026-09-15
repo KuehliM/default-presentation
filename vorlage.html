@@ -77,6 +77,9 @@
      TEIL B  <body>    die Folien; dort steht der zu aendernde Text
      TEIL C  <script>  Skalierung, Blaettern, Register, Diagramme
 
+   Neuer Vortrag: python3 werkzeuge/neu.py <ordner> "Titel" — legt einen
+   Vortragsordner mit diesem Unterbau an; Folien von hier hineinkopieren.
+
    Wo aendere ich was?
      Text der Folien ......... TEIL B, jede <section class="slide">
      Name und Tagung unten ... TEIL B, <p class="foot-meta">
@@ -101,10 +104,11 @@
 
    Harte Grenzen — nicht ueberschreiten
      Buehne 1280 x 720. Inhalt beginnt bei 40 px und endet
-     spaetestens bei 640 px; der Streifen darunter gehoert der
-     Fusszeile. Satzspiegel 68 px links und rechts. Abbildungen
+     spaetestens bei 650 px; der Streifen darunter gehoert der
+     Fusszeile. Karten sind so hoch wie ihr Inhalt; Grafiken werden
+     so gross gebaut, dass sie die Flaeche nutzen. Satzspiegel 68 px links und rechts. Abbildungen
      hoechstens 400 px hoch. Kleinste lesbare Schrift 15 px.
-     Gemessen wird nicht geschaetzt:  python3 pruefen.py
+     Gemessen wird nicht geschaetzt:  python3 werkzeuge/pruefen.py
 
    Eine Folie anlegen
      <section class="slide" data-title="Registerkarte">
@@ -153,7 +157,8 @@
   --tabT:      var(--blau);
 
   --pad-x: 68px;              /* Satzspiegel links und rechts */
-  --pad-b: 80px;              /* reservierter Streifen fuer die Fusszeile */
+  --pad-b: 70px;              /* reservierter Streifen fuer die Fusszeile: Inhalt bis 650,
+                                 die Fusszeile beginnt bei 662 (bis 15.09.: 80) */
   --grund: #edf2fa;           /* Folienhintergrund */
   --rand:  var(--grund);      /* Streifen neben der Folie, wenn das
                                  Fensterformat nicht 16:9 ist */
@@ -171,8 +176,8 @@
   --stage-h: 720;        /* 4:3 waere 1024 / 768. */
 
   --ease: cubic-bezier(.22,.9,.24,1);
-  --stripe: 14px;        /* Breite des Farbstreifens am Kartenrand */
-  --peek: 21px;          /* in Ruhe sichtbar: Streifen plus 5px Papier */
+  --stripe: 8px;         /* Breite des Farbstreifens am Kartenrand (bis 15.09.: 14) */
+  --peek: 12px;          /* in Ruhe sichtbar: Streifen plus 4px Papier (bis 15.09.: 21) */
   --peek-hover: 90px;    /* Maus im Register: Miniatur wird sichtbar */
 }
 
@@ -253,7 +258,12 @@ body{
 .rail{
   position:fixed; right:0; top:50%; transform:translateY(-50%);
   z-index:50; display:flex; flex-direction:column; gap:var(--rail-gap, 5px);
+  /* In Ruhe zurueckgenommen: Max' Bild vom 15.09. — 67 Karten mit vollem
+     Streifen und Pillenrundung sahen aus wie ein Zaun. Unter der Maus
+     oder mit Tastaturfokus wieder voll gedeckt. */
+  opacity:.7; transition: opacity .3s ease;
 }
+.rail:hover, .rail:focus-within{ opacity:1 }
 /* Unsichtbare Anfassflaeche: die Maus muss den 7px schmalen
    Strich nicht treffen, die Naehe zum Rand genuegt. */
 .rail::before{ content:""; position:absolute; right:0; top:-28px; bottom:-28px; width:120px }
@@ -500,7 +510,7 @@ ul.refs i{ font-style:italic }
 /* Der Streifen der Fusszeile bleibt frei. Grafiken koennen sonst
    in ihn hineinwachsen und Text ueberlagern — deshalb eine Obergrenze
    fuer Abbildungen. Sie verkleinert die Zeichnung, verzerrt sie nicht. */
-.slide figure svg{ max-height: 400px }
+.slide figure svg{ max-height: 430px }   /* 650 − Kartenoberkante 144 − Polsterung 48 − Luecke 10 − einzeilige Unterschrift 20 */
 /* Rasterbild (img) in einer Abbildung: Kasten auf Kartenbreite, hoechstens
    360 px hoch — 40 px weniger als eine Grafik, damit darunter eine
    zweizeilige Unterschrift Platz hat. Nachgemessen: die Flex-Spalte dehnt
@@ -508,7 +518,7 @@ ul.refs i{ font-style:italic }
    waere verzerrt. object-fit:contain haelt es unverzerrt und mittig im
    Kasten, bei jedem Seitenverhaeltnis. */
 figure img{ display:block; width:100%; height:auto; object-fit:contain }
-.slide figure img{ max-height: 360px }
+.slide figure img{ max-height: 410px }
 
 /* ---- Formensammlung: Diagramme, Ablaeufe, Kacheln --------- */
 
@@ -770,6 +780,9 @@ table.vgl .num{ font-family:var(--mono); font-variant-numeric:tabular-nums }
   gap:12px; align-items:center;
 }
 .bahn-koepfe::before{ content:"" }              /* leere Ecke ueber der Rollenspalte */
+/* Dieselbe rechte Polsterung wie die Bahn — sonst ist das Kopfraster 12 px
+   breiter, jede Spalte 3 px, und die Koepfe wandern nach rechts aus der Mitte. */
+.bahn-koepfe{ padding-right:12px }
 .bahn-kopf{
   text-align:center; padding:9px 10px; border-radius:999px;
   background:var(--blau); color:#fff; font-size:15px; font-weight:500; line-height:1.2; white-space:nowrap;
@@ -1068,11 +1081,15 @@ table.vgl .num{ font-family:var(--mono); font-variant-numeric:tabular-nums }
 .pm.minus ul.points li::before{ content:"−"; color:var(--sw-75) }
 
 /* Gegenueberstellung — links die Vorstellung, rechts das Fachkonzept,
-   Zeile fuer Zeile, ein Pfeil dazwischen; die rechte Seite als Schritte */
-.gegen{ display:grid; grid-template-columns:1fr 48px 1fr; column-gap:14px; align-items:center }
+   Zeile fuer Zeile, ein Pfeil dazwischen; die rechte Seite als Schritte.
+   Die Zellen fuellen ihre Zeile (stretch), damit die Oberlinien aller
+   drei Spalten auf einer Hoehe liegen — mit align-items:center sass die
+   Linie der kuerzeren Zelle tiefer als die der laengeren. Mittig steht
+   der Text ueber align-content am Block, nicht ueber Flex. */
+.gegen{ display:grid; grid-template-columns:1fr 48px 1fr; column-gap:14px; align-items:stretch }
 .gegen-kopf{ margin:0 0 6px; font-size:12.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--sw-75) }
 .gegen-kopf.fach{ color:var(--blau) }
-.gegen-l, .gegen-r{ margin:0; padding:15px 0; font-size:19px; line-height:1.45; border-top:1px solid var(--line) }
+.gegen-l, .gegen-r{ margin:0; padding:15px 0; font-size:19px; line-height:1.45; border-top:1px solid var(--line); align-content:center }
 .gegen-l{ color:var(--sw-75) }
 .gegen-r{ font-weight:500 }
 .gegen-pfeil{ align-self:stretch; display:grid; place-items:center; border-top:1px solid var(--line); color:var(--blau); font-size:26px }
@@ -1134,6 +1151,196 @@ ol.fragen li{
 }
 ol.fragen li::before{ content:counter(frage); font-size:44px; font-weight:700; line-height:1; color:var(--blau); letter-spacing:-.03em }
 
+/* Kernsatz mit Erlaeuterung — eine Aussage gross in Blau, das
+   Kleingedruckte darunter Zeile fuer Zeile als Schritte. Kein h2:
+   der Satz ist der Titel, wie bei der Forschungsfrage. */
+.kern{ margin:0; font-size:33px; line-height:1.3; font-weight:700; letter-spacing:-.02em; color:var(--blau); max-width:1060px; text-wrap:balance }
+.erl{ display:flex; flex-direction:column }
+.erl p{ margin:0; padding:14px 0; font-size:19px; line-height:1.45; border-top:1px solid var(--line) }
+.erl p:first-child{ border-top:0; padding-top:2px }
+.erl p:last-child{ padding-bottom:2px }
+.erl b{ color:var(--blau) }
+
+/* Gleichung — A + B → C als Merkform: Terme als Kacheln, die Zeichen
+   gross dazwischen; das Ergebnis blau. Zeichen und Term treten
+   zusammen auf (dasselbe data-step). */
+.gleichung{ display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:18px; align-items:stretch }
+.gleichung .term{
+  background:#fff; border-radius:var(--r-lg); padding:30px 26px 32px; text-align:center;
+  box-shadow:0 2px 12px rgba(0,42,80,.07);
+  display:flex; flex-direction:column; justify-content:center; gap:12px; min-height:190px;
+}
+.gleichung .term b{ font-size:30px; line-height:1.1; font-weight:700; letter-spacing:-.02em }
+.gleichung .term span{ font-size:16px; line-height:1.4; color:var(--muted); text-wrap:pretty }
+.gleichung .term.ergebnis{ background:var(--blau); color:#fff }
+.gleichung .term.ergebnis span{ color:rgba(255,255,255,.82) }
+.gleichung .op{ align-self:center; font-size:64px; line-height:1; color:var(--blau); font-variant-numeric:tabular-nums }
+
+/* Konvergenz — mehrere Befunde laufen auf einen Schluss zu; das
+   Gegenstueck zur Verzweigung. Links drei Karten in gleich hohen
+   Zeilen ohne Luecke (die Luft steckt als Rand in der Karte), damit
+   ihre Mitten genau bei 1/6, 1/2 und 5/6 der Hoehe liegen. Dort
+   setzen die Pfeile an: ein SVG ohne festes Seitenverhaeltnis fuellt
+   die Mittelspalte, vector-effect haelt die Strichstaerke trotzdem
+   konstant. Rechts der Schluss als blaue Karte, mittig; die Spitze
+   ist ihr Pseudo-Element. */
+.konv{ display:grid; grid-template-columns:1.05fr 120px .95fr; align-items:stretch }
+.konv-quellen{ display:grid; grid-template-rows:repeat(3, 1fr) }
+.konv-befund{
+  margin:7px 0; padding:18px 24px; background:#fff; border-radius:var(--r-lg);
+  box-shadow:0 2px 12px rgba(0,42,80,.07); font-size:19px; line-height:1.45;
+  align-content:center; text-wrap:pretty;   /* mittig in der Zeile — kein Flex: der wuerde eine Formel im Satz zum eigenen Element machen */
+}
+.konv-mitte{ position:relative }
+.konv-mitte svg{ position:absolute; inset:0; width:100%; height:100%; display:block; overflow:visible }
+.konv-mitte path{ fill:none; stroke:var(--blau-50); stroke-width:2.4; vector-effect:non-scaling-stroke }
+.konv-ziel{
+  position:relative; align-self:center; margin:0; padding:26px 28px;
+  background:var(--blau); color:#fff; border-radius:var(--r-lg);
+  font-size:21px; line-height:1.4; font-weight:500; text-wrap:pretty;
+}
+.konv-ziel::before{
+  content:""; position:absolute; left:-13px; top:50%; width:14px; height:22px;
+  transform:translateY(-50%); background:var(--blau-50);
+  clip-path:polygon(0 0, 100% 50%, 0 100%);
+}
+
+/* Slopegraph — eine Linie je Person vom Vortest zum Nachtest;
+   steigend blau, fallend grau, das Mittel als dicke Linie */
+.sl-grid{ stroke:var(--sw-25); stroke-width:1 }
+.sl-ax{ stroke:var(--sw-50); stroke-width:1.5 }
+.sl-tick{ font-size:13px; fill:var(--muted) }
+.sl-kopf{ font-size:14px; font-weight:700; fill:var(--ink) }
+.sl-linie{ stroke:var(--blau-50); stroke-width:1.5; stroke-linecap:round }
+.sl-linie.neg{ stroke:var(--sw-50) }
+.sl-linie.stark{ stroke:var(--sw-75); stroke-width:2.6 }
+.sl-pt{ fill:var(--blau-50) }
+.sl-pt.neg{ fill:var(--sw-50) }
+.sl-mittel{ stroke:var(--blau); stroke-width:4; stroke-linecap:round }
+.sl-lab{ font-size:13.5px; font-weight:700; fill:var(--blau) }
+.sl-lab.neg{ fill:var(--sw-75) }
+
+/* Studiendesign als Schema — Gruppen als Zeilen, Zeitpunkte als Spalten.
+   Die Spaltenvorlage kommt aus --spalten der Folie (die Intervention darf
+   breiter sein). Messung als umrandete Pille, Intervention als blauer
+   Kasten, Kontrollbedingung als Rahmen, Ausstehendes gestrichelt. */
+.design{ display:grid; grid-template-columns:190px var(--spalten); gap:14px; align-items:center }
+.design-kopf{ margin:0; text-align:center; font-size:15px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--blau); line-height:1.3 }
+.design-kopf span{ display:block; letter-spacing:0; text-transform:none; font-weight:400; color:var(--muted) }
+.design-gruppe{ margin:0; font-size:17px; font-weight:700; color:var(--blau); line-height:1.25 }
+.design-gruppe span{ display:block; font-size:14px; font-weight:400; color:var(--muted); margin-top:2px }
+.design-mess, .design-block{ margin:0; text-align:center; font-size:15px; font-weight:500; line-height:1.3 }
+.design-mess{ padding:11px 10px; border-radius:999px; border:2px solid var(--blau); color:var(--blau); white-space:nowrap }
+.design-mess.offen{ border-style:dashed; border-color:var(--blau-50); color:var(--blau-75) }
+.design-block{ padding:13px 12px; border-radius:var(--r-sm); background:var(--blau); color:#fff }
+.design-block.kontrolle{ background:none; box-shadow:inset 0 0 0 1.5px var(--line); color:var(--muted) }
+
+/* Kennzahl mit Veraenderung — die Kachel .stat mit vorher (klein, grau)
+   ueber nachher (gross) und der Differenz als Pille; .null fuer keinen Effekt */
+.stat .von{ font-size:17px; color:var(--muted); font-variant-numeric:tabular-nums; margin-bottom:-2px }
+.stat{ position:relative }
+.stat .delta{
+  position:absolute; top:20px; right:22px; font-style:normal; font-family:var(--mono); font-size:14px; font-weight:700;
+  padding:4px 11px; border-radius:999px; background:var(--blau-10); color:var(--blau); font-variant-numeric:tabular-nums;
+}
+.stat .delta.null{ background:var(--sw-10); color:var(--sw-75) }
+
+/* Triade — drei Groessen, die sich gegenseitig bedingen */
+.tr-kante{ stroke:var(--blau-50); stroke-width:2.2; fill:none }
+.tr-spitze{ fill:var(--blau-50) }
+.tr-pille{ fill:#fff; stroke:var(--blau); stroke-width:1.8 }
+.tr-t{ font-size:15px; font-weight:700; fill:var(--ink) }
+.tr-s{ font-size:12.5px; fill:var(--muted) }
+.tr-mitte{ font-size:14px; font-weight:700; fill:var(--blau) }
+/* Zwiebel — ein Kern, Schichten darum; aussen hell, innen dunkel */
+.zw-ring{ stroke:#fff; stroke-width:2 }
+.zw-ring.s1{ fill:var(--blau-50) }
+.zw-ring.s2{ fill:var(--blau-25) }
+.zw-ring.s3{ fill:var(--blau-10) }
+.zw-kern{ fill:var(--blau) }
+.zw-kern-t{ font-size:15px; font-weight:700; fill:#fff }
+.zw-t{ font-size:14px; font-weight:700; fill:var(--ink) }
+/* Pyramide — Stufen, die aufeinander aufbauen; oben wird es enger */
+.py-stufe{ fill:var(--blau-25) }
+.py-stufe.s2{ fill:var(--blau-50) }
+.py-stufe.s3{ fill:var(--blau-75) }
+.py-stufe.s4{ fill:var(--blau) }
+.py-nr{ font-family:var(--mono); font-size:12px; font-weight:700; fill:var(--blau) }
+.py-t{ font-size:17px; font-weight:700; fill:var(--ink) }
+.py-t.hell{ fill:#fff }
+.py-e{ font-size:15px; fill:var(--ink) }
+.py-linie{ stroke:var(--sw-25); stroke-width:1; stroke-dasharray:3 4 }
+/* Zuordnung — zwei Spalten, Linien dazwischen */
+.zu-kasten{ fill:#fff; stroke:var(--sw-25); stroke-width:1.2 }
+.zu-kasten.fach{ fill:var(--blau-10); stroke:var(--blau-50) }
+.zu-t{ font-size:16px; fill:var(--ink) }
+.zu-t.fach{ font-weight:500 }
+.zu-kopf{ font-size:12.5px; font-weight:700; letter-spacing:.08em; fill:var(--sw-75) }
+.zu-kopf.fach{ fill:var(--blau) }
+.zu-linie{ fill:none; stroke:var(--blau-50); stroke-width:2.2 }
+/* Freikoerperbild — Koerper auf schiefer Ebene, Kraefte als Pfeile */
+.fk-boden{ stroke:var(--sw-50); stroke-width:1.5 }
+.fk-ebene{ fill:var(--sw-10); stroke:var(--sw-50); stroke-width:1.5 }
+.fk-koerper{ fill:#fff; stroke:var(--ink); stroke-width:1.8 }
+.fk-punkt{ fill:var(--ink) }
+.fk-kraft{ stroke:var(--blau); stroke-width:3; stroke-linecap:round }
+.fk-spitze{ fill:var(--blau) }
+.fk-kraft.komp{ stroke:var(--blau-75); stroke-width:2; stroke-dasharray:6 4 }
+.fk-spitze.komp{ fill:var(--blau-75) }
+.fk-hilfe{ stroke:var(--sw-25); stroke-width:1; stroke-dasharray:3 4; fill:none }
+.fk-winkel{ fill:none; stroke:var(--sw-75); stroke-width:1.2 }
+.fk-t{ font-size:16px; font-weight:500; fill:var(--blau); paint-order:stroke; stroke:#fff; stroke-width:4px; stroke-linejoin:round }
+.fk-t.komp{ fill:var(--blau-75) }
+.fk-a{ font-size:14px; fill:var(--sw-75) }
+/* Histogramm — Klassen aus Rohdaten, Referenzlinie als Schritt */
+.hg-grid{ stroke:var(--sw-25); stroke-width:1 }
+.hg-ax{ stroke:var(--sw-50); stroke-width:1.5 }
+.hg-tick{ font-size:13px; fill:var(--muted) }
+.hg-ax-t{ font-size:14px; fill:var(--ink) }
+.hg-bar{ fill:var(--blau-50) }
+.hg-bar.stark{ fill:var(--blau) }
+.hg-n{ font-size:12.5px; fill:var(--muted) }
+.hg-ref{ stroke:var(--sw-75); stroke-width:1.6; stroke-dasharray:6 4 }
+.hg-lab{ font-size:13.5px; font-weight:700; fill:var(--sw-75) }
+.hg-lab.stark{ fill:var(--blau) }
+/* Item-Heatmap — Zelle blau nach Wert, Schrift hell auf dunkler Zelle */
+.hm-zelle{ fill:var(--blau); stroke:#fff; stroke-width:2 }
+.hm-v{ font-size:14px; fill:var(--ink); font-variant-numeric:tabular-nums }
+.hm-v.hell{ fill:#fff }
+.hm-item{ font-size:14px; fill:var(--ink) }
+.hm-kopf{ font-size:12.5px; font-weight:700; fill:var(--blau) }
+.hm-kopf.sub{ font-weight:400; fill:var(--muted) }
+.hm-delta{ font-size:14px; font-weight:700; fill:var(--blau); font-variant-numeric:tabular-nums }
+.hm-delta.klein{ font-weight:400; fill:var(--muted) }
+
+/* Arbeits- und Zeitplan (Gantt) — Zeilen sind Arbeitspakete, Spalten
+   Quartale. Kopfzeile und jede Zeile sind eigene Raster mit derselben
+   Vorlage (wie die Schwimmbahnen), ein Balken sagt --von und --dauer.
+   Die Heute-Linie liegt absolut ueber allem: --anteil ist ihr Ort
+   zwischen 0 und 1 auf der Spaltenflaeche rechts der Beschriftung.
+   Bezug der absoluten Lage ist der Polsterkasten der Karte, deshalb
+   rechnet left die Kartenpolsterung (--kp, 28 px aus Abschnitt 8) mit. */
+.gantt{ display:flex; flex-direction:column; gap:8px; position:relative; --links:230px; --kp:28px }
+.gantt-kopf, .gantt-zeile{ display:grid; grid-template-columns:var(--links) repeat(var(--spalten), minmax(0,1fr)); gap:0 6px; align-items:center }
+.gantt-kopf{ padding-bottom:8px; border-bottom:2px solid var(--blau-50); margin-bottom:4px }
+.gantt-kopf::before{ content:"" }
+.gantt-q{ margin:0; text-align:center; font-size:15px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--blau) }
+.gantt-aufgabe{ margin:0; font-size:16px; line-height:1.3; padding-right:14px }
+.gantt-balken{
+  grid-column: calc(var(--von) + 1) / span var(--dauer);
+  margin:0; padding:8px 14px; border-radius:999px; background:var(--blau-25); color:var(--blau);
+  font-size:14px; font-weight:500; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.gantt-balken.fertig{ background:var(--blau); color:#fff }
+.gantt-heute{
+  position:absolute; top:18px; bottom:18px; width:0;
+  left: calc(var(--kp) + var(--links) + (100% - 2 * var(--kp) - var(--links)) * var(--anteil));
+  border-left:2px dashed var(--sw-75);
+}
+.gantt-heute span{
+  position:absolute; bottom:-4px; left:8px; font-size:13.5px; font-weight:700; color:var(--sw-75); white-space:nowrap;
+}
+
 /* ---------- 7 · Fusszeile und Logo ------------------------ */
 .slide::before, .slide::after{ content:""; position:absolute; pointer-events:none; z-index:0 }
 /* Eigene Kompositionsebene fuer die grossen blauen Karten (Titel, Dank,
@@ -1147,7 +1354,7 @@ ol.fragen li::before{ content:counter(frage); font-size:44px; font-weight:700; l
 /* Links abgerundet, rechts flach am Bildschirmrand. overflow:hidden
    sorgt dafuer, dass der Farbstreifen die Rundung mitmacht — sonst
    schaut die runde Ecke der Karte hinter dem eckigen Streifen hervor. */
-.rail-item{ border-radius: 14px 0 0 14px; overflow:hidden }
+.rail-item{ border-radius: 4px 0 0 4px; overflow:hidden }   /* eckiger als die Karten (bis 15.09.: 14) — bei 14 px Kartenhoehe waren es Pillen */
 .thumb{ border-radius: var(--r-sm) }
 .ov-item .thumb{ border-radius: var(--r-md) }
 
@@ -1207,6 +1414,9 @@ ol.fragen li::before{ content:counter(frage); font-size:44px; font-weight:700; l
 .slide > .antwort-karte,
 .slide > .gegen,
 .slide > .bilanz,
+.slide > .erl,
+.slide > .design,
+.slide > .gantt,
 .slide > ol.fragen,
 .slide > .keys{
   background:#fff; border-radius:var(--r-lg); padding:24px 28px;
@@ -1462,7 +1672,7 @@ ul.points li math{ font-size:20px }
 <!-- Logo: einmal als Symbol, an drei Stellen per use eingesetzt
      (Titelfolie, Dankfolie, Fusszeile). Logo tauschen heisst: die
      Pfade hier ersetzen und den Sichtausschnitt (viewBox) mitnehmen.
-     Quelle: RWTH_Logo_3.svg — Farben sind die Tokens blau / blau-50. -->
+     Quelle: quellen/RWTH_Logo_3.svg — Farben sind die Tokens blau / blau-50. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <symbol id="logo-rwth" viewBox="0 0 361.36 98">
     <path fill="#00549f" fill-rule="evenodd" d="m16.47404,46.81361l-0.582,0l-14.596,0l0,-5.14l0,-40.143l0,-0.337l14.565,0l0.03,0l10.293,0c6.75,-0.001 12.57,4.368 14.469,10.161c1.76,5.366 0.256,11.199 -3.713,15.348c0.528,1.431 1.042,2.548 1.532,3.833c1.101,2.54 2.111,5.08 3.212,7.589l3.611,8.689l-0.092,0l-15.299,0c0,0.007 -0.123,-0.368 -0.245,-0.52c-0.611,-1.346 -1.162,-2.785 -1.774,-4.131l-3.702,-8.781c-1.468,-3.55 -2.937,-6.903 -4.406,-10.453c1.834,-0.049 3.204,0.294 4.974,-0.518c1.242,-0.613 3.127,-2.133 3.175,-5.047c-0.048,-1.446 -0.448,-2.54 -1.403,-3.677c-0.959,-1.058 -2.346,-1.842 -4.152,-1.868c0,0 -5.9,-0.003 -5.896,0l0,34.995l-0.001,0zm151.269,-45.612l-7.917,0l0,16.46l-9.891,0l-0.734,0l0,-13.614l0,-2.846l-10.953,0l-38.552,0l-10.648,0l-1.254,0l0,20.5c0.122,0.948 0.336,1.896 0.428,2.876l-4.1,-9.332c-1.836,-4.284 -3.58,-8.568 -5.416,-12.882c-0.153,-0.398 -0.262,-0.665 -0.46,-1.162l-15.665,0c0,2.233 0.031,4.711 0,6.884l0,13.616c0.153,0.856 0.429,1.988 0.552,2.876l-0.092,-0.184c-3.366,-7.68 -6.609,-15.39 -9.821,-23.192l-15.629,0c0.306,0.918 0.795,1.744 1.102,2.662l3.452,8.085l2.409,5.66l0.153,0.344c1.108,2.639 1.985,4.706 3.06,7.244c3.099,7.328 6.081,14.403 9.187,21.624l15.665,0l0,-23.865c0.397,1.346 0.704,2.723 1.01,4.1c2.662,6.547 5.539,13.187 8.261,19.765l15.635,0l0,-18.511l0,-16.552l10.707,0l0,15.42l0,0.734l0,18.909l15.056,0l0.123,0l0,-15.635l0,-15.023l0,-3.304l0,-1.101l10.614,0l0,35.063l6.702,0c2.754,-0.03 5.723,0 8.476,0l0,-18.602l0.123,0l9.087,0l1.415,0l0,18.602l3.327,0l11.851,0l0,-45.619l-7.262,0l-0.001,0z"/>
@@ -1543,11 +1753,11 @@ ul.points li math{ font-size:20px }
       <h2 data-anim>Was zusammengehört — und was sich lohnt</h2>
       <div class="cols" data-anim>
         <figure>
-          <svg id="vennSvg" viewBox="0 0 420 236" role="img" aria-label="Drei sich überlappende Kreise: Technologie, Pädagogik, Fachwissen; in der Mitte TPACK."></svg>
+          <svg id="vennSvg" viewBox="0 0 420 306" role="img" aria-label="Drei sich überlappende Kreise: Technologie, Pädagogik, Fachwissen; in der Mitte TPACK."></svg>
           <figcaption>Schnittmenge: Das Interessante liegt in der Überlappung. Drei Kreise, die Mitte als eigener Schritt.</figcaption>
         </figure>
         <figure>
-          <svg id="felderSvg" viewBox="0 0 420 236" role="img" aria-label="Vier-Felder-Matrix: Aufwand gegen Lernwirkung, vier Bausteine darin eingeordnet."></svg>
+          <svg id="felderSvg" viewBox="0 0 420 306" role="img" aria-label="Vier-Felder-Matrix: Aufwand gegen Lernwirkung, vier Bausteine darin eingeordnet."></svg>
           <figcaption>Vier Felder: Zwei Achsen spannen vier Typen auf. Jeder Baustein nennt im Skript sein Feld und steht dort mittig.</figcaption>
         </figure>
       </div>
@@ -1555,12 +1765,41 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Links das Modell, rechts die Konsequenz. Zuerst die Mitte des Venn einblenden, dann die Bausteine in der Matrix.</aside>
     </section>
 
+    <!-- Triade und Zwiebel — zwei kleine Strukturbilder auf einer Folie ... -->
+    <section class="slide" data-title="Dreieck und Zwiebel">
+      <p class="eyebrow" data-anim>Hintergrund</p>
+      <h2 data-anim>Was sich bedingt — und was sich umgibt</h2>
+      <div class="cols" data-anim>
+        <figure>
+          <svg id="triadeSvg" viewBox="0 0 520 380" role="img" aria-label="Dreieck mit drei Ecken: fachliche Klärung, Lernerperspektiven, didaktische Strukturierung; Doppelpfeile auf den Kanten, in der Mitte „Didaktische Rekonstruktion“."></svg>
+          <figcaption>Triade: Drei Größen bedingen sich gegenseitig, keine kommt zuerst; die Kanten mit Doppelpfeilen als Schritt. Nach Kattmann u.&nbsp;a. (1997).</figcaption>
+        </figure>
+        <figure>
+          <svg id="zwiebelSvg" viewBox="0 0 520 380" role="img" aria-label="Vier konzentrische Kreise: innen der Versuch, darum Unterrichtsstunde, Unterrichtsreihe, Lehrplan."></svg>
+          <figcaption>Zwiebel: Ein Kern, um den sich Kontexte legen. Jede Schicht ein Schritt, von innen nach außen; die Beschriftung sitzt im Band.</figcaption>
+        </figure>
+      </div>
+      <p class="source-note" data-anim>Zwei kleine Formen auf einer Folie. Beschriftungen sind Platzhalter.</p>
+      <aside class="notes">Links das Modell, mit dem die Studie geplant wurde; rechts, wo der Versuch im Unterricht sitzt. Die Schichten einzeln nennen.</aside>
+    </section>
+
+    <!-- Pyramide — Stufen, die aufeinander aufbauen ..................... -->
+    <section class="slide" data-title="Stufen">
+      <p class="eyebrow" data-anim>Hintergrund</p>
+      <h2 data-anim>Vier Stufen des Verstehens</h2>
+      <figure data-anim>
+        <svg id="pyramideSvg" viewBox="0 0 1112 436" role="img" aria-label="Pyramide aus vier Stufen von unten nach oben: Beschreiben, Erklären, Vorhersagen, Übertragen; rechts je eine Erläuterung."></svg>
+        <figcaption>Pyramide: Es baut aufeinander auf, oben wird es enger. Stufen und Erläuterungen stehen als Liste im Skript, jede Stufe ist ein Schritt. Platzhalter.</figcaption>
+      </figure>
+      <aside class="notes">Von unten nach oben. Bei „Übertragen" den Bogen zur Atmosphäre schlagen — dahin soll das Modul führen.</aside>
+    </section>
+
     <!-- Stern — ein Kern, Satelliten aussen, paarweise als Schritte ..... -->
     <section class="slide" data-title="Einflüsse">
       <p class="eyebrow" data-anim>Hintergrund</p>
       <h2 data-anim>Woran der Lernzuwachs hängt</h2>
       <figure data-anim>
-        <svg id="sternSvg" viewBox="0 0 1112 330" role="img" aria-label="Sternform: Lernzuwachs in der Mitte, sechs Einflussgrößen außen — Vorwissen, Interesse, Material, Lehrkraft, Zeit, Lerngruppe."></svg>
+        <svg id="sternSvg" viewBox="0 0 1112 436" role="img" aria-label="Sternform: Lernzuwachs in der Mitte, sechs Einflussgrößen außen — Vorwissen, Interesse, Material, Lehrkraft, Zeit, Lerngruppe."></svg>
         <figcaption>Ein Kern, sechs Satelliten. Beschriftung und Reihenfolge stehen als Liste im Skript, die Pillenbreite wird am Text gemessen. Drei Schritte, je zwei Satelliten.</figcaption>
       </figure>
       <aside class="notes">Von innen nach außen: erst die Lernenden, dann der Unterricht, dann der Rahmen. Der Stern ordnet — er behauptet keine Stärke der Einflüsse.</aside>
@@ -1578,6 +1817,17 @@ ul.points li math{ font-size:20px }
       </div>
       <p class="source-note" data-anim>Formulierungen sind Platzhalter, keine Belege aus Interviews.</p>
       <aside class="notes">Links vorlesen, kurz warten, dann rechts. Die Mitte ist die wichtigste Zeile — das Gleichgewicht ist der Kern des Moduls.</aside>
+    </section>
+
+    <!-- Zuordnung mit Verbindungslinien — was gehoert zu was .............. -->
+    <section class="slide" data-title="Zuordnung">
+      <p class="eyebrow" data-anim>Hintergrund</p>
+      <h2 data-anim>Welche Vorstellung zu welchem Konzept gehört</h2>
+      <figure data-anim>
+        <svg id="zuordnungSvg" viewBox="0 0 1112 416" role="img" aria-label="Zwei Spalten: links vier Vorstellungen von Lernenden, rechts drei Fachkonzepte; Linien zeigen, welche Vorstellung welches Konzept berührt."></svg>
+        <figcaption>Zuordnung: Vorstellungen links, Fachkonzepte rechts, Linien dazwischen — mehrere Vorstellungen treffen dasselbe Konzept. Die Linien erscheinen je Konzept als Schritt. Formulierungen sind Platzhalter.</figcaption>
+      </figure>
+      <aside class="notes">Anders als die Gegenüberstellung: Hier ist die Beziehung nicht eins zu eins. Beim zweiten Schritt zeigen, dass zwei Vorstellungen auf die Energiebilanz zielen.</aside>
     </section>
 
     <!-- Formelsatz — LaTeX im Quelltext, MathML in der Folie ... -->
@@ -1641,6 +1891,44 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Zeile für Zeile aufdecken und jede Begründung laut sagen. Bei der letzten Zeile innehalten: Das Ergebnis widerspricht der Alltagsvorstellung, ein schwereres Pendel schwinge schneller.</aside>
     </section>
 
+    <!-- Gleichung — A + B → C als Merkform, Terme als Kacheln .......... -->
+    <section class="slide" data-title="Gleichung">
+      <p class="eyebrow" data-anim>Grundlagen</p>
+      <h2 data-anim>Was den Zuwachs erklären soll</h2>
+      <div class="gleichung" data-anim>
+        <div class="term"><b>Vorwissen</b><span>was die Lernenden mitbringen — gemessen im Vortest</span></div>
+        <span class="op" data-step="1">+</span>
+        <div class="term" data-step="1"><b>Intervention</b><span>zwölf Wochen Modul, darin ein Praktikumstag</span></div>
+        <span class="op" data-step="2">→</span>
+        <div class="term ergebnis" data-step="2"><b>Zuwachs</b><span>Nachtest minus Vortest, normiert auf das noch Mögliche</span></div>
+      </div>
+      <ul class="points" data-anim>
+        <li data-step="3">Das Modell der Studie in einer Zeile: Beide Summanden werden gemessen, die rechte Seite folgt daraus.</li>
+        <li data-step="3">Was die Zeile nicht sagt: ob die Summanden zusammenspielen. Ob der Zuwachs vom Vorwissen abhängt, prüft H2.</li>
+      </ul>
+      <p class="source-note" data-anim>Merkform nach dem Muster A + B → C. Begriffe sind Platzhalter.</p>
+      <aside class="notes">Drei Wörter, zwei Zeichen. Erst den linken Term, dann das Plus, dann den Pfeil — und den zweiten Punkt nicht auslassen: Er sagt, was die Form verschweigt.</aside>
+    </section>
+
+    <!-- Freikoerperbild — Kraefte am Koerper, einzeln einblendbar ......... -->
+    <section class="slide" data-title="Freikörperbild">
+      <p class="eyebrow" data-anim>Grundlagen</p>
+      <h2 data-anim>Welche Kräfte am Körper angreifen</h2>
+      <div class="cols wide-left" data-anim>
+        <figure>
+          <svg id="kraefteSvg" viewBox="0 0 620 430" role="img" aria-label="Körper auf einer schiefen Ebene mit 30 Grad Neigung; nacheinander erscheinen Gewichtskraft, Normalkraft, Haftreibung und die Zerlegung der Gewichtskraft in Hangabtrieb und Anpresskraft."></svg>
+          <figcaption>Freikörperbild: nur die Kräfte, die <b>am</b> Körper angreifen. Neigung und Längen rechnet das Skript aus dem Winkel. Platzhalter.</figcaption>
+        </figure>
+        <ul class="points">
+          <li data-step="1"><b>Gewichtskraft</b> greift im Schwerpunkt an und zeigt zum Erdmittelpunkt — nicht „nach unten auf die Ebene".</li>
+          <li data-step="2"><b>Normalkraft</b> steht senkrecht auf der Fläche, nicht senkrecht zum Boden.</li>
+          <li data-step="3"><b>Haftreibung</b> wirkt längs der Fläche, gegen das Abrutschen.</li>
+          <li data-step="4"><b>Zerlegung</b> längs und quer zur Ebene — der Hangabtrieb <span class="tex" data-tex="F_{\text{H}} = m\,g\,\sin\alpha"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>F</mi><mtext>H</mtext></msub><mo>=</mo><mi>m</mi><mspace width="0.1667em"></mspace><mi>g</mi><mspace width="0.1667em"></mspace><mrow><mspace width="0.1667em"></mspace><mi>sin</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mi>α</mi></mrow></math></span> ist der Teil, den die Reibung halten muss.</li>
+        </ul>
+      </div>
+      <aside class="notes">Kraft für Kraft, jede mit ihrem Satz. Die Falle ist die Normalkraft: Viele zeichnen sie senkrecht nach oben.</aside>
+    </section>
+
     <!-- Kennzahlen — .stats mit .stat-Kacheln ................... -->
     <section class="slide" data-title="Stichprobe">
       <p class="eyebrow" data-anim>Methode</p>
@@ -1657,6 +1945,35 @@ ul.points li math{ font-size:20px }
       </ul>
       <p class="source-note" data-anim>Alle Zahlen auf dieser Folie sind Platzhalter.</p>
       <aside class="notes">Zahlen nennen, nicht einzeln durchgehen. Auf die Zuweisung auf Klassenebene hinweisen — danach wird erfahrungsgemäß gefragt.</aside>
+    </section>
+
+    <!-- Studiendesign als Schema — Gruppen mal Zeitpunkte .................. -->
+    <section class="slide" data-title="Studiendesign">
+      <p class="eyebrow" data-anim>Methode</p>
+      <h2 data-anim>Zwei Gruppen, drei Zeitpunkte</h2>
+      <div class="design" data-anim style="--spalten:1fr 1.5fr 1fr 1fr">
+        <span></span>
+        <p class="design-kopf">Vortest<span>Woche 0</span></p>
+        <p class="design-kopf">Intervention<span>Woche 1 bis 12</span></p>
+        <p class="design-kopf">Nachtest<span>Woche 13</span></p>
+        <p class="design-kopf">Follow-up<span>Woche 29</span></p>
+        <p class="design-gruppe">Interventionsgruppe<span>6 Klassen · n = 108</span></p>
+        <p class="design-mess">T1</p>
+        <p class="design-block">Modul Klimabox</p>
+        <p class="design-mess">T2</p>
+        <p class="design-mess offen" data-step="2">T3 · steht aus</p>
+        <p class="design-gruppe" data-step="1">Kontrollgruppe<span>6 Klassen · n = 106</span></p>
+        <p class="design-mess" data-step="1">T1</p>
+        <p class="design-block kontrolle" data-step="1">regulärer Unterricht</p>
+        <p class="design-mess" data-step="1">T2</p>
+        <p class="design-mess offen" data-step="2">T3 · steht aus</p>
+      </div>
+      <ul class="points" data-anim>
+        <li>Derselbe Test zu allen drei Zeitpunkten, dieselbe Testleitung, gleiche Woche in beiden Gruppen.</li>
+        <li data-step="1">Zuweisung auf Klassenebene: Die Klassen kamen, wie sie kamen — keine Zufallszuweisung.</li>
+      </ul>
+      <p class="source-note" data-anim>Schema Gruppen × Zeitpunkte, nur CSS. Zahlen sind Platzhalter.</p>
+      <aside class="notes">Erst die Interventionsgruppe, dann die Kontrollgruppe daruntersetzen, zuletzt das ausstehende Follow-up. Der zweite Stichpunkt kommt der Frage aus dem Publikum zuvor.</aside>
     </section>
 
     <!-- Zeitleiste — Phasen und Messzeitpunkte im Raster ...... -->
@@ -1806,7 +2123,7 @@ ul.points li math{ font-size:20px }
     </section>
 
     <!-- Bild mit Text — Rasterbild als Daten-URI, daneben Stichpunkte.
-         Quelle Klimabox.png, beschnitten und auf 1200 px gebracht, 64
+         Quelle quellen/Klimabox.png, beschnitten und auf 1200 px gebracht, 64
          Farben, 21 KB. Die Datei laedt nichts nach. ....................... -->
     <section class="slide" data-title="Klimabox">
       <p class="eyebrow" data-anim>Methode</p>
@@ -1913,7 +2230,7 @@ ul.points li math{ font-size:20px }
       <h2 data-anim>Derselbe Pfad, ein anderer Verlauf</h2>
       <div class="cols wide-left" data-anim>
         <figure>
-          <svg id="fallSvg" viewBox="0 0 620 360" role="img" aria-label="Diagramm des freien Falls: zehn Messwerte der Fallstrecke gegen die Fallzeit, eine Ausgleichsgerade und die Modellkurve s gleich ein halb g mal t Quadrat."></svg>
+          <svg id="fallSvg" viewBox="0 0 620 430" role="img" aria-label="Diagramm des freien Falls: zehn Messwerte der Fallstrecke gegen die Fallzeit, eine Ausgleichsgerade und die Modellkurve s gleich ein halb g mal t Quadrat."></svg>
           <figcaption>Zehn Messwerte. Achsen, Teilstriche und beide Kurven rechnet der Browser aus genau diesen Zahlen.</figcaption>
         </figure>
         <ul class="points">
@@ -1931,7 +2248,7 @@ ul.points li math{ font-size:20px }
       <h2 data-anim>Wie warm es in der Box wird</h2>
       <div class="cols wide-left" data-anim>
         <figure>
-          <svg id="kurveSvg" viewBox="0 0 620 340" role="img" aria-label="Liniendiagramm: Temperatur in zwei Klimaboxen über 20 Minuten, offen und mit Glasscheibe, dazu die Modellkurve."></svg>
+          <svg id="kurveSvg" viewBox="0 0 620 450" role="img" aria-label="Liniendiagramm: Temperatur in zwei Klimaboxen über 20 Minuten, offen und mit Glasscheibe, dazu die Modellkurve."></svg>
           <figcaption>Messwerte im Minutentakt, Platzhalter. Achsen und Skalen entstehen aus den Zahlen im Skript.</figcaption>
         </figure>
         <ul class="points">
@@ -1954,12 +2271,30 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Erst die Kontrollgruppe stehen lassen. Dann die Intervention einblenden und auf die Streuung hinweisen, nicht nur auf den Median.</aside>
     </section>
 
+    <!-- Histogramm mit Referenzlinie — Klassen aus Rohdaten ................ -->
+    <section class="slide" data-title="Histogramm">
+      <p class="eyebrow" data-anim>Ergebnisse</p>
+      <h2 data-anim>Wie viele über die Schwelle kommen</h2>
+      <div class="cols wide-left" data-anim>
+        <figure>
+          <svg id="histoSvg" viewBox="0 0 620 430" role="img" aria-label="Histogramm der Nachtest-Punktzahlen in Klassen zu zehn Punkten; eine gestrichelte Linie markiert die Schwelle von 60 Punkten, die Säulen darüber sind hervorgehoben."></svg>
+          <figcaption>Klassen zu 10 Punkten, gezählt aus den Rohwerten im Skript. Schritt 1 die Schwelle, Schritt 2 der Anteil darüber. Platzhalter.</figcaption>
+        </figure>
+        <ul class="points">
+          <li>Jede Säule zählt Lernende in einem Punktebereich des Nachtests.</li>
+          <li data-step="1">Die Schwelle ist der Mindeststandard des Landes — 60 von 100 Punkten.</li>
+          <li data-step="2">Zwei Drittel liegen darüber; im Vortest war es ein Drittel.</li>
+        </ul>
+      </div>
+      <aside class="notes">Der Boxplot sagt Median und Streuung, das Histogramm zeigt die Form: hier ein Gipfel bei 70 und ein langer Ausläufer nach links. Bei der Schwelle kurz halten — sie ist eine Setzung, kein Messwert.</aside>
+    </section>
+
     <!-- Balken mit Fehlerbalken — Mittelwerte mit 95-%-Intervall -->
     <section class="slide" data-title="Gruppenmittel">
       <p class="eyebrow" data-anim>Ergebnisse</p>
       <h2 data-anim>Mittelwerte mit ihrer Unsicherheit</h2>
       <figure data-anim>
-        <svg id="kiSvg" viewBox="0 0 1112 300" role="img" aria-label="Balkendiagramm der Mittelwerte im Konzepttest für Kontroll- und Interventionsgruppe, jeweils vor und nach der Erhebung, mit 95-Prozent-Konfidenzintervallen."></svg>
+        <svg id="kiSvg" viewBox="0 0 1112 396" role="img" aria-label="Balkendiagramm der Mittelwerte im Konzepttest für Kontroll- und Interventionsgruppe, jeweils vor und nach der Erhebung, mit 95-Prozent-Konfidenzintervallen."></svg>
         <figcaption>Die Antenne zeigt das 95-%-Konfidenzintervall. Überlappen sich zwei Antennen deutlich, trägt der Unterschied nicht.</figcaption>
       </figure>
       <p class="source-note" data-anim>Alle Werte sind Platzhalter und stehen als Zahlen im Quelltext.</p>
@@ -1990,7 +2325,7 @@ ul.points li math{ font-size:20px }
       <h2 data-anim>Wann die Fehlvorstellung kippt</h2>
       <div class="cols wide-left" data-anim>
         <figure>
-          <svg id="ircSvg" viewBox="0 0 620 340" role="img" aria-label="Item-Antwortkurven zur Aufgabe 4: Anteil der Antwortoptionen A bis D gegen die Gesamtpunktzahl im Vortest; B ist richtig, C ist die Impetus-Vorstellung."></svg>
+          <svg id="ircSvg" viewBox="0 0 620 450" role="img" aria-label="Item-Antwortkurven zur Aufgabe 4: Anteil der Antwortoptionen A bis D gegen die Gesamtpunktzahl im Vortest; B ist richtig, C ist die Impetus-Vorstellung."></svg>
           <figcaption>Aufgabe 4 aus dem Vortest, Lernende nach Gesamtpunktzahl in sechs Gruppen. Platzhalter.</figcaption>
         </figure>
         <ul class="points">
@@ -2008,7 +2343,7 @@ ul.points li math{ font-size:20px }
       <h2 data-anim>Welche Aufgaben die Intervention trifft</h2>
       <div class="cols wide-left" data-anim>
         <figure>
-          <svg id="hantelSvg" viewBox="0 0 620 340" role="img" aria-label="Hantel-Diagramm: Lösungshäufigkeit je Aufgabe im Vortest und im Nachtest, durch einen Strich verbunden, sortiert nach Zuwachs."></svg>
+          <svg id="hantelSvg" viewBox="0 0 620 430" role="img" aria-label="Hantel-Diagramm: Lösungshäufigkeit je Aufgabe im Vortest und im Nachtest, durch einen Strich verbunden, sortiert nach Zuwachs."></svg>
           <figcaption>Grau der Vortest, blau der Nachtest, der Strich ist der Zuwachs. Sortiert wird beim Aufbau. Platzhalter.</figcaption>
         </figure>
         <ul class="points">
@@ -2020,13 +2355,49 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Der Blick auf die einzelne Aufgabe. Beim zweiten Schritt auf die unteren drei zeigen: Da hat die Intervention nichts bewegt — das ist die Nachricht.</aside>
     </section>
 
+    <!-- Slopegraph — eine Linie je Person vom Vortest zum Nachtest ...... -->
+    <section class="slide" data-title="Slopegraph">
+      <p class="eyebrow" data-anim>Ergebnisse</p>
+      <h2 data-anim>Jede Linie ein Lernender</h2>
+      <div class="cols wide-left" data-anim>
+        <figure>
+          <svg id="slopeSvg" viewBox="0 0 620 450" role="img" aria-label="Slopegraph: je Lernendem eine Linie vom Vortest links zum Nachtest rechts; steigende Linien blau, fallende grau, das Gruppenmittel als dicke blaue Linie."></svg>
+          <figcaption>Links der Vortest, rechts der Nachtest, eine Linie je Person. Blau steigt, grau fällt. Platzhalter.</figcaption>
+        </figure>
+        <ul class="points">
+          <li>Das Gruppenmittel sagt „plus 24". Die Linien sagen, wer das ist.</li>
+          <li data-step="1">Die meisten steigen, die meisten kräftig — der Zuwachs ist kein Effekt weniger Ausreißer.</li>
+          <li data-step="2">Fünf fallen, alle fünf kamen mit hohem Vorwissen. Das Mittel verdeckt genau sie.</li>
+        </ul>
+      </div>
+      <aside class="notes">Der Boxplot zeigt die Verteilung, die Hantel die Aufgabe — hier steht die einzelne Person. Beim zweiten Schritt auf die grauen Linien zeigen: Wer schon viel wusste, hat nichts gewonnen, manche verloren.</aside>
+    </section>
+
+    <!-- Item-Heatmap — Loesungshaeufigkeit je Item und Gruppe .............. -->
+    <section class="slide" data-title="Heatmap">
+      <p class="eyebrow" data-anim>Ergebnisse</p>
+      <h2 data-anim>Jedes Item, jede Gruppe, ein Blick</h2>
+      <div class="cols wide-left" data-anim>
+        <figure>
+          <svg id="heatSvg" viewBox="0 0 620 430" role="img" aria-label="Heatmap: acht Items als Zeilen, vier Spalten für Interventions- und Kontrollgruppe je vor und nach der Intervention; Zellen um so dunkler blau, je höher die Lösungshäufigkeit; eine fünfte Spalte mit dem Zuwachs der Interventionsgruppe."></svg>
+          <figcaption>Zelle um so dunkler, je höher die Lösungshäufigkeit in Prozent. Nachtest als Schritt 1, Zuwachs der Interventionsgruppe als Schritt 2. Platzhalter.</figcaption>
+        </figure>
+        <ul class="points">
+          <li>Zeilen sind Items, Spalten die Gruppen vor und nach der Intervention.</li>
+          <li data-step="1">Rechts der Spalte „Prä" wird es dunkel — links kaum.</li>
+          <li data-step="2">Die größten Zuwächse liegen bei A3, A5 und A7, alle zum Kräftegleichgewicht.</li>
+        </ul>
+      </div>
+      <aside class="notes">Die Hantel zeigt dasselbe für eine Gruppe; hier stehen beide nebeneinander. Auf die Kontrollspalten zeigen: fast keine Änderung.</aside>
+    </section>
+
     <!-- Zwei Verteilungen — Effektstaerke als Abstand der Mitten ........ -->
     <section class="slide" data-title="Effektstärke">
       <p class="eyebrow" data-anim>Ergebnisse</p>
       <h2 data-anim>Wie groß der Unterschied ist</h2>
       <div class="cols wide-left" data-anim>
         <figure>
-          <svg id="glockenSvg" viewBox="0 0 620 340" role="img" aria-label="Zwei überlappende Normalverteilungen: Kontrollgruppe und Interventionsgruppe, deren Mitten 0,6 Standardabweichungen auseinanderliegen."></svg>
+          <svg id="glockenSvg" viewBox="0 0 620 430" role="img" aria-label="Zwei überlappende Normalverteilungen: Kontrollgruppe und Interventionsgruppe, deren Mitten 0,6 Standardabweichungen auseinanderliegen."></svg>
           <figcaption>Beide Gruppen als Normalverteilung gleicher Streuung; die Achse zählt in Standardabweichungen. Platzhalter.</figcaption>
         </figure>
         <ul class="points">
@@ -2044,7 +2415,7 @@ ul.points li math{ font-size:20px }
       <h2 data-anim>Für wen es wie stark wirkt</h2>
       <div class="cols wide-left" data-anim>
         <figure>
-          <svg id="forestSvg" viewBox="0 0 620 340" role="img" aria-label="Forest Plot: Effektstärke d mit 95-%-Intervall für fünf Teilgruppen, darunter der Gesamteffekt als Raute."></svg>
+          <svg id="forestSvg" viewBox="0 0 620 450" role="img" aria-label="Forest Plot: Effektstärke d mit 95-%-Intervall für fünf Teilgruppen, darunter der Gesamteffekt als Raute."></svg>
           <figcaption>Punkt und Intervall je Teilgruppe, der Gesamteffekt als Raute. Platzhalter.</figcaption>
         </figure>
         <ul class="points">
@@ -2062,7 +2433,7 @@ ul.points li math{ font-size:20px }
       <h2 data-anim>Wie die Intervention wirkt</h2>
       <div class="cols wide-left" data-anim>
         <figure>
-          <svg id="pfadSvg" viewBox="0 0 620 340" role="img" aria-label="Pfadmodell: Intervention und Vorwissen wirken auf den Lernzuwachs, die Intervention außerdem über das Interesse; standardisierte Koeffizienten an den Pfeilen."></svg>
+          <svg id="pfadSvg" viewBox="0 0 620 450" role="img" aria-label="Pfadmodell: Intervention und Vorwissen wirken auf den Lernzuwachs, die Intervention außerdem über das Interesse; standardisierte Koeffizienten an den Pfeilen."></svg>
           <figcaption>Kästen und Pfeile aus einer Liste im Skript, die Koeffizienten als Schritt. Platzhalter.</figcaption>
         </figure>
         <ul class="points">
@@ -2079,7 +2450,7 @@ ul.points li math{ font-size:20px }
       <p class="eyebrow" data-anim>Ergebnisse</p>
       <h2 data-anim>Was sich Lehrkräfte wünschen</h2>
       <figure data-anim>
-        <svg id="balkenSvg" viewBox="0 0 1112 330" role="img" aria-label="Waagerechte Balken: zehn Wünsche von Lehrkräften an das Material, nach Zahl der Nennungen absteigend sortiert."></svg>
+        <svg id="balkenSvg" viewBox="0 0 1112 436" role="img" aria-label="Waagerechte Balken: zehn Wünsche von Lehrkräften an das Material, nach Zahl der Nennungen absteigend sortiert."></svg>
         <figcaption>Offene Frage, Mehrfachnennung möglich. Die Reihenfolge entsteht beim Aufbau aus den Zahlen — im Quelltext dürfen sie ungeordnet stehen. Alle Werte sind Platzhalter.</figcaption>
       </figure>
       <aside class="notes">Nur die ersten drei nennen. Beim Schritt die Linie: alles darüber hat mehr als die Hälfte der Befragten genannt.</aside>
@@ -2090,7 +2461,7 @@ ul.points li math{ font-size:20px }
       <p class="eyebrow" data-anim>Ergebnisse</p>
       <h2 data-anim>Wie die Studierenden das Modul einschätzen</h2>
       <figure data-anim>
-        <svg id="likertSvg" viewBox="0 0 1112 330" role="img" aria-label="Divergierende Stapelbalken: sechs Aussagen zum Modul auf einer fünfstufigen Skala, Ablehnung nach links, Zustimmung nach rechts."></svg>
+        <svg id="likertSvg" viewBox="0 0 1112 436" role="img" aria-label="Divergierende Stapelbalken: sechs Aussagen zum Modul auf einer fünfstufigen Skala, Ablehnung nach links, Zustimmung nach rechts."></svg>
         <figcaption>Fünfstufige Skala, n = 214. Grau lehnt ab, Blau stimmt zu; die Mitte teilt sich um die Nulllinie. Sortiert nach Zustimmung — im Skript, nicht im Quelltext. Alle Werte sind Platzhalter.</figcaption>
       </figure>
       <aside class="notes">Die oberste Zeile ist die Botschaft. Beim Schritt die Summen: dann die unterste Zeile ansprechen — die ist der Preis.</aside>
@@ -2114,13 +2485,31 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Der wichtigste Satz: Ein Zuwachs von zehn Punkten wiegt bei hohem Vorwissen schwerer. Genau das leistet der normierte Zugewinn.</aside>
     </section>
 
+    <!-- Kennzahl mit Veraenderung — vorher, nachher, Differenz als Pille .. -->
+    <section class="slide" data-title="Veränderung">
+      <p class="eyebrow" data-anim>Ergebnisse</p>
+      <h2 data-anim>Vorher, nachher, Unterschied</h2>
+      <div class="stats" data-anim>
+        <div class="stat"><span class="von">48 % →</span><b>72 %</b><span>Lösungsquote Interventionsgruppe</span><i class="delta" data-step="1">+24</i></div>
+        <div class="stat"><span class="von">47 % →</span><b>53 %</b><span>Lösungsquote Kontrollgruppe</span><i class="delta" data-step="1">+6</i></div>
+        <div class="stat"><span class="von">3,4 →</span><b>3,5</b><span>Interesse am Fach, Skala 1 bis 5</span><i class="delta null" data-step="1">+0,1</i></div>
+        <div class="stat"><span class="von">31 min →</span><b>24 min</b><span>Bearbeitungszeit des Tests</span><i class="delta" data-step="1">−7</i></div>
+      </div>
+      <ul class="points" data-anim>
+        <li>Jede Kachel ein Paar: vorher klein, nachher groß, die Differenz als Pille im Schritt.</li>
+        <li data-step="1">Grau, wo sich nichts bewegt hat — das Interesse ist so ein Fall, und der gehört auf die Folie.</li>
+      </ul>
+      <p class="source-note" data-anim>Kennzahlenkacheln mit Veränderung. Alle Zahlen sind Platzhalter.</p>
+      <aside class="notes">Vier Zahlen, ein Atemzug je Kachel. Die dritte Kachel nicht überspringen: Kein Effekt ist auch ein Befund.</aside>
+    </section>
+
     <!-- Behauptung + Beleg — Titel als Satz, darunter ein Beleg:
          hier divergierende Saeulen um eine Nulllinie ........................ -->
     <section class="slide these" data-title="Behauptung">
       <p class="eyebrow" data-anim>Ergebnisse</p>
       <h2 data-anim>Elf von vierzehn Klassen gewinnen im Nachtest dazu — drei verlieren, alle drei knapp.</h2>
       <figure data-anim>
-        <svg id="abweichungSvg" viewBox="0 0 1112 300" role="img" aria-label="Säulen um eine Nulllinie: Zuwachs je Klasse in Prozentpunkten, elf positiv in Blau, drei negativ in Grau, sortiert."></svg>
+        <svg id="abweichungSvg" viewBox="0 0 1112 386" role="img" aria-label="Säulen um eine Nulllinie: Zuwachs je Klasse in Prozentpunkten, elf positiv in Blau, drei negativ in Grau, sortiert."></svg>
       </figure>
       <p class="source-note" data-anim>Behauptung im Titel, Beleg darunter, sonst nichts — nach Alley (Assertion-Evidence). Werte sind Platzhalter.</p>
       <aside class="notes">Der Titel sagt es, das Bild belegt es. Nicht vorlesen — auf die drei grauen Säulen zeigen und den Schritt mit dem Mittel setzen.</aside>
@@ -2131,7 +2520,7 @@ ul.points li math{ font-size:20px }
       <p class="eyebrow" data-anim>Ergebnisse</p>
       <h2 data-anim>Wer wechselt — und wer zurück</h2>
       <figure data-anim>
-        <svg id="sankeySvg" viewBox="0 0 1112 330" role="img" aria-label="Übergänge von Vortest zu Nachtest zwischen Fehlvorstellung, Mischform und Fachkonzept als Bänder, Breite nach Anzahl."></svg>
+        <svg id="sankeySvg" viewBox="0 0 1112 416" role="img" aria-label="Übergänge von Vortest zu Nachtest zwischen Fehlvorstellung, Mischform und Fachkonzept als Bänder, Breite nach Anzahl."></svg>
         <figcaption>Jedes Band ist eine Gruppe von Lernenden, die Breite ihre Zahl. Die Übergangsmatrix steht als 3 × 3 Zahlen im Skript. Ein Schritt hebt die Rückwege hervor. Alle Werte sind Platzhalter.</figcaption>
       </figure>
       <aside class="notes">Das Bild, das jeder Mittelwert verschluckt: Wer kommt an — und wer fällt zurück. Beim Schritt die 18 nennen.</aside>
@@ -2142,7 +2531,7 @@ ul.points li math{ font-size:20px }
       <p class="eyebrow" data-anim>Ergebnisse</p>
       <h2 data-anim>Wohin die Energie geht</h2>
       <figure data-anim>
-        <svg id="flussSvg" viewBox="0 0 1112 330" role="img" aria-label="Energieflussbild der Klimabox: Das Licht der Lampe teilt sich auf Abdeckung und Boden auf; vom Boden geht es als Wärmestrahlung, Leitung durch die Wände und Erwärmung der Luft weiter."></svg>
+        <svg id="flussSvg" viewBox="0 0 1112 436" role="img" aria-label="Energieflussbild der Klimabox: Das Licht der Lampe teilt sich auf Abdeckung und Boden auf; vom Boden geht es als Wärmestrahlung, Leitung durch die Wände und Erwärmung der Luft weiter."></svg>
         <figcaption>Bandbreite nach Anteil. Knoten, Spalten und Flüsse stehen als Liste im Skript; jede weitere Spalte ist ein Schritt. Alle Anteile sind Platzhalter.</figcaption>
       </figure>
       <aside class="notes">Von links nach rechts erzählen: Was ankommt, was die Abdeckung schluckt, was der Boden daraus macht. Beim Schritt die drei Wege nennen.</aside>
@@ -2154,7 +2543,7 @@ ul.points li math{ font-size:20px }
       <h2 data-anim>Wie viele beim Fachkonzept ankommen</h2>
       <div class="cols" data-anim>
         <figure>
-          <svg id="punktfeldSvg" viewBox="0 0 520 336" role="img" aria-label="Punktfeld aus 100 Punkten: 27 blau für das Fachkonzept, 31 hellblau für die Mischform, 42 grau für die Fehlvorstellung."></svg>
+          <svg id="punktfeldSvg" viewBox="0 0 520 442" role="img" aria-label="Punktfeld aus 100 Punkten: 27 blau für das Fachkonzept, 31 hellblau für die Mischform, 42 grau für die Fehlvorstellung."></svg>
           <figcaption>Hundert Lernende, ein Punkt je Person; Anteile als Liste im Skript. Platzhalter.</figcaption>
         </figure>
         <ul class="points">
@@ -2236,7 +2625,7 @@ ul.points li math{ font-size:20px }
       <p class="eyebrow" data-anim>Methode</p>
       <h2 data-anim>Wie die Kategorien zusammenhängen</h2>
       <figure data-anim>
-        <svg id="baumSvg" viewBox="0 0 1112 300" role="img" aria-label="Baum: Systemisches Denken zerfällt in drei Kategorien mit je zwei bis drei Unterkategorien."></svg>
+        <svg id="baumSvg" viewBox="0 0 1112 420" role="img" aria-label="Baum: Systemisches Denken zerfällt in drei Kategorien mit je zwei bis drei Unterkategorien."></svg>
         <figcaption>Ein Baum, im Skript als verschachtelte Liste. Erst die Kategorien, dann Ast für Ast die Unterkategorien. Alle Inhalte sind Platzhalter.</figcaption>
       </figure>
       <aside class="notes">Beim Aufklappen je Ast ein Satz. Nicht jede Unterkategorie erklären — dafür ist der Anhang da.</aside>
@@ -2272,7 +2661,7 @@ ul.points li math{ font-size:20px }
           <li>Windungen, Stationen und Namen stehen im Skript.</li>
         </ul>
         <figure>
-          <svg id="spiraleSvg" viewBox="0 0 400 380" role="img" aria-label="Spirale mit drei Windungen und je vier Stationen: Analyse, Entwurf, Erprobung, Bilanz."></svg>
+          <svg id="spiraleSvg" viewBox="0 0 400 410" role="img" aria-label="Spirale mit drei Windungen und je vier Stationen: Analyse, Entwurf, Erprobung, Bilanz."></svg>
         </figure>
       </div>
       <aside class="notes">Der Unterschied zum Kreis ist die Pointe: Bilanz mündet nicht in dieselbe Analyse, sondern in eine bessere.</aside>
@@ -2301,7 +2690,7 @@ ul.points li math{ font-size:20px }
       <p class="eyebrow" data-anim>Methode</p>
       <h2 data-anim>Wer in die Auswertung kommt</h2>
       <figure data-anim>
-        <svg id="weicheSvg" viewBox="0 0 1112 250" role="img" aria-label="Vier Ja-Nein-Weichen von 612 Angeschriebenen zu 214 Datensätzen in der Auswertung; jede Nein-Abzweigung mit Anzahl."></svg>
+        <svg id="weicheSvg" viewBox="0 0 1112 340" role="img" aria-label="Vier Ja-Nein-Weichen von 612 Angeschriebenen zu 214 Datensätzen in der Auswertung; jede Nein-Abzweigung mit Anzahl."></svg>
         <figcaption>Jede Weiche ist eine Frage: „ja" führt weiter, „nein" zweigt ab. Die Zahlen sind dieselben wie im Trichter — hier mit dem Grund je Abzweig. Alle Werte sind Platzhalter.</figcaption>
       </figure>
       <aside class="notes">Weiche für Weiche. Der Trichter zeigt das Wieviel, die Weichen das Warum.</aside>
@@ -2336,6 +2725,29 @@ ul.points li math{ font-size:20px }
       <aside class="notes">Erst reden, dann den Deckel heben. Die Pflanze braucht gut anderthalb Sekunden — solange nicht weiterklicken.</aside>
     </section>
 
+    <!-- Konvergenz — drei Befunde laufen auf einen Schluss zu ............ -->
+    <section class="slide" data-title="Konvergenz">
+      <p class="eyebrow" data-anim>Diskussion</p>
+      <h2 data-anim>Drei Befunde, ein Schluss</h2>
+      <div class="konv" data-anim>
+        <div class="konv-quellen">
+          <p class="konv-befund">Die Interventionsgruppe gewinnt 22 Punkte, die Kontrollgruppe 6 — der Zuwachs ist nicht nur Reifung.</p>
+          <p class="konv-befund" data-step="1">Vier von sechs Aufgaben tragen ihn, alle vier zum Kräftegleichgewicht.</p>
+          <p class="konv-befund" data-step="2">Bei niedrigem Vorwissen ist er am größten, <span class="tex" data-tex="d = 0{,}82"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>d</mi><mo>=</mo><mn>0,82</mn></mrow></math></span> gegen 0,31 bei hohem.</p>
+        </div>
+        <div class="konv-mitte" data-step="3">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 16.67 C 50 16.67, 50 50, 100 50"/>
+            <path d="M0 50 L100 50"/>
+            <path d="M0 83.33 C 50 83.33, 50 50, 100 50"/>
+          </svg>
+        </div>
+        <p class="konv-ziel" data-step="3">Das Modul wirkt dort, wo es ansetzt: am Kräftegleichgewicht — und bei denen, die am wenigsten mitbringen.</p>
+      </div>
+      <p class="source-note" data-anim>Gegenstück zur Verzweigung: mehrere Wege führen auf ein Ziel. Zahlen sind Platzhalter.</p>
+      <aside class="notes">Befund für Befund, jeder ein Satz. Erst wenn alle drei stehen, die Pfeile und den Schluss — die Folgerung soll sich aus dem Bild ergeben, nicht aus der Ansage.</aside>
+    </section>
+
     <!-- Staerken und Grenzen — zwei Karten, Plus und Minus als Zeichen .... -->
     <section class="slide" data-title="Stärken und Grenzen">
       <p class="eyebrow" data-anim>Diskussion</p>
@@ -2360,6 +2772,40 @@ ul.points li math{ font-size:20px }
       </div>
       <p class="source-note" data-anim>Alle Angaben sind Platzhalter.</p>
       <aside class="notes">Erst das Plus, ohne Bescheidenheit. Dann das Minus, ohne Ausflüchte — der zweite Punkt ist der, den das Publikum ohnehin fragt.</aside>
+    </section>
+
+    <!-- Kernsatz mit Erlaeuterung — eine Aussage gross, das Kleingedruckte
+         darunter als Schritte; kein h2, der Satz ist der Titel .............. -->
+    <section class="slide" data-title="Kernsatz">
+      <p class="eyebrow" data-anim>Diskussion</p>
+      <p class="kern" data-anim>Ein Praktikumstag bewegt die Vorstellung — ob sie sich hält, entscheidet die Wiederholung im Unterricht.</p>
+      <div class="erl" data-anim>
+        <p data-step="1"><b>Bewegt:</b> Direkt nach dem Tag wählen 68 % der Lernenden die fachliche Erklärung, vorher waren es 31 %.</p>
+        <p data-step="2"><b>Hält nur mit Wiederholung:</b> Vier Wochen später sind es noch 61 % in den Klassen, die das Thema wieder aufgegriffen haben — und 44 % in den anderen.</p>
+        <p data-step="3"><b>Deshalb:</b> Der Tag ist der Anstoß, nicht die Lösung. Was die Lehrkraft danach tut, entscheidet über den Ertrag.</p>
+      </div>
+      <p class="source-note" data-anim>Ein Satz, der allein trägt; die Erläuterung kommt Zeile für Zeile. Zahlen sind Platzhalter.</p>
+      <aside class="notes">Den Satz stehen lassen, bis er gelesen ist. Dann die drei Zeilen — die dritte ist die Botschaft an die Lehrkräfte im Raum.</aside>
+    </section>
+
+    <!-- Arbeits- und Zeitplan (Gantt) — Pakete ueber Quartalen ............ -->
+    <section class="slide" data-title="Zeitplan">
+      <p class="eyebrow" data-anim>Ausblick</p>
+      <h2 data-anim>Wie es weitergeht</h2>
+      <div class="gantt" data-anim style="--spalten:6">
+        <div class="gantt-kopf">
+          <p class="gantt-q">Q3 2026</p><p class="gantt-q">Q4 2026</p><p class="gantt-q">Q1 2027</p><p class="gantt-q">Q2 2027</p><p class="gantt-q">Q3 2027</p><p class="gantt-q">Q4 2027</p>
+        </div>
+        <div class="gantt-zeile"><p class="gantt-aufgabe">Hauptstudie, Nachtest</p><p class="gantt-balken fertig" style="--von:1;--dauer:1">abgeschlossen</p></div>
+        <div class="gantt-zeile"><p class="gantt-aufgabe">Follow-up-Erhebung</p><p class="gantt-balken" style="--von:2;--dauer:1">6 Klassen</p></div>
+        <div class="gantt-zeile"><p class="gantt-aufgabe">Auswertung</p><p class="gantt-balken" style="--von:2;--dauer:2">Prä · Post · Follow-up</p></div>
+        <div class="gantt-zeile"><p class="gantt-aufgabe">Überarbeitung des Moduls</p><p class="gantt-balken" style="--von:3;--dauer:2">Reibung, Aufgabe A6</p></div>
+        <div class="gantt-zeile"><p class="gantt-aufgabe">Zweiter Durchgang</p><p class="gantt-balken" style="--von:5;--dauer:2">neue Schulen</p></div>
+        <div class="gantt-zeile"><p class="gantt-aufgabe">Publikation</p><p class="gantt-balken" style="--von:6;--dauer:1">Manuskript</p></div>
+        <div class="gantt-heute" data-step="1" style="--anteil:0.14"><span>heute</span></div>
+      </div>
+      <p class="source-note" data-anim>Zeitplan als Gantt, nur CSS: jeder Balken nennt Beginn und Dauer in Quartalen. Alle Angaben sind Platzhalter.</p>
+      <aside class="notes">Nicht Zeile für Zeile vorlesen. Die Heute-Linie einblenden und sagen, was bis zur nächsten Tagung steht.</aside>
     </section>
 
     <!-- Drei Botschaften — grosse Ziffern, ein Satz je Karte ............. -->
@@ -2451,7 +2897,7 @@ ul.points li math{ font-size:20px }
       <h2>Kennwerte der 24 Items</h2>
       <div class="cols wide-left">
         <figure>
-          <svg id="itemSvg" viewBox="0 0 620 360" role="img" aria-label="Streudiagramm der Itemkennwerte: waagerecht die Schwierigkeit, senkrecht die Trennschärfe. Ein hinterlegter Bereich markiert die brauchbaren Werte; drei Items liegen außerhalb."></svg>
+          <svg id="itemSvg" viewBox="0 0 620 430" role="img" aria-label="Streudiagramm der Itemkennwerte: waagerecht die Schwierigkeit, senkrecht die Trennschärfe. Ein hinterlegter Bereich markiert die brauchbaren Werte; drei Items liegen außerhalb."></svg>
           <figcaption>Ein Punkt je Item. Schwierigkeit waagerecht, Trennschärfe senkrecht — beide aus denselben Rohdaten gerechnet.</figcaption>
         </figure>
         <ul class="points">
@@ -2640,7 +3086,7 @@ ul.points li math{ font-size:20px }
     const B = (n * sty - st * sy) / (n * stt - st * st);
     const A = (sy - B * st) / n;
 
-    const w = 620, h = 360, ml = 58, mr = 16, mt = 12, mb = 48;
+    const w = 620, h = 430, ml = 58, mr = 16, mt = 12, mb = 48;
     const XD = 1.02, YA = -1.2, YB = 5.3;
     const X = t => ml + t / XD * (w - ml - mr);
     const Y = v => (h - mb) - (v - YA) / (YB - YA) * (h - mt - mb);
@@ -2743,7 +3189,7 @@ ul.points li math{ font-size:20px }
       { name:'Intervention', balken:[{ t:'Prä', m:12.1, ki:0.8 }, { t:'Post', m:17.6, ki:1.0 }] },
     ];
     const YMAX = 22, TICKS = [0, 5, 10, 15, 20];
-    const w = 1112, h = 300, ml = 66, mr = 18, mt = 22, mb = 66;
+    const w = 1112, h = 396, ml = 66, mr = 18, mt = 22, mb = 66;
     const Y  = v => (h - mb) - v / YMAX * (h - mt - mb);
     const de = x => String(x).replace('.', ',');
     const f1 = x => x.toFixed(1);
@@ -2823,7 +3269,7 @@ ul.points li math{ font-size:20px }
       { t:'Elterninformation',                 n:7  },
     ].slice().sort((a, b) => b.n - a.n);
     const XMAX = 45, TICKS = [0, 10, 20, 30, 40];
-    const w = 1112, h = 330, ml = 268, mr = 56, mt = 8, mb = 54;
+    const w = 1112, h = 436, ml = 268, mr = 56, mt = 8, mb = 54;
     const X  = v => ml + v / XMAX * (w - ml - mr);
     const f1 = x => x.toFixed(1);
     const zeile = (h - mt - mb) / W.length, bh = Math.round(zeile * .66);
@@ -2873,7 +3319,7 @@ ul.points li math{ font-size:20px }
       { t:'Python möchte ich weiter nutzen',              p:[6, 10, 20, 31, 33] },
       { t:'Die Einführung hat mich gut vorbereitet',      p:[3, 9, 18, 40, 30] },
     ].slice().sort((a, b) => (b.p[3] + b.p[4]) - (a.p[3] + a.p[4]));
-    const w = 1112, h = 330, ml = 372, mr = 64, mt = 6, mb = 74;
+    const w = 1112, h = 436, ml = 372, mr = 64, mt = 6, mb = 74;
     /* Skala symmetrisch um die Mitte, so weit wie der laengste Ausschlag
        (Ablehnung oder Zustimmung samt halber Mitte), auf 10 % gerundet. */
     const weite = Math.ceil(Math.max(...A.map(a => Math.max(a.p[0] + a.p[1], a.p[3] + a.p[4]) + a.p[2] / 2)) / 10) * 10;
@@ -2923,10 +3369,10 @@ ul.points li math{ font-size:20px }
   (function buildVenn(){
     const svg = document.getElementById('vennSvg');
     if (!svg) return;
-    const K = [ { t:'Technologie', cx:170, cy:96,  tx:112, ty:66 },     /* Platzhalter */
-                { t:'Pädagogik',   cx:250, cy:96,  tx:308, ty:66 },
-                { t:'Fachwissen',  cx:210, cy:160, tx:210, ty:210 } ];
-    const r = 68, f1 = x => x.toFixed(1);
+    const K = [ { t:'Technologie', cx:160, cy:120, tx:100, ty:80 },     /* Platzhalter */
+                { t:'Pädagogik',   cx:260, cy:120, tx:320, ty:80 },
+                { t:'Fachwissen',  cx:210, cy:200, tx:210, ty:275 } ];
+    const r = 86, f1 = x => x.toFixed(1);
     let g = '';
     K.forEach(k => { g += '<circle class="vn-kreis" cx="' + k.cx + '" cy="' + k.cy + '" r="' + r + '"/>'; });
     K.forEach(k => { g += '<text class="vn-t" x="' + k.tx + '" y="' + k.ty + '" text-anchor="middle">' + k.t + '</text>'; });
@@ -2957,7 +3403,7 @@ ul.points li math{ font-size:20px }
                 { t:'Videoanleitung',    feld:0 },
                 { t:'Präsenzbetreuung',  feld:3 },
                 { t:'Handout',           feld:2 } ];
-    const w = 420, h = 236, ml = 44, mr = 8, mt = 8, mb = 36, ch = 26, luft = 8, kopf = 22;
+    const w = 420, h = 306, ml = 44, mr = 8, mt = 8, mb = 36, ch = 26, luft = 8, kopf = 22;
     const f1 = x => x.toFixed(1);
     const xm = (ml + w - mr) / 2, ym = (mt + h - mb) / 2, fb = xm - ml, fh = ym - mt;
     const ecke = [[ml, mt], [xm, mt], [ml, ym], [xm, ym]];
@@ -3000,7 +3446,7 @@ ul.points li math{ font-size:20px }
     const svg = document.getElementById('spiraleSvg');
     if (!svg) return;
     const STATIONEN = ['Analyse', 'Entwurf', 'Erprobung', 'Bilanz'];
-    const WINDUNGEN = 3, cx = 200, cy = 198, r0 = 34, r1 = 144, ENDE = 0.28;   /* ENDE: Bogenmass vor der Oberkante */
+    const WINDUNGEN = 3, cx = 200, cy = 213, r0 = 36, r1 = 158, ENDE = 0.28;   /* ENDE: Bogenmass vor der Oberkante */
     const R = th => r0 + (r1 - r0) * th / (2 * Math.PI * WINDUNGEN);
     const P = th => [cx + R(th) * Math.sin(th), cy - R(th) * Math.cos(th)];   /* 0 = oben, im Uhrzeigersinn */
     const f1 = x => x.toFixed(1);
@@ -3045,7 +3491,7 @@ ul.points li math{ font-size:20px }
                 { f:'Nachtest bearbeitet?',    nein:'kein Nachtest',     n:27 },
                 { f:'Beide vollständig?',      nein:'lückenhaft',        n:12 } ];
     const ZIEL = 'In die Auswertung';
-    const w = 1112, h = 250, x0 = 8, yq = 26, hq = 44, ya = 150, ha = 58, bz = 168;
+    const w = 1112, h = 340, x0 = 8, yq = 36, hq = 50, ya = 224, ha = 64, bz = 168;
     const f1 = x => x.toFixed(1);
     const feld = w - x0 - bz - 8, bq = 166, luft = (feld - W.length * bq) / W.length;
     let g = '<defs><marker id="wzA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">' +
@@ -3059,10 +3505,10 @@ ul.points li math{ font-size:20px }
               '<text class="wz-ft" x="' + f1(xm) + '" y="' + (yq + hq / 2 + 5) + '" text-anchor="middle">' + q.f + '</text>';
       /* nein: nach unten */
       k += '<path class="wz-pfeil" d="M' + f1(xm) + ' ' + (yq + hq) + ' V' + (ya - 4) + '" marker-end="url(#wzA)"/>' +
-           '<text class="wz-lbl" x="' + f1(xm + 8) + '" y="' + (yq + hq + 26) + '">nein</text>' +
+           '<text class="wz-lbl" x="' + f1(xm + 8) + '" y="' + (yq + hq + 30) + '">nein</text>' +
            '<rect class="wz-aus" x="' + f1(x + 14) + '" y="' + ya + '" width="' + (bq - 28) + '" height="' + ha + '" rx="12"/>' +
-           '<text class="wz-an" x="' + f1(xm) + '" y="' + (ya + 25) + '" text-anchor="middle">' + q.n + '</text>' +
-           '<text class="wz-at" x="' + f1(xm) + '" y="' + (ya + 45) + '" text-anchor="middle">' + q.nein + '</text>';
+           '<text class="wz-an" x="' + f1(xm) + '" y="' + (ya + 27) + '" text-anchor="middle">' + q.n + '</text>' +
+           '<text class="wz-at" x="' + f1(xm) + '" y="' + (ya + 49) + '" text-anchor="middle">' + q.nein + '</text>';
       /* ja: nach rechts */
       const xe = i < W.length - 1 ? x + bq + luft - 4 : w - bz - 4;
       k += '<path class="wz-pfeil" d="M' + f1(x + bq) + ' ' + (yq + hq / 2) + ' H' + f1(xe) + '" marker-end="url(#wzA)"/>' +
@@ -3089,7 +3535,7 @@ ul.points li math{ font-size:20px }
       { t:'Dynamik verstehen',  k:['Rückkopplung', 'Verzögerung', 'Nichtlinearität'] },
       { t:'Eingreifen',         k:['Hebel wählen', 'Folgen abschätzen'] },
     ] };
-    const w = 1112, h = 300, y0 = 14, y1 = 128, y2 = 236, hw = 44, ha = 40, hb = 36, bb = 128, luftB = 12;
+    const w = 1112, h = 420, y0 = 14, y1 = 180, y2 = 344, hw = 44, ha = 40, hb = 36, bb = 128, luftB = 12;
     const f1 = x => x.toFixed(1);
     const blaetter = BAUM.k.reduce((n, a) => n + a.k.length, 0);
     const proAst = BAUM.k.map(a => a.k.length * bb + (a.k.length - 1) * luftB);
@@ -3133,7 +3579,7 @@ ul.points li math{ font-size:20px }
     const M = [ [38, 41, 27],                        /* Platzhalter: von Zeile nach Spalte */
                 [ 9, 33, 34],
                 [ 3,  6, 23] ];
-    const w = 1112, h = 330, xl = 300, xr = 812, kb = 16, mt = 30, mb = 8, luft = 16;
+    const w = 1112, h = 416, xl = 300, xr = 812, kb = 16, mt = 30, mb = 8, luft = 16;
     const f1 = x => x.toFixed(1);
     const n = M.flat().reduce((a, b) => a + b, 0);
     const prae = M.map(z => z.reduce((a, b) => a + b, 0));
@@ -3242,7 +3688,7 @@ ul.points li math{ font-size:20px }
     ];
     const R_MIN = .30, P_MIN = .20, P_MAX = .80;   /* uebliche Schranken */
 
-    const w = 620, h = 360, ml = 60, mr = 18, mt = 16, mb = 50;
+    const w = 620, h = 430, ml = 60, mr = 18, mt = 16, mb = 50;
     const X  = v => ml + v * (w - ml - mr);
     const Y  = v => (h - mb) - v / .7 * (h - mt - mb);
     const de = x => String(x).replace('.', ',');
@@ -3299,7 +3745,7 @@ ul.points li math{ font-size:20px }
     const GLAS  = [21.2,23.1,24.8,26.8,27.8,29.2,30.4,30.9,32.0,32.6,33.0,33.9,34.0,34.4,35.0,34.9,35.4,35.7,35.6,36.1,36.1];
     const MODELL = { t0: 21, dT: 16, tau: 7 };                /* T = t0 + dT (1 − e^(−t/tau)) */
 
-    const w = 620, h = 340, ml = 50, mr = 62, mt = 14, mb = 44;
+    const w = 620, h = 450, ml = 50, mr = 62, mt = 14, mb = 44;
     const tMax = OFFEN.length - 1, yMin = 20, yMax = 40;
     const X = t => ml + t / tMax * (w - ml - mr);
     const Y = v => (h - mb) - (v - yMin) / (yMax - yMin) * (h - mt - mb);
@@ -3344,7 +3790,7 @@ ul.points li math{ font-size:20px }
     const ITEMS = [['A1',62,71],['A2',45,68],['A3',38,72],['A4',55,60],['A5',30,58],['A6',71,74],['A7',49,80],['A8',41,66]];
     const sortiert = ITEMS.slice().sort((a, b) => (b[2] - b[1]) - (a[2] - a[1]));
 
-    const w = 620, h = 340, ml = 46, mr = 18, mt = 12, mb = 44;
+    const w = 620, h = 430, ml = 46, mr = 18, mt = 12, mb = 44;
     const zeile = (h - mt - mb) / sortiert.length;
     const X = v => ml + v / 100 * (w - ml - mr);
     const Yi = i => mt + zeile * (i + 0.5);
@@ -3382,7 +3828,7 @@ ul.points li math{ font-size:20px }
     if (!svg) return;
 
     const D = 0.6;                                             /* Cohens d — Platzhalter */
-    const w = 620, h = 340, ml = 18, mr = 18, mt = 34, mb = 44, von = -3.4, bis = 4.0;
+    const w = 620, h = 430, ml = 18, mr = 18, mt = 34, mb = 44, von = -3.4, bis = 4.0;
     const X = z => ml + (z - von) / (bis - von) * (w - ml - mr);
     const phi = z => Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI);
     const Y = p => (h - mb) - p / phi(0) * (h - mt - mb - 26);
@@ -3427,7 +3873,7 @@ ul.points li math{ font-size:20px }
                     ['boden',1,'Im Boden absorbiert'], ['str',2,'Strahlung nach außen'], ['leit',2,'Leitung durch die Wände'], ['luft',2,'Luft in der Box']];
     const FLUSS  = [['lampe','refl',10,'verlust'], ['lampe','abd',12], ['lampe','boden',78], ['boden','str',38], ['boden','leit',25], ['boden','luft',15]];
 
-    const w = 1112, h = 330, kb = 16, mt = 30, mb = 8, luft = 18;
+    const w = 1112, h = 436, kb = 16, mt = 30, mb = 8, luft = 18;
     const spaltenX = [150, 520, 890];
     const f1 = x => x.toFixed(1);
     const K = Object.fromEntries(KNOTEN.map(([id, sp, name]) => [id, { id, sp, name, rein: 0, raus: 0 }]));
@@ -3457,8 +3903,11 @@ ul.points li math{ font-size:20px }
     };
     /* Erst alle Baender, dann alle Knoten samt Beschriftung — so liegt
        keine Schrift unter einem Band eines spaeteren Schritts. Ein
-       Schritt je Spalte ab der zweiten, fuer Baender wie fuer Knoten. */
-    const schritt = (sp, inhalt) => sp === 0 ? inhalt : '<g data-step="' + sp + '">' + inhalt + '</g>';
+       Schritt je Spalte ab der zweiten, fuer Baender wie fuer Knoten.
+       Ohne Inhalt keine Gruppe: aus der letzten Spalte geht kein Band
+       mehr ab, und ein leeres g mit data-step waere ein Schritt, bei
+       dem nichts passiert — stepsOf zaehlt jedes data-step. */
+    const schritt = (sp, inhalt) => !inhalt || sp === 0 ? inhalt : '<g data-step="' + sp + '">' + inhalt + '</g>';
     let g = '';
     spalten.forEach(sp => g += schritt(sp, FLUSS.filter(([a]) => K[a].sp === sp).map(([a, b, v, kl]) => band(K[a], K[b], v, kl)).join('')));
     spalten.forEach(sp => g += schritt(Math.max(0, sp - 1), Object.values(K).filter(k => k.sp === sp).map(knoten).join('')));
@@ -3477,7 +3926,7 @@ ul.points li math{ font-size:20px }
     /* Beschriftung, Unterzeile, Schritt — Reihenfolge im Uhrzeigersinn, oben beginnend */
     const SAT = [['Vorwissen','der Lernenden',1], ['Material','Aufgaben und Versuch',2], ['Zeit','im Stundenplan',3],
                  ['Lerngruppe','Größe und Klima',3], ['Lehrkraft','Fach und Routine',2], ['Interesse','am Gegenstand',1]];
-    const w = 1112, h = 330, cx = 556, cy = 165, rk = 62, rx = 400, ry = 112, ph = 50;
+    const w = 1112, h = 436, cx = 556, cy = h / 2, rk = 62, rx = 400, ph = 50, ry = cy - ph / 2 - 10;
     const f1 = x => x.toFixed(1);
     const lage = i => { const a = -Math.PI / 2 + i * 2 * Math.PI / SAT.length; return [cx + rx * Math.cos(a), cy + ry * Math.sin(a)]; };
     let strahlen = '', pillen = {};
@@ -3507,8 +3956,8 @@ ul.points li math{ font-size:20px }
   (function buildPfad(){
     const svg = document.getElementById('pfadSvg');
     if (!svg) return;
-    const KN = { intervention: [84, 136, 'Intervention'], vorwissen: [84, 272, 'Vorwissen'],
-                 interesse: [300, 42, 'Interesse'], zuwachs: [536, 196, 'Lernzuwachs', 'ziel'] };
+    const KN = { intervention: [84, 180, 'Intervention'], vorwissen: [84, 360, 'Vorwissen'],
+                 interesse: [300, 56, 'Interesse'], zuwachs: [536, 260, 'Lernzuwachs', 'ziel'] };
     /* von, nach, Koeffizient, Klasse — Platzhalter */
     const KA = [['intervention','interesse',0.32,'weg'], ['interesse','zuwachs',0.28,'weg'], ['intervention','zuwachs',0.21,''], ['vorwissen','zuwachs',0.45,'']];
     const bw = 132, bh = 52;
@@ -3554,7 +4003,7 @@ ul.points li math{ font-size:20px }
     /* Klasse, Zuwachs in Prozentpunkten — Platzhalter, Reihenfolge egal */
     const KL = [['7a',12],['7b',9],['7c',-2],['8a',8],['8b',7],['8c',6],['9a',5],['9b',5],['9c',-1],['10a',4],['10b',3],['10c',2],['11a',1],['11b',-4]];
     const sortiert = KL.slice().sort((a, b) => b[1] - a[1]);
-    const w = 1112, h = 300, ml = 40, mr = 20, mt = 26, mb = 30;
+    const w = 1112, h = 386, ml = 40, mr = 20, mt = 26, mb = 30;
     const vMax = Math.max(...KL.map(k => k[1])), vMin = Math.min(...KL.map(k => k[1]));
     const Y = v => mt + (vMax - v) / (vMax - vMin) * (h - mt - mb);
     const spalte = (w - ml - mr) / KL.length, sb = spalte * 0.58;
@@ -3589,7 +4038,7 @@ ul.points li math{ font-size:20px }
     /* Anteil in Personen von 100, Beschriftung — Platzhalter; der Rest bleibt grau */
     const ANTEILE = [[27, 'Fachkonzept'], [31, 'Mischform']];
     const REST = 'Fehlvorstellung';
-    const n = 10, zelle = 30, r = 11.5, x0 = 16, y0 = 16;
+    const n = 10, zelle = 37, r = 14, x0 = 75, y0 = 12;   /* Raster 370 breit, mittig in 520 */
     const f1 = x => x.toFixed(1);
     const klasse = k => { let s = 0; for (let i = 0; i < ANTEILE.length; i++) { s += ANTEILE[i][0]; if (k < s) return ' a' + i; } return ''; };
     let g = '', schritte = {};
@@ -3600,10 +4049,11 @@ ul.points li math{ font-size:20px }
       if (kl) { const st = +kl.slice(2) + 1; schritte[st] = (schritte[st] || '') + '<circle class="pk-pt' + kl + '" cx="' + f1(cx) + '" cy="' + f1(cy) + '" r="' + r + '"/>'; }
     }
     Object.keys(schritte).sort().forEach(st => { g += '<g data-step="' + st + '">' + schritte[st] + '</g>'; });
-    const lx = x0 + n * zelle + 28, rest = 100 - ANTEILE.reduce((a, b) => a + b[0], 0);
-    const zeile = (i, kl, t, zahl, st) => '<g' + (st ? ' data-step="' + st + '"' : '') + '><circle class="pk-pt' + kl + '" cx="' + lx + '" cy="' + (y0 + 20 + i * 34) + '" r="9"/>' +
-      '<text class="pk-leg-n" x="' + (lx + 20) + '" y="' + (y0 + 25 + i * 34) + '">' + zahl + '</text>' +
-      '<text class="pk-leg" x="' + (lx + 52) + '" y="' + (y0 + 25 + i * 34) + '">' + t + '</text></g>';
+    /* Legende in einer Zeile unter dem Raster: Punkt, Zahl, Wort — drei Eintraege auf 520 verteilt */
+    const ly = y0 + n * zelle + 36, rest = 100 - ANTEILE.reduce((a, b) => a + b[0], 0), lb = 520 / (ANTEILE.length + 1);
+    const zeile = (i, kl, t, zahl, st) => '<g' + (st ? ' data-step="' + st + '"' : '') + '><circle class="pk-pt' + kl + '" cx="' + f1(i * lb + 14) + '" cy="' + (ly - 5) + '" r="9"/>' +
+      '<text class="pk-leg-n" x="' + f1(i * lb + 32) + '" y="' + ly + '">' + zahl + '</text>' +
+      '<text class="pk-leg" x="' + f1(i * lb + 62) + '" y="' + ly + '">' + t + '</text></g>';
     ANTEILE.forEach(([z, t], i) => { g += zeile(i, ' a' + i, t, z, i + 1); });
     g += zeile(ANTEILE.length, '', REST, rest, 0);
     svg.innerHTML = g;
@@ -3623,7 +4073,7 @@ ul.points li math{ font-size:20px }
     /* Option, Anteil je Gruppe in %, Klasse — Platzhalter; Zeilensummen 100 */
     const OPT = [['A', [30,28,22,15, 8, 4], ''], ['B', [15,22,35,52,72,88], 'richtig'],
                  ['C', [40,38,33,25,15, 6], 'impetus'], ['D', [15,12,10, 8, 5, 2], '']];
-    const w = 620, h = 340, ml = 50, mr = 70, mt = 16, mb = 46;
+    const w = 620, h = 450, ml = 50, mr = 70, mt = 16, mb = 46;
     const X = v => ml + v / 100 * (w - ml - mr);
     const Y = v => (h - mb) - v / 100 * (h - mt - mb);
     const f1 = x => x.toFixed(1);
@@ -3674,7 +4124,7 @@ ul.points li math{ font-size:20px }
     const ZEILEN = [['Niedriges Vorwissen', 0.82, 0.51, 1.13], ['Mittleres Vorwissen', 0.58, 0.30, 0.86], ['Hohes Vorwissen', 0.31, 0.02, 0.60],
                     ['Klasse 7 und 8', 0.66, 0.40, 0.92], ['Klasse 9 bis 11', 0.52, 0.24, 0.80]];
     const GESAMT = ['Gesamt', 0.60, 0.42, 0.78];
-    const w = 620, h = 340, ml = 160, mr = 118, mt = 12, mb = 46, von = -0.25, bis = 1.25;
+    const w = 620, h = 450, ml = 160, mr = 118, mt = 12, mb = 46, von = -0.25, bis = 1.25;
     const zeile = (h - mt - mb) / (ZEILEN.length + 1.4);
     const X = v => ml + (v - von) / (bis - von) * (w - ml - mr);
     const Yi = i => mt + zeile * (i + 0.5);
@@ -3699,6 +4149,308 @@ ul.points li math{ font-size:20px }
          '<text class="fp-gesamt-t" x="' + (ml - 14) + '" y="' + f1(yg + 5) + '" text-anchor="end">' + tg + '</text>' +
          '<path class="fp-gesamt" d="M' + f1(X(log)) + ' ' + f1(yg) + ' L' + f1(X(dg)) + ' ' + f1(yg - 8) + ' L' + f1(X(hig)) + ' ' + f1(yg) + ' L' + f1(X(dg)) + ' ' + f1(yg + 8) + ' Z"/>' +
          '<text class="fp-wert" x="' + (w - mr + 12) + '" y="' + f1(yg + 4) + '">' + de(dg) + ' [' + de(log) + '; ' + de(hig) + ']</text></g>';
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Slopegraph — eine Linie je Person, Vortest links, Nachtest
+     rechts. Steigende Linien blau, fallende grau. Schritt 1 legt
+     das Gruppenmittel als dicke Linie darueber, Schritt 2 hebt die
+     fallenden hervor und zaehlt sie. Beides gerechnet.
+     ======================================================== */
+  (function buildSlope(){
+    const svg = document.getElementById('slopeSvg');
+    if (!svg) return;
+
+    /* Vortest, Nachtest in Prozent der erreichbaren Punkte, eine Zeile je Lernendem — Platzhalter */
+    const P = [[18,52],[22,61],[25,58],[27,74],[30,63],[28,55],[33,72],[35,66],[36,74],[36,60],
+               [40,79],[41,68],[43,75],[45,76],[46,83],[48,64],[50,77],[52,86],[54,80],[53,73],
+               [57,88],[60,84],[62,58],[64,84],[66,61],[68,90],[71,66],[74,71],[76,70],[80,92]];
+
+    const w = 620, h = 450, ml = 60, mr = 124, mt = 40, mb = 22;
+    const x1 = ml, x2 = w - mr;
+    const Y  = v => (h - mb) - v / 100 * (h - mt - mb);
+    const f1 = x => x.toFixed(1);
+    const mittel = a => a.reduce((s, v) => s + v, 0) / a.length;
+    const mPr = mittel(P.map(q => q[0])), mPo = mittel(P.map(q => q[1]));
+    const fallend = P.filter(([pr, po]) => po < pr);
+
+    let g = '';
+    [0, 25, 50, 75, 100].forEach(v => {
+      g += '<line class="sl-grid" x1="' + x1 + '" y1="' + f1(Y(v)) + '" x2="' + x2 + '" y2="' + f1(Y(v)) + '"/>' +
+           '<text class="sl-tick" x="' + (x1 - 10) + '" y="' + f1(Y(v) + 4) + '" text-anchor="end">' + v + '</text>';
+    });
+    g += '<line class="sl-ax" x1="' + x1 + '" y1="' + mt + '" x2="' + x1 + '" y2="' + (h - mb) + '"/>' +
+         '<line class="sl-ax" x1="' + x2 + '" y1="' + mt + '" x2="' + x2 + '" y2="' + (h - mb) + '"/>' +
+         '<text class="sl-kopf" x="' + x1 + '" y="' + (mt - 16) + '" text-anchor="middle">Vortest</text>' +
+         '<text class="sl-kopf" x="' + x2 + '" y="' + (mt - 16) + '" text-anchor="middle">Nachtest</text>';
+    const linie = ([pr, po], klasse) =>
+      '<line class="sl-linie' + klasse + '" x1="' + x1 + '" y1="' + f1(Y(pr)) + '" x2="' + x2 + '" y2="' + f1(Y(po)) + '"/>';
+    P.forEach(q => {
+      const neg = q[1] < q[0] ? ' neg' : '';
+      g += linie(q, neg) +
+           '<circle class="sl-pt' + neg + '" cx="' + x1 + '" cy="' + f1(Y(q[0])) + '" r="3"/>' +
+           '<circle class="sl-pt' + neg + '" cx="' + x2 + '" cy="' + f1(Y(q[1])) + '" r="3"/>';
+    });
+    /* Beschriftungen rechts der Achse: Mittel am Ende der Mittellinie, die
+       Fallenden bei ihrer mittleren Hoehe — mindestens 18 px auseinander. */
+    const yM = Y(mPo), yFroh = Y(mittel(fallend.map(q => q[1])));
+    const yF = Math.abs(yFroh - yM) < 18 ? yM + Math.sign(yFroh - yM || 1) * 18 : yFroh;
+    g += '<g data-step="1"><line class="sl-mittel" x1="' + x1 + '" y1="' + f1(Y(mPr)) + '" x2="' + x2 + '" y2="' + f1(yM) + '"/>' +
+         '<text class="sl-lab" x="' + (x2 + 12) + '" y="' + f1(yM + 4) + '">Mittel ' + Math.round(mPr) + ' → ' + Math.round(mPo) + '</text></g>';
+    g += '<g data-step="2">' + fallend.map(q => linie(q, ' stark')).join('') +
+         '<text class="sl-lab neg" x="' + (x2 + 12) + '" y="' + f1(yF + 4) + '">' + fallend.length + ' von ' + P.length + ' fallen</text></g>';
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Triade — drei Groessen, die sich gegenseitig bedingen.
+     Ecken als Pillen (Breite am Text gemessen wie beim Stern),
+     Kanten mit Doppelpfeil in der Mitte als Schritt.
+     ======================================================== */
+  (function buildTriade(){
+    const svg = document.getElementById('triadeSvg');
+    if (!svg) return;
+    /* Ecke, Unterzeile — oben, unten links, unten rechts */
+    const ECKEN = [['Fachliche Klärung', 'Was sagt die Physik?'], ['Lernerperspektiven', 'Was denken die Lernenden?'],
+                   ['Didaktische Strukturierung', 'Was folgt für den Unterricht?']];
+    const MITTE = ['Didaktische', 'Rekonstruktion'];
+    const h = 380, P = [[260, 40], [92, h - 42], [428, h - 42]], ph = 50;   /* Ecken: oben, unten links, unten rechts */
+    const f1 = x => x.toFixed(1);
+    let kanten = '';
+    P.forEach(([x1, y1], i) => {                  /* Kante i verbindet Ecke i mit Ecke i+1 */
+      const [x2, y2] = P[(i + 1) % 3];
+      const dx = x2 - x1, dy = y2 - y1, l = Math.hypot(dx, dy), ux = dx / l, uy = dy / l, px = -uy * 5, py = ux * 5;
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const spitze = (tx, ty, s) => '<polygon class="tr-spitze" points="' + f1(tx) + ',' + f1(ty) + ' ' + f1(tx - s * ux * 11 + px) + ',' + f1(ty - s * uy * 11 + py) +
+                                    ' ' + f1(tx - s * ux * 11 - px) + ',' + f1(ty - s * uy * 11 - py) + '"/>';
+      kanten += '<line class="tr-kante" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>' +
+                spitze(mx + ux * 14, my + uy * 14, 1) + spitze(mx - ux * 14, my - uy * 14, -1);
+    });
+    const cx = (P[0][0] + P[1][0] + P[2][0]) / 3, cy = (P[0][1] + P[1][1] + P[2][1]) / 3;
+    let g = '<g data-step="1">' + kanten +
+      MITTE.map((z, i) => '<text class="tr-mitte" x="' + f1(cx) + '" y="' + f1(cy + 5 + (i - (MITTE.length - 1) / 2) * 18) + '" text-anchor="middle">' + z + '</text>').join('') + '</g>';
+    ECKEN.forEach(([t, u], i) => {
+      const [x, y] = P[i];
+      g += '<g class="tr-g"><rect class="tr-pille" x="' + x + '" y="' + (y - ph / 2) + '" width="0" height="' + ph + '" rx="' + (ph / 2) + '"/>' +
+           '<text class="tr-t" x="' + x + '" y="' + (y - 3) + '" text-anchor="middle">' + t + '</text>' +
+           '<text class="tr-s" x="' + x + '" y="' + (y + 15) + '" text-anchor="middle">' + u + '</text></g>';
+    });
+    svg.innerHTML = g;
+    svg.querySelectorAll('.tr-g').forEach(el => {
+      const ts = el.querySelectorAll('text'), r = el.querySelector('rect');
+      const bw = Math.max(...[...ts].map(t => t.getComputedTextLength())) + 30;
+      r.setAttribute('width', f1(bw)); r.setAttribute('x', f1(+ts[0].getAttribute('x') - bw / 2));
+    });
+  })();
+
+  /* ========================================================
+     Zwiebel — ein Kern, Schichten darum. Von aussen nach innen
+     gezeichnet (die innere deckt die aeussere), von innen nach
+     aussen eingeblendet; die Beschriftung sitzt oben im Band.
+     ======================================================== */
+  (function buildZwiebel(){
+    const svg = document.getElementById('zwiebelSvg');
+    if (!svg) return;
+    const KERN = 'Versuch';
+    const SCHICHTEN = ['Unterrichtsstunde', 'Unterrichtsreihe', 'Lehrplan'];   /* von innen nach aussen */
+    const R = [55, 99, 141, 181], cx = 260, cy = 190, ab = 2;                  /* Radien: Kern, dann je Schicht; ab: erster Schritt */
+    const f1 = x => x.toFixed(1);
+    let g = '';
+    for (let i = SCHICHTEN.length; i >= 1; i--) {
+      g += '<g data-step="' + (ab + i - 1) + '"><circle class="zw-ring s' + i + '" cx="' + cx + '" cy="' + cy + '" r="' + R[i] + '"/>' +
+           '<text class="zw-t" x="' + cx + '" y="' + f1(cy - (R[i] + R[i - 1]) / 2 + 5) + '" text-anchor="middle">' + SCHICHTEN[i - 1] + '</text></g>';
+    }
+    g += '<circle class="zw-kern" cx="' + cx + '" cy="' + cy + '" r="' + R[0] + '"/>' +
+         '<text class="zw-kern-t" x="' + cx + '" y="' + (cy + 5) + '" text-anchor="middle">' + KERN + '</text>';
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Pyramide — Stufen von unten nach oben, jede ein Schritt;
+     rechts je Stufe eine Erlaeuterung, mit punktierter Linie
+     angebunden. Breiten und Lagen aus der Zahl der Stufen.
+     ======================================================== */
+  (function buildPyramide(){
+    const svg = document.getElementById('pyramideSvg');
+    if (!svg) return;
+    /* Stufe, Erlaeuterung — von unten nach oben */
+    const STUFEN = [['Beschreiben', 'Was passiert: Die Box wird warm, das Thermometer steigt.'],
+                    ['Erklären', 'Warum: Licht kommt hinein, Wärme kommt schwer wieder heraus.'],
+                    ['Vorhersagen', 'Was wäre, wenn: ohne Deckel, mit schwarzem Boden, mit zwei Scheiben.'],
+                    ['Übertragen', 'Wo noch: Gewächshaus, Auto in der Sonne, Atmosphäre.']];
+    const h = 436, n = STUFEN.length, luecke = 6, oben = 14, cx = 300, wu = 560, ws = 120, xe = 640;
+    const hs = Math.floor((h - 2 * oben - luecke * (n - 1)) / n);          /* Stufenhoehe aus der Gesamthoehe */
+    const f1 = x => x.toFixed(1);
+    const breite = i => wu - i * ws;                              /* Breite der Unterkante von Stufe i */
+    let g = '';
+    STUFEN.forEach(([t, e], i) => {
+      const y = oben + (n - 1 - i) * (hs + luecke), wa = breite(i), wo = breite(i + 1), ym = y + hs / 2;
+      const hell = i >= 2;
+      const inhalt =
+        '<polygon class="py-stufe s' + (i + 1) + '" points="' + (cx - wa / 2) + ',' + (y + hs) + ' ' + (cx + wa / 2) + ',' + (y + hs) + ' ' +
+        (cx + wo / 2) + ',' + y + ' ' + (cx - wo / 2) + ',' + y + '"/>' +
+        '<text class="py-t' + (hell ? ' hell' : '') + '" x="' + cx + '" y="' + f1(ym + 6) + '" text-anchor="middle">' + t + '</text>' +
+        '<line class="py-linie" x1="' + f1(cx + (wa + wo) / 4 + 8) + '" y1="' + f1(ym) + '" x2="' + (xe - 12) + '" y2="' + f1(ym) + '"/>' +
+        '<text class="py-nr" x="' + xe + '" y="' + f1(ym - 6) + '">STUFE ' + (i + 1) + '</text>' +
+        '<text class="py-e" x="' + xe + '" y="' + f1(ym + 14) + '">' + e + '</text>';
+      g += i === 0 ? inhalt : '<g data-step="' + i + '">' + inhalt + '</g>';
+    });
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Zuordnung — zwei Spalten, Linien dazwischen. Die Paare
+     stehen als Indexpaare im Skript; die Linien eines Konzepts
+     erscheinen zusammen als Schritt.
+     ======================================================== */
+  (function buildZuordnung(){
+    const svg = document.getElementById('zuordnungSvg');
+    if (!svg) return;
+    const LINKS  = ['„Das Glas verstärkt das Licht."', '„Wärme sammelt sich an wie Wasser."', '„Dunkle Flächen ziehen die Wärme an."', '„Nachts dringt die Kälte ein."'];
+    const RECHTS = ['Transmission und Absorption', 'Energiebilanz und Gleichgewicht', 'Absorption und Emission von Strahlung'];
+    const PAARE  = [[0, 0], [1, 1], [2, 2], [3, 1], [3, 2]];           /* links, rechts */
+    const w = 1112, h = 416, bw = 430, bh = 44, oben = 36;
+    const xl = 0, xr = w - bw;
+    const yl = i => oben + i * (h - oben - bh) / (LINKS.length - 1);
+    const yr = j => oben + j * (h - oben - bh) / (RECHTS.length - 1);
+    const f1 = x => x.toFixed(1);
+    const kasten = (x, y, t, fach) =>
+      '<rect class="zu-kasten' + (fach ? ' fach' : '') + '" x="' + x + '" y="' + f1(y) + '" width="' + bw + '" height="' + bh + '" rx="10"/>' +
+      '<text class="zu-t' + (fach ? ' fach' : '') + '" x="' + (x + 16) + '" y="' + f1(y + bh / 2 + 5) + '">' + t + '</text>';
+    let g = '<text class="zu-kopf" x="' + xl + '" y="16">VORSTELLUNG DER LERNENDEN</text>' +
+            '<text class="zu-kopf fach" x="' + xr + '" y="16">FACHKONZEPT</text>';
+    RECHTS.forEach((t, j) => {
+      const xm = (xl + bw + xr) / 2;
+      g += '<g data-step="' + (j + 1) + '">' + PAARE.filter(([, b]) => b === j).map(([a]) =>
+        '<path class="zu-linie" d="M' + (xl + bw) + ' ' + f1(yl(a) + bh / 2) + ' C' + xm + ' ' + f1(yl(a) + bh / 2) + ', ' + xm + ' ' + f1(yr(j) + bh / 2) + ', ' + xr + ' ' + f1(yr(j) + bh / 2) + '"/>').join('') + '</g>';
+    });
+    LINKS.forEach((t, i) => g += kasten(xl, yl(i), t, false));
+    RECHTS.forEach((t, j) => g += kasten(xr, yr(j), t, true));
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Freikoerperbild — Koerper auf schiefer Ebene. Alles aus dem
+     Winkel gerechnet: Ebene, Lage des Koerpers, Richtung und
+     Laenge der Kraefte. Pfeilspitzen als Polygone, keine Marker
+     (Marker haengen an IDs, und die Miniaturen entfernen IDs).
+     ======================================================== */
+  (function buildKraefte(){
+    const svg = document.getElementById('kraefteSvg');
+    if (!svg) return;
+    const GRAD = 30, FG = 150, SEITE = 84, h = 430;            /* Neigung, Laenge der Gewichtskraft in px, Kantenlaenge, Hoehe */
+    const a = GRAD * Math.PI / 180, c = Math.cos(a), si = Math.sin(a);
+    const A = [40, h - 30], L = 580;                           /* Fusspunkt und Laenge der Ebene */
+    const B = [A[0] + L * c, A[1] - L * si];
+    const M = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];          /* Aufsetzpunkt */
+    const nx = -si, ny = -c;                                   /* Normale, von der Ebene weg */
+    const S = [M[0] + nx * SEITE / 2, M[1] + ny * SEITE / 2];  /* Schwerpunkt */
+    const f1 = x => x.toFixed(1);
+    const pfeil = (x0, y0, dx, dy, len, kl) => {
+      const x1 = x0 + dx * len, y1 = y0 + dy * len, px = -dy * 5.5, py = dx * 5.5, k = kl ? ' ' + kl : '';
+      return '<line class="fk-kraft' + k + '" x1="' + f1(x0) + '" y1="' + f1(y0) + '" x2="' + f1(x1 - dx * 8) + '" y2="' + f1(y1 - dy * 8) + '"/>' +
+             '<polygon class="fk-spitze' + k + '" points="' + f1(x1) + ',' + f1(y1) + ' ' + f1(x1 - dx * 13 + px) + ',' + f1(y1 - dy * 13 + py) + ' ' + f1(x1 - dx * 13 - px) + ',' + f1(y1 - dy * 13 - py) + '"/>';
+    };
+    const sub = (t, u) => t + '<tspan dy="5" font-size="11">' + u + '</tspan>';
+    let g = '<line class="fk-boden" x1="10" y1="' + A[1] + '" x2="610" y2="' + A[1] + '"/>' +
+      '<polygon class="fk-ebene" points="' + A.join(',') + ' ' + f1(B[0]) + ',' + f1(B[1]) + ' ' + f1(B[0]) + ',' + A[1] + '"/>' +
+      '<path class="fk-winkel" d="M' + (A[0] + 44) + ' ' + A[1] + ' A44 44 0 0 0 ' + f1(A[0] + 44 * c) + ' ' + f1(A[1] - 44 * si) + '"/>' +
+      '<text class="fk-a" x="' + (A[0] + 52) + '" y="' + (A[1] - 8) + '">α = ' + GRAD + '°</text>' +
+      '<rect class="fk-koerper" x="' + (-SEITE / 2) + '" y="' + (-SEITE / 2) + '" width="' + SEITE + '" height="' + SEITE + '" rx="4" transform="translate(' + f1(S[0]) + ' ' + f1(S[1]) + ') rotate(' + (-GRAD) + ')"/>' +
+      '<circle class="fk-punkt" cx="' + f1(S[0]) + '" cy="' + f1(S[1]) + '" r="4"/>';
+    const lab = (x, y, t, kl, anker) => '<text class="fk-t' + (kl ? ' ' + kl : '') + '" x="' + f1(x) + '" y="' + f1(y) + '"' + (anker ? ' text-anchor="' + anker + '"' : '') + '>' + t + '</text>';
+    /* 1 Gewichtskraft senkrecht, 2 Normalkraft laengs der Normale, 3 Haftreibung hangaufwaerts, 4 Zerlegung */
+    g += '<g data-step="1">' + pfeil(S[0], S[1], 0, 1, FG) + lab(S[0] + 12, S[1] + FG - 2, sub('F', 'G')) + '</g>';
+    g += '<g data-step="2">' + pfeil(S[0], S[1], nx, ny, FG * c) + lab(S[0] + nx * FG * c - 12, S[1] + ny * FG * c + 2, sub('F', 'N'), '', 'end') + '</g>';
+    g += '<g data-step="3">' + pfeil(S[0], S[1], c, -si, FG * si) + lab(S[0] + c * FG * si + 8, S[1] - si * FG * si - 6, sub('F', 'R')) + '</g>';
+    const H = [S[0] - c * FG * si, S[1] + si * FG * si], Q = [S[0] - nx * FG * c, S[1] - ny * FG * c];   /* Enden der Komponenten */
+    g += '<g data-step="4">' +
+      '<path class="fk-hilfe" d="M' + f1(H[0]) + ' ' + f1(H[1]) + ' L' + f1(S[0]) + ' ' + f1(S[1] + FG) + ' L' + f1(Q[0]) + ' ' + f1(Q[1]) + '"/>' +
+      pfeil(S[0], S[1], -c, si, FG * si, 'komp') + pfeil(S[0], S[1], -nx, -ny, FG * c, 'komp') +
+      lab(H[0] - 8, H[1] + 4, 'Hangabtrieb', 'komp', 'end') + lab(Q[0] + 10, Q[1] + 14, 'Anpresskraft', 'komp') + '</g>';
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Histogramm — Klassen zu 10 Punkten, gezaehlt aus Rohwerten.
+     Schritt 1 die Schwelle, Schritt 2 die Saeulen darueber
+     hervorgehoben samt Anteil — beides gerechnet.
+     ======================================================== */
+  (function buildHisto(){
+    const svg = document.getElementById('histoSvg');
+    if (!svg) return;
+    /* Nachtest-Punktzahlen, eine je Lernendem — Platzhalter */
+    const DATEN = [22, 28, 31, 35, 38, 41, 44, 45, 47, 49, 52, 53, 55, 57, 58, 61, 63, 64, 66, 67, 68, 69,
+                   71, 72, 72, 73, 74, 75, 76, 77, 78, 79, 81, 82, 83, 84, 85, 86, 88, 89, 91, 92, 94, 96];
+    const SCHWELLE = 60, KLASSE = 10;
+    const w = 620, h = 430, ml = 42, mr = 16, mt = 36, mb = 48;
+    const klassen = Array.from({ length: 100 / KLASSE }, () => 0);
+    DATEN.forEach(v => klassen[Math.min(klassen.length - 1, Math.floor(v / KLASSE))]++);
+    const nmax = Math.ceil(Math.max(...klassen) / 2) * 2 + 2;   /* eine Stufe Luft fuer die Zahl ueber der Saeule */
+    const X = v => ml + v / 100 * (w - ml - mr);
+    const Y = n => (h - mb) - n / nmax * (h - mt - mb);
+    const f1 = x => x.toFixed(1);
+    let g = '';
+    for (let n = 0; n <= nmax; n += 2) {
+      g += '<line class="hg-grid" x1="' + ml + '" y1="' + f1(Y(n)) + '" x2="' + (w - mr) + '" y2="' + f1(Y(n)) + '"/>' +
+           '<text class="hg-tick" x="' + (ml - 8) + '" y="' + f1(Y(n) + 4) + '" text-anchor="end">' + n + '</text>';
+    }
+    for (let v = 0; v <= 100; v += KLASSE) {
+      g += '<text class="hg-tick" x="' + f1(X(v)) + '" y="' + (h - mb + 19) + '" text-anchor="middle">' + v + '</text>';
+    }
+    const saeule = (n, i, kl) => n ? '<rect class="hg-bar' + (kl ? ' ' + kl : '') + '" x="' + f1(X(i * KLASSE) + 1.5) + '" y="' + f1(Y(n)) + '" width="' + f1(X(KLASSE) - X(0) - 3) + '" height="' + f1(Y(0) - Y(n)) + '" rx="3"/>' : '';
+    klassen.forEach((n, i) => {
+      g += saeule(n, i, '') + (n ? '<text class="hg-n" x="' + f1(X(i * KLASSE + KLASSE / 2)) + '" y="' + f1(Y(n) - 6) + '" text-anchor="middle">' + n + '</text>' : '');
+    });
+    g += '<line class="hg-ax" x1="' + ml + '" y1="' + mt + '" x2="' + ml + '" y2="' + (h - mb) + '"/>' +
+         '<line class="hg-ax" x1="' + ml + '" y1="' + (h - mb) + '" x2="' + (w - mr) + '" y2="' + (h - mb) + '"/>' +
+         '<text class="hg-ax-t" x="' + f1((ml + w - mr) / 2) + '" y="' + (h - 6) + '" text-anchor="middle">Punkte im Nachtest</text>' +
+         '<text class="hg-ax-t" x="' + ml + '" y="' + (mt - 14) + '">Lernende</text>';
+    const drueber = DATEN.filter(v => v >= SCHWELLE).length, anteil = Math.round(100 * drueber / DATEN.length);
+    g += '<g data-step="1"><line class="hg-ref" x1="' + f1(X(SCHWELLE)) + '" y1="' + (mt - 4) + '" x2="' + f1(X(SCHWELLE)) + '" y2="' + (h - mb) + '"/>' +
+         '<text class="hg-lab" x="' + f1(X(SCHWELLE) - 8) + '" y="' + (mt - 14) + '" text-anchor="end">Mindeststandard ' + SCHWELLE + '</text></g>';
+    g += '<g data-step="2">' + klassen.map((n, i) => i * KLASSE >= SCHWELLE ? saeule(n, i, 'stark') : '').join('') +
+         '<text class="hg-lab stark" x="' + f1(X(SCHWELLE) + 8) + '" y="' + (mt - 14) + '">' + drueber + ' von ' + DATEN.length + ' darüber, ' + anteil + ' %</text></g>';
+    svg.innerHTML = g;
+  })();
+
+  /* ========================================================
+     Item-Heatmap — Zeilen Items, Spalten Gruppen mal Zeitpunkt.
+     Deckkraft der Zelle nach Wert, mit Potenz 1,5 gespreizt, damit
+     30 und 70 sich unterscheiden; Schrift hell, sobald die Zelle
+     dunkel wird. Nachtest als Schritt 1, Zuwachs der
+     Interventionsgruppe als Schritt 2 — gerechnet.
+     ======================================================== */
+  (function buildHeat(){
+    const svg = document.getElementById('heatSvg');
+    if (!svg) return;
+    /* Item: Intervention Prae, Post, Kontrolle Prae, Post — Loesungshaeufigkeit in Prozent, Platzhalter */
+    const ITEMS = [['A1', 62, 71, 60, 64], ['A2', 45, 68, 44, 49], ['A3', 38, 72, 40, 45], ['A4', 55, 60, 54, 57],
+                   ['A5', 30, 58, 31, 36], ['A6', 71, 74, 70, 72], ['A7', 49, 80, 47, 52], ['A8', 41, 66, 42, 46]];
+    const GRUPPEN = ['Intervention', 'Kontrolle'], ZEITEN = ['Prä', 'Post'];
+    const w = 620, h = 430, ml = 46, md = 78, mt = 50, mb = 4;
+    const zw = (w - ml - md) / 4, zh = (h - mt - mb) / ITEMS.length;
+    const f1 = x => x.toFixed(1);
+    const X = j => ml + j * zw, Y = i => mt + i * zh;
+    let g = '';
+    GRUPPEN.forEach((t, k) => g += '<text class="hm-kopf" x="' + f1(X(2 * k) + zw) + '" y="' + (mt - 30) + '" text-anchor="middle">' + t + '</text>');
+    let post = '';
+    ITEMS.forEach(([nm, ...v], i) => {
+      g += '<text class="hm-item" x="' + (ml - 10) + '" y="' + f1(Y(i) + zh / 2 + 5) + '" text-anchor="end">' + nm + '</text>';
+      v.forEach((p, j) => {
+        const z = '<rect class="hm-zelle" x="' + f1(X(j)) + '" y="' + f1(Y(i)) + '" width="' + f1(zw) + '" height="' + f1(zh) + '" fill-opacity="' + f1(0.05 + 0.9 * Math.pow(p / 100, 1.5)) + '"/>' +
+                  '<text class="hm-v' + (p > 58 ? ' hell' : '') + '" x="' + f1(X(j) + zw / 2) + '" y="' + f1(Y(i) + zh / 2 + 5) + '" text-anchor="middle">' + p + '</text>';
+        if (j % 2) post += z; else g += z;
+      });
+    });
+    ZEITEN.forEach((t, k) => [0, 1].forEach(gr => {
+      const z = '<text class="hm-kopf sub" x="' + f1(X(2 * gr + k) + zw / 2) + '" y="' + (mt - 10) + '" text-anchor="middle">' + t + '</text>';
+      if (k) post += z; else g += z;
+    }));
+    g += '<g data-step="1">' + post + '</g>';
+    g += '<g data-step="2"><text class="hm-kopf" x="' + f1(X(4) + md / 2 + 4) + '" y="' + (mt - 10) + '" text-anchor="middle">Zuwachs</text>' +
+         ITEMS.map(([, pr, po], i) => '<text class="hm-delta' + (po - pr < 20 ? ' klein' : '') + '" x="' + f1(X(4) + md / 2 + 4) + '" y="' + f1(Y(i) + zh / 2 + 5) + '" text-anchor="middle">+' + (po - pr) + '</text>').join('') + '</g>';
     svg.innerHTML = g;
   })();
 
