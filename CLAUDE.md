@@ -85,8 +85,12 @@ Ganzes skaliert. Alle Maße unten sind Bühnenpixel, unabhängig vom Bildschirm.
 | Rasterbilder höchstens | 410 px hoch | `.slide figure img` |
 
 **Unverhandelbar:** Text und Karten dürfen nie unter 650 px reichen. Der Streifen
-darunter gehört der Fußzeile (Logo ab 662). Für `.slide.hero` (Titel- und Dankfolie) gilt 664 px,
-weil dort die Fußzeile ausgeblendet ist.
+darunter gehört der Fußzeile (Logo ab 662). Für `.slide.hero` (Titel- und Dankfolie) gilt
+**584 px** (seit dem 15.09. abends): Die blaue Karte wächst mit ihrem Inhalt und endet 40 px
+unter der Byline; das große Logo beginnt bei 644, dazwischen bleiben 20 px. Ein Titel darf
+drei Zeilen haben (84 px), dann mit einzeiligem oder zweizeiligem Untertitel — mehr passt nicht.
+Besser: ab etwa 27 Zeichen `h1.lang` (72 px), dann stehen 31 Zeichen je Zeile und ein Titel
+bis 60 Zeichen bleibt zweizeilig (Max' Entscheidung vom 15.09. abends, nicht noch kleiner).
 
 **Die Fläche wird genutzt (seit dem 15.09., Max):** Karten sind so hoch wie ihr Inhalt —
 **keine** gestreckten Karten, keine erzwungene Symmetrie zwischen Spalten. Aber der Inhalt
@@ -154,7 +158,7 @@ dürfen kleiner sein.
 
 | Rolle | Klasse | Grad |
 |---|---|---|
-| Titelfolie | `h1` | 84 px |
+| Titelfolie | `h1` | 84 px — langer Titel `h1.lang` 72 px (zwei Zeilen à ~31 Zeichen statt ~26) |
 | Folientitel | `h2` | 46 px — als Satz (`.slide.these`) 38 px |
 | Untertitel, Vorspann | `.lead` | 26 px |
 | Aufzählung Ebene 1 | `ul.points li` | 19 px |
@@ -190,7 +194,7 @@ Schatten.
 
 | Klasse | Wirkung |
 |---|---|
-| `.slide.hero` | Titel-/Abschlussfolie: blaue Karte, weiße Schrift, ohne Fußzeile |
+| `.slide.hero` | Titel-/Abschlussfolie: blaue Karte, weiße Schrift, ohne Fußzeile. Die Karte **wächst mit dem Inhalt:** Die Folie ist ein Raster aus vier Zeilen (Abschnitt, Titel, Untertitel, Byline), das `::before` spannt sie alle und ragt 40 px darüber hinaus — Titel bis drei Zeilen |
 | `.cols` | zwei gleich breite Spalten, je eine Karte |
 | `.cols.wide-left` | Verhältnis 1,15 : 0,85 |
 | `ul.points` | drei Ebenen: Punkt, Strich, Viereck — `<ul>` einfach verschachteln |
@@ -420,10 +424,24 @@ dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es
   Kopfkommentar des Stylesheets, dann `<style>` in einem Kommentar des Formelblocks.
   Beide Male hat eine Suche nach dem Element den Kommentar erwischt und den halben Rest
   mitgenommen. **In Kommentaren keine Elementnamen in spitzen Klammern.**
-- **Messwerte der Titelfolie schwanken.** Mit eingebautem KaTeX meldet `pruefen.py`
-  für Folie 1 einen um 18 px höheren Inhalt und 3 % kleinere Grade. Nachgeprüft: die
-  gerenderten Bilder sind **byteweise identisch**. Es ist ein Zeitartefakt der
-  kopflosen Messung, kein Unterschied im Bild — nicht daran herumbessern.
+- **Messwerte der Titelfolie schwanken — aufgeklärt am 15.09.** Unter
+  `--virtual-time-budget` laufen CSS-Animationen nicht mit: Die Sonde fand alle Animationen
+  der aktiven Folie bei `running@0`, und jedes `data-anim`-Element saß auf der Startlage des
+  Auftritts (`rise`, `translateY(18px)`) — das waren die „18 px höher". Ob es zuschlägt, hängt
+  vom Zeitverhalten ab (im 0,6-MB-Vortrag ja, in der 0,85-MB-Vorlage nicht). Seit dem 15.09.
+  bringt die Sonde vor dem Messen alle Animationen mit `finish()` in die Endlage; die
+  Messung ist damit deterministisch. Wer in `pruefen.py` etwas Neues misst: **nach** dieser Zeile.
+- **Weiße Schrift außerhalb der Karte ist kein Überlauf.** Die Hero-Karte stand bis zum
+  15.09. fest bei 48–478 px (`bottom:242px`), gebaut für „Registerdeck" in einer Zeile. Ein
+  dreizeiliger Titel schob Untertitel und Byline aus der Karte — weiß auf hellem Grund, unlesbar —
+  und `pruefen.py` meldete nichts, weil nichts unter die Grenze rutschte. Seither wächst die
+  Karte mit (Raster, siehe Bausteine). Lehre: **Blaue Karten mit festem Maß gibt es nicht mehr;
+  bei Titel- und Dankfolie das Bild ansehen,** die Messung sieht nur Text.
+- **Ein Button erbt die Schrift nicht.** Register (`.rail-item`) und Übersicht (`.ov-item`) sind
+  Buttons; das Register hatte `font:inherit`, die Übersicht nicht — ihre Miniaturen und
+  Beschriftungen standen seit je in der Systemschrift (kopflos: Arial), am Bildschirm kaum zu
+  sehen, in der Messung eindeutig (`getComputedStyle(klon).fontFamily`). Seit dem 15.09. abends
+  `font:inherit` auch dort. **Wer einen Button anlegt, gibt ihm `font:inherit`.**
 - **Leere Gruppe mit `data-step` = Schritt ins Leere.** `stepsOf` zählt jedes `data-step`,
   auch an einem `<g>` ohne Inhalt. `buildFluss` legte je Spalte eine Gruppe für die abgehenden
   Bänder an — aus der letzten Spalte geht keins ab, die Gruppe war leer, und der Pfeil musste
@@ -446,7 +464,8 @@ dokumentiert der Foliensatz etwas anderes, als er tut. Eine dritte Stelle gab es
   „8" statt „0,8". Das DOM ist dabei richtig, im echten Browser passiert es nicht. **Für
   Bilder `--window-size=1280,807` nehmen** (Maßstab 1, unten 43 px abschneiden), dann
   sind vier von vier Läufen byteweise gleich. Das erklärt rückwirkend die „Zeitartefakte"
-  der Titelfolie und des Fortschrittsbalkens im Protokoll.
+  des Fortschrittsbalkens im Protokoll — die der Titelfolie nicht, die hatten den Auftritt
+  als Ursache (siehe „Messwerte der Titelfolie schwanken").
 - **Grid-Zeile voll, Zellen ohne Spalte.** Ein Element mit `grid-column:1/-1` in einer
   Zeile lässt der automatischen Platzierung dort keinen Platz — weitere Zellen derselben
   Zeile wandern in unsichtbare Zusatzspalten rechts hinaus. Entweder jede Zelle mit

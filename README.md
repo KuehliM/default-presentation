@@ -298,7 +298,7 @@ nach der Zahl der Folien.
 
 | Klasse | Wirkung |
 |---|---|
-| `.slide.hero` | Titel- und Abschlussfolie: große blaue Karte, weiße Schrift, ohne Fußzeile |
+| `.slide.hero` | Titel- und Abschlussfolie: große blaue Karte, weiße Schrift, ohne Fußzeile; die Karte wächst mit dem Inhalt; langer Titel als `h1.lang` (72 px, zwei Zeilen) |
 | `.cols` | zwei gleich breite Spalten, jede als weiße Karte |
 | `.cols.wide-left` | dasselbe im Verhältnis 1,15 : 0,85 |
 | `ul.points` | Aufzählung mit drei Ebenen: runder Punkt, Strich, Viereck — einfach `<ul>` verschachteln, jede Ebene wird etwas kleiner |

@@ -41,6 +41,12 @@ CHROME_ORTE = [
 SONDE = r"""
 <script>
 window.addEventListener('load', () => setTimeout(() => {
+  /* Unter --virtual-time-budget laufen Animationen nicht mit: der
+     Auftritt (rise, von translateY(18px)) steht bei 0 ms, und jedes
+     data-anim-Element der aktiven Folie sitzt 18 px zu tief — das war
+     die „schwankende" Titelfolie. Vor dem Messen alles in die Endlage;
+     endlose Animationen lassen sich nicht beenden und bleiben, wie sie sind. */
+  document.getAnimations().forEach(a => { try { a.finish(); } catch (e) {} });
   const root = document.documentElement;
 
   const zahl = n => parseFloat(getComputedStyle(root).getPropertyValue(n));

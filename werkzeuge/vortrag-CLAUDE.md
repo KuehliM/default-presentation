@@ -15,7 +15,10 @@ Er ist in sich vollständig — das Repo wird nicht mehr gebraucht.
 ## Ablauf
 
 1. **Kopf:** Titelfolie (`.eyebrow`, `h1`, `.lead`, `.byline`), Dankfolie, Fußzeile
-   (`p.foot-meta` unter den Folien) und `title` — die Platzhalter ersetzen.
+   (`p.foot-meta` unter den Folien) und `title` — die Platzhalter ersetzen. Die blaue Karte
+   wächst mit. Titel über etwa 27 Zeichen: `class="lang"` am `h1` (72 px statt 84, zwei Zeilen
+   à ~31 Zeichen); die Byline muss über 584 bleiben (`pruefen.py` misst das). Danach die
+   Titelfolie **ansehen** — weiße Schrift neben der Karte meldet kein Werkzeug.
 2. **Folien anlegen**, zwei Wege, beliebig gemischt:
    * leer: den Block „Erste Folie" kopieren (`eyebrow`, `h2`, `ul.points`, `aside.notes`);
    * aus der Vorlage: Form im Katalog suchen, in `vorlage.html` die **ganze `section`** samt

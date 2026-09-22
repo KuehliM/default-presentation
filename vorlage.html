@@ -362,6 +362,7 @@ body{
 .ov-grid > *{ width: calc(var(--ov-thumb, 280) * 1px) }
 .ov-item{
   appearance:none; border:0; background:none; cursor:pointer; padding:0;
+  font:inherit;   /* ein Button erbt die Schrift nicht — ohne das standen Miniaturen und Beschriftung in der Systemschrift (das Register hat es seit je) */
   display:flex; flex-direction:column; gap:10px; text-align:left; color:var(--ink);
   transition: transform .22s var(--ease);
 }
@@ -398,6 +399,11 @@ h1, h2{ position:relative; margin-bottom:20px }
 h1{
   margin:0 0 4px; font-size:84px; line-height:1.02; font-weight:700; letter-spacing:-.032em; color:var(--blau); text-wrap:balance;
 }
+/* Langer Titel: zwei Zeilen statt drei. 84 px fassen rund 26 Zeichen je
+   Zeile, 72 px rund 31 (Fira Sans Bold, -.032em, Satzbreite 1080). Max'
+   Entscheidung vom 15.09. abends fuer den GDCP-Vortrag: "Foerderung
+   systemischen Denkens / durch Klimamodellierung" — nicht noch kleiner. */
+h1.lang{ font-size:72px }
 h2{
   margin:0 0 4px; font-size:46px; line-height:1.08; font-weight:700; letter-spacing:-.026em; text-wrap:balance;
 }
@@ -1429,11 +1435,30 @@ ol.fragen li::before{ content:counter(frage); font-size:44px; font-weight:700; l
 .cols{ gap:26px }
 pre{ background:var(--blau-10); border-left:0; border-radius:var(--r-md) }
 .flow-box{ fill:#fff; stroke:#dbe3ef }
-.slide.hero{ padding:88px 100px 56px; gap:30px }
+/* Titel- und Dankfolie: die blaue Karte waechst mit ihrem Inhalt.
+   Die Folie ist ein Raster mit einer Spalte und vier Zeilen — Abschnitt,
+   Titel, Untertitel, Byline —, die Karte (::before) spannt dieselben
+   vier Zeilen und ragt mit negativem Rand 40 px ueber den Inhalt hinaus.
+   So endet sie 40 px unter der Byline, ob der Titel eine Zeile hat oder
+   drei. Vorher stand sie fest bei 478 px (bottom:242px) und war auf einen
+   einzeiligen Titel gebaut; ab zwei Titelzeilen fielen Untertitel und
+   Byline weiss auf hellen Grund. Jede der vier Zeilen darf fehlen, kostet
+   dann aber ihren Zeilenabstand. Das Logo bleibt absolut in der Fussecke
+   (Oberkante 644); damit die Karte 20 px davor endet, darf die Byline bis
+   584 reichen — das ist der untere Rand (136 = 720 - 584), den pruefen.py
+   als Grenze liest. */
+.slide.hero{
+  display:grid; grid-template-columns:1fr; grid-template-rows:repeat(4, auto);
+  align-content:start; gap:30px; padding:88px 100px 136px;
+}
 .slide.hero::before{
-  display:block; left:56px; right:56px; top:48px; bottom:242px;
+  display:block; position:relative; grid-area:1 / 1 / -1 / -1; margin:-40px -44px;
   background:var(--blau); border-radius:var(--r-lg);
 }
+.slide.hero > .eyebrow{ grid-area:1 / 1 }
+.slide.hero > h1{ grid-area:2 / 1 }
+.slide.hero > .lead{ grid-area:3 / 1 }
+.slide.hero > .byline{ grid-area:4 / 1 }
 .slide.hero h1{ color:#fff }
 .slide.hero .eyebrow{ color:var(--blau-50) }
 .slide.hero .lead{ color:rgba(255,255,255,.84) }
